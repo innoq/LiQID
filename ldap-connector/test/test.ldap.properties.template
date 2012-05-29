@@ -1,0 +1,21 @@
+#LDAP Settings
+default.ldap=ldap1
+# LDAP Listsing, divided by ","
+#ldap.listing=ldap1,ldap2
+
+ldap.listing=ldap1
+
+ldap.user.objectClasses=top, organizationalPerson, inetOrgPerson, person, posixAccount, shadowAccount,  JabberAccount, ldapPublicKey
+ldap.group.objectClasses=groupOfNames, shadowAccount
+ldap.sshKey=<!-- no key -->
+ldap.jabberServer=jabber.example.com
+
+ldap1.base_dn=dc=example,dc=com
+ldap1.ou_people=ou=People
+ldap1.ou_group=ou=Group
+# should OUs be autocreatet if they not exist?
+ldap1.ou.autocreate=true
+ldap1.url=ldap://192.168.0.11:389
+ldap1.principal=cn=admin,dc=example,dc=com
+ldap1.credentials=toor
+

@@ -1,0 +1,105 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.innoq</groupId>
+    <artifactId>liqid</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>LiQID</name>
+    <url>http://www.innoq.com</url>
+    <developers>
+        <developer>
+            <id>phl</id>
+            <name>Philipp Haussleiter</name>
+            <email>philipp.haussleiter@innoq.com</email>
+            <url>http://www.innoq.com</url>
+            <organization>innoQ Deutschland GmbH</organization>
+            <organizationUrl>http://www.innoq.de</organizationUrl>
+            <roles>
+                <role>developer</role>
+                <role>architect</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <id>christians</id>
+            <name>Christian Sarazin</name>
+            <email>christian.sarazin@innoq.com</email>
+            <url>http://www.innoq.com</url>
+            <organization>innoQ Deutschland GmbH</organization>
+            <organizationUrl>http://www.innoq.de</organizationUrl>
+            <roles>
+                <role>tester</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <!-- must be replaced with sonatype Repository -->
+    <distributionManagement>
+        <repository>
+            <id>innoq.internal</id>
+            <url>https://archiva.innoq.com/archiva/repository/innoq.internal/</url>
+        </repository>
+        <snapshotRepository>
+            <id>innoq.internal</id>
+            <url>https://archiva.innoq.com/archiva/repository/innoq.internal/</url>
+        </snapshotRepository>
+    </distributionManagement>    
+    <modules>
+        <module>model</module>
+        <module>utils</module>
+        <module>ldap-connector</module>
+    </modules>
+    <profiles>
+        <profile>
+            <id>additions</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <aggregate>true</aggregate>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>aggregate</id>
+                                <goals>
+                                    <goal>aggregate</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
