@@ -805,6 +805,10 @@ public class LdapHelper implements Helper {
 
     private File getUserAvatarAsFile(ImageIcon avatar, String uid) {
         String tmpDir = Configuration.getInstance().getTmpDir();
+        File folder = new File(tmpDir + "/ldap/" + instance + "/avatars");
+        if(!folder.exists()){
+            folder.mkdirs();
+        }
         File file = new File(tmpDir + "/ldap/" + instance + "/avatars" + "/" + uid + ".png");
         if (!file.exists()) {
             try {
