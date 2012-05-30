@@ -2,3 +2,7 @@ target/
 .svn
 **/.svn
 private
+ldap-connector/test/test.ldap.properties
+
+.DS_Store
+**/.DS_Store
