@@ -110,6 +110,16 @@ public class TestGroup {
     }
 
     @Test
+    public void testUpdateGroup() throws Exception {
+        LdapGroup g1 = (LdapGroup) HELPER.getGroup(CN);
+        assertNull(g1.get("description"));
+        g1.set("description", "Group " + CN);
+        HELPER.setGroup(g1);
+        g1 = (LdapGroup) HELPER.getGroup(CN);
+        assertEquals(g1.get("description"), "Group " + CN);
+    }
+
+    @Test
     public void testUpdateEmptyGroup() throws Exception {
         LdapGroup g1 = (LdapGroup) HELPER.getGroup(CN);
         int count = g1.getUsers().size();

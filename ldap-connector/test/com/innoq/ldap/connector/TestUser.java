@@ -111,7 +111,16 @@ public class TestUser {
         assertTrue("should be true", login);
         Utils.resetTestUser(UID);
     }
-
+    @Test
+    public void testUpdateUser() throws Exception {
+        Node u1 = HELPER.getUser(UID);
+        assertNull(u1.get("o"));
+        u1.set("description", "Company for  " + UID);
+        HELPER.setUser(u1);
+        u1 = HELPER.getUser(UID);
+        assertEquals(u1.get("description"), "Company for  " + UID);
+    }
+    
     @Test
     public void testDeleteUser() {
         Node u1 = HELPER.getUser(UID);

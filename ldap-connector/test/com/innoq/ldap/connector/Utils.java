@@ -57,14 +57,13 @@ public class Utils {
         attributes.put("loginShell", "/bin/bash");
         attributes.put("mail", "test@test.com");
         attributes.put("mobile", "+12345678910");
-        attributes.put("o", "innoQ Deutschland GmbH");
-        attributes.put("postalAddress", "Halskestrasse 17$40880 Ratingen$NRW$Deutschland");
-        attributes.put("postalCode", "40880");
+        attributes.put("postalAddress", "a Street 123 17$12345 a City$NRW$Germany");
+        attributes.put("postalCode", "12345");
         attributes.put("shadowInactive", "0");
         attributes.put("shadowLastChange", "15055");
         attributes.put("shadowMax", "99999");
         attributes.put("shadowWarning", "7");
-        attributes.put("street", "Halskestrasse 17");
+        attributes.put("street", "a Street 123");
         return attributes;
     }
 
