@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -43,10 +41,8 @@ import javax.swing.ImageIcon;
  */
 public class LdapHelper implements Helper {
 
-    private static final Logger LOG = Logger.getLogger(LdapHelper.class.getName());
     private Log log = new LogZero();
     private Node principal = null;
-    private Hashtable env = new Hashtable();
     private DirContext ctx = null;
     private String baseDn;
     private String basePeopleDn;
@@ -85,17 +81,29 @@ public class LdapHelper implements Helper {
         return helper;
     }
 
+    /**
+     * Returns a Listing of all LDAPs from the properties file (ldap.listing).
+     * @return the Listing as String Array.
+     */
     public static String[] getLdaps() {
         String ldapListing = Configuration.getProperty("ldap.listing");
         String[] ldaps = ldapListing.split(",");
         return ldaps;
     }
 
+    /**
+     * Returns an Instance of the LdapHelper.
+     * @param instance
+     */
     public LdapHelper(String instance) {
         this.instance = instance;
         checkDirs();
     }
 
+    /**
+     * Sets the Log of that LdapHelper.
+     * @param log the Log writer to use.
+     */
     public void setLog(Log log) {
         this.log = log;
     }
@@ -111,11 +119,13 @@ public class LdapHelper implements Helper {
             LdapUser oldLdapUser = (LdapUser) getUser(newLdapUser.getUid());
             if (oldLdapUser.isEmpty()) {
                 newLdapUser.setPassword(newLdapUser.getName());
+                log.write("bind: " + getOuForNode(newLdapUser), LdapHelper.class);
                 ctx.bind(getOuForNode(newLdapUser), null, newLdapUser.getAttributes());
                 creationCount++;
             } else {
                 ModificationItem[] mods = buildModificationsForUser(newLdapUser, oldLdapUser);
                 if (mods.length > 0) {
+                    log.write("modifyAttributes: " + getOuForNode(newLdapUser), LdapHelper.class);
                     ctx.modifyAttributes(getOuForNode(newLdapUser), mods);
                     modificationCount++;
                 }
@@ -183,11 +193,13 @@ public class LdapHelper implements Helper {
             LdapGroup oldLdapGroup = (LdapGroup) getGroup(newLdapGroup.getCn());
             if (oldLdapGroup.isEmpty()) {
                 creationCount++;
+                log.write("bind: " + getOuForNode(newLdapGroup), LdapHelper.class);
                 ctx.bind(getOuForNode(newLdapGroup), null, newLdapGroup.getAttributes());
             } else {
                 ModificationItem[] mods = buildModificationsForGroup(newLdapGroup, oldLdapGroup);
                 if (mods.length > 0) {
                     modificationCount++;
+                    log.write("modifyAttributes: " + getOuForNode(newLdapGroup), LdapHelper.class);
                     ctx.modifyAttributes(getOuForNode(newLdapGroup), mods);
                 }
             }
@@ -464,9 +476,10 @@ public class LdapHelper implements Helper {
             validationCount++;
             return true;
         } catch (NamingException ex) {
-            LOG.log(Level.WARNING, instance + ": checkCredentials uid: {0} {1}", new Object[]{uid, ex.getLocalizedMessage()});
+            throw new LdapException( instance + ": checkCredentials uid"+uid, ex);
+        }finally{
+            return false;
         }
-        return false;
     }
 
     /**
@@ -521,26 +534,44 @@ public class LdapHelper implements Helper {
         return group;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getCreationCount() {
         return creationCount;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getDeletionCount() {
         return deletionCount;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getModificationCount() {
         return modificationCount;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getQueryCount() {
         return queryCount;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getValidationCount() {
         return validationCount;
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
     public void reload() {
         loadProperties();
     }
@@ -569,7 +600,6 @@ public class LdapHelper implements Helper {
     }
 
     private ModificationItem[] buildModificationsForGroup(final LdapGroup newLdapGroup, final LdapGroup oldLdapGroup) {
-        String k;
         List<String> mods = new ArrayList<String>();
         List<String> adds = new ArrayList<String>();
         List<String> dels = new ArrayList<String>();
@@ -596,14 +626,7 @@ public class LdapHelper implements Helper {
             }
         }
 
-        // filter for null Attributes
-        Enumeration<String> keys = attrs.getIDs();
-        while (keys.hasMoreElements()) {
-            k = keys.nextElement();
-            if (getAttributeOrNa(attrs, k).equals("null")) {
-                attrs.remove(k);
-            }
-        }
+        attrs = filterForNullAttributes(attrs);
 
         List<ModificationItem> miList = new ArrayList<ModificationItem>();
         miList = buildObjectClassChangeSets(miList, oldLdapGroup, newLdapGroup);
@@ -625,12 +648,15 @@ public class LdapHelper implements Helper {
         while (keys.hasMoreElements()) {
             k = keys.nextElement();
             if (mods.contains(k)) {
+                log.write("MiListForGroup MOD " + k + " " + attrs.get(k), LdapHelper.class);
                 miList.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs.get(k)));
             }
             if (adds.contains(k)) {
+                log.write("MiListForGroup ADD " + k + " " + attrs.get(k), LdapHelper.class);
                 miList.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, attrs.get(k)));
             }
             if (dels.contains(k)) {
+                log.write("MiListForGroup REM " + k + " " + attrs.get(k), LdapHelper.class);
                 miList.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE, attrs.get(k)));
             }
         }
@@ -671,9 +697,7 @@ public class LdapHelper implements Helper {
         return miList;
     }
 
-    // TODO this Methods needs to be separeted into several Methods.
     private ModificationItem[] buildModificationsForUser(final LdapUser newLdapUser, final LdapUser oldLdapUser) {
-        String k;
         List<String> mods = new ArrayList<String>();
         List<String> adds = new ArrayList<String>();
         List<String> dels = new ArrayList<String>();
@@ -697,14 +721,7 @@ public class LdapHelper implements Helper {
             }
         }
 
-        // filter for null Attributes
-        Enumeration<String> keys = attrs.getIDs();
-        while (keys.hasMoreElements()) {
-            k = keys.nextElement();
-            if (getAttributeOrNa(attrs, k).equals("null")) {
-                attrs.remove(k);
-            }
-        }
+        attrs = filterForNullAttributes(attrs);
         List<ModificationItem> miList = new ArrayList<ModificationItem>();
         miList = buildObjectClassChangeSets(miList, oldLdapUser, newLdapUser);
 
@@ -712,20 +729,8 @@ public class LdapHelper implements Helper {
             BasicAttribute pwAttr = new BasicAttribute("userPassword", "{SHA}" + newLdapUser.getPassword());
             miList.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, pwAttr));
         }
-        keys = attrs.getIDs();
-        while (keys.hasMoreElements()) {
-            k = keys.nextElement();
-            if (mods.contains(k)) {
-                miList.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs.get(k)));
-            }
-            if (adds.contains(k)) {
-                miList.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, attrs.get(k)));
-            }
-            if (dels.contains(k)) {
-                miList.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE, attrs.get(k)));
-            }
-        }
 
+        miList = buildMiListForUser(miList, attrs, mods, adds, dels);
         int c = 0;
         ModificationItem[] miArray = new ModificationItem[miList.size()];
         for (ModificationItem m : miList) {
@@ -733,6 +738,40 @@ public class LdapHelper implements Helper {
             c++;
         }
         return miArray;
+    }
+
+    private Attributes filterForNullAttributes(Attributes attrs) {
+        String k;
+        Enumeration<String> keys = attrs.getIDs();
+        while (keys.hasMoreElements()) {
+            k = keys.nextElement();
+            if (getAttributeOrNa(attrs, k).equals("null")) {
+                log.write("filterForNullAttributes removing " + k + " " + attrs.get(k), LdapHelper.class);
+                attrs.remove(k);
+            }
+        }
+        return attrs;
+    }
+
+    private List<ModificationItem> buildMiListForUser(List<ModificationItem> miList, Attributes attrs, List<String> mods, List<String> adds, List<String> dels) {
+        Enumeration<String> keys = attrs.getIDs();
+        String k;
+        while (keys.hasMoreElements()) {
+            k = keys.nextElement();
+            if (mods.contains(k)) {
+                log.write("buildMiListForUser MOD " + k + " " + attrs.get(k), LdapHelper.class);
+                miList.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs.get(k)));
+            }
+            if (adds.contains(k)) {
+                log.write("buildMiListForUser ADD " + k + " " + attrs.get(k), LdapHelper.class);
+                miList.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, attrs.get(k)));
+            }
+            if (dels.contains(k)) {
+                log.write("buildMiListForUser REM " + k + " " + attrs.get(k), LdapHelper.class);
+                miList.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE, attrs.get(k)));
+            }
+        }
+        return miList;
     }
 
     private LdapUser fillAttributesInUser(LdapUser user, Attributes attributes) {
@@ -806,7 +845,7 @@ public class LdapHelper implements Helper {
     private File getUserAvatarAsFile(ImageIcon avatar, String uid) {
         String tmpDir = Configuration.getInstance().getTmpDir();
         File folder = new File(tmpDir + "/ldap/" + instance + "/avatars");
-        if(!folder.exists()){
+        if (!folder.exists()) {
             folder.mkdirs();
         }
         File file = new File(tmpDir + "/ldap/" + instance + "/avatars" + "/" + uid + ".png");
@@ -855,14 +894,17 @@ public class LdapHelper implements Helper {
         baseDn = Configuration.getProperty(instance + ".base_dn");
         basePeopleDn = Configuration.getProperty(instance + ".ou_people") + "," + baseDn;
         baseGroupDn = Configuration.getProperty(instance + ".ou_group") + "," + baseDn;
+        Hashtable env = new Hashtable();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+        env.put(Context.SECURITY_AUTHENTICATION, "simple");
+        env.put(Context.SECURITY_PRINCIPAL, Configuration.getProperty(instance + ".principal"));
+        env.put(Context.SECURITY_CREDENTIALS, Configuration.getProperty(instance + ".credentials"));
+
         env.put(Context.PROVIDER_URL, Configuration.getProperty(instance + ".url") + "/" + baseDn);
         if (Configuration.getProperty(instance + ".url").startsWith("ldaps")) {
             env.put(Context.SECURITY_PROTOCOL, "ssl");
         }
-        env.put(Context.SECURITY_AUTHENTICATION, "simple");
-        env.put(Context.SECURITY_PRINCIPAL, Configuration.getProperty(instance + ".principal"));
-        env.put(Context.SECURITY_CREDENTIALS, Configuration.getProperty(instance + ".credentials"));
+
         defaultValues.put("jabberServer", Configuration.getProperty("ldap.jabberServer", DEFAULT_JABBER_SERVER));
         defaultValues.put("sshKey", Configuration.getProperty("ldap.sshKey", DEFAULT_SSH_KEY));
         try {
@@ -875,13 +917,13 @@ public class LdapHelper implements Helper {
         } catch (NamingException ex) {
             online = false;
             log.write("could not connect to " + instance, LdapHelper.class);
-            throw new LdapException(instance + ": loadProperties {0}", ex);
+            throw new LdapException(instance + ": loadProperties", ex);
         }
     }
 
     private void checkOus() {
         log.write("checking Organisation Units", LdapHelper.class);
-        String ous[] = {basePeopleDn, basePeopleDn};
+        String ous[] = {basePeopleDn, baseGroupDn};
         List<String> exists = new ArrayList<String>();
         try {
             String query = "(objectClass=organizationalUnit)";
@@ -897,27 +939,36 @@ public class LdapHelper implements Helper {
                 ouAttribute = getAttributeOrNa(attributes, "ou");
                 for (String ou : ous) {
                     if (getOuAttributeFromDN(ou).equals(ouAttribute)) {
+                        log.write("existing Organisation Unit " + ou, LdapHelper.class);
                         exists.add(ou.trim());
                     }
                 }
             }
+            Hashtable environment = (Hashtable) ctx.getEnvironment().clone();
+            environment.put(Context.PROVIDER_URL, Configuration.getProperty(instance + ".url"));
+            DirContext dirContext = new InitialDirContext(environment);
             for (String ou : ous) {
+                log.write("checking ou: " + ou, LdapHelper.class);
                 if (!exists.contains(ou)) {
-                    ctx.bind(baseDn, null, getOuAttributes(ou));
                     log.write("creating Organisation Unit " + ou, LdapHelper.class);
+                    dirContext.bind(ou, null, getOuAttributes(ou));
                     creationCount++;
                 }
             }
+            dirContext.close();
         } catch (NamingException ex) {
-            throw new LdapException(instance + ": checkOus {0}", ex);
+            throw new LdapException(instance + ": checkOus", ex);
         }
     }
 
     private BasicAttributes getOuAttributes(String dn) {
         BasicAttributes attrs = new BasicAttributes();
-        attrs.put("objectClass", "top");
-        attrs.put("objectClass", "organizationalUnit");
+        BasicAttribute ocattrs = new BasicAttribute("objectClass");
+        ocattrs.add("top");
+        ocattrs.add("organizationalUnit");
+        attrs.put(ocattrs);
         attrs.put("ou", getOuAttributeFromDN(dn));
+        log.write("Attributes for " + dn + ":\n" + attrs.toString(), LdapHelper.class);
         return attrs;
     }
 
