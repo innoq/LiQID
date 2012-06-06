@@ -476,10 +476,9 @@ public class LdapHelper implements Helper {
             validationCount++;
             return true;
         } catch (NamingException ex) {
-            throw new LdapException( instance + ": checkCredentials uid"+uid, ex);
-        }finally{
-            return false;
+            log.write("NamingException " + ex.getLocalizedMessage(), LdapHelper.class);
         }
+        return false;
     }
 
     /**
@@ -568,7 +567,7 @@ public class LdapHelper implements Helper {
     public long getValidationCount() {
         return validationCount;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -724,13 +723,12 @@ public class LdapHelper implements Helper {
         attrs = filterForNullAttributes(attrs);
         List<ModificationItem> miList = new ArrayList<ModificationItem>();
         miList = buildObjectClassChangeSets(miList, oldLdapUser, newLdapUser);
-
+        miList = buildMiListForUser(miList, attrs, mods, adds, dels);
         if (newLdapUser.getPassword() != null) {
             BasicAttribute pwAttr = new BasicAttribute("userPassword", "{SHA}" + newLdapUser.getPassword());
+            log.write("update Password", LdapHelper.class);
             miList.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, pwAttr));
         }
-
-        miList = buildMiListForUser(miList, attrs, mods, adds, dels);
         int c = 0;
         ModificationItem[] miArray = new ModificationItem[miList.size()];
         for (ModificationItem m : miList) {
@@ -758,17 +756,19 @@ public class LdapHelper implements Helper {
         String k;
         while (keys.hasMoreElements()) {
             k = keys.nextElement();
-            if (mods.contains(k)) {
-                log.write("buildMiListForUser MOD " + k + " " + attrs.get(k), LdapHelper.class);
-                miList.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs.get(k)));
-            }
-            if (adds.contains(k)) {
-                log.write("buildMiListForUser ADD " + k + " " + attrs.get(k), LdapHelper.class);
-                miList.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, attrs.get(k)));
-            }
-            if (dels.contains(k)) {
-                log.write("buildMiListForUser REM " + k + " " + attrs.get(k), LdapHelper.class);
-                miList.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE, attrs.get(k)));
+            if (!"userPassword".equals(k)) {
+                if (mods.contains(k)) {
+                    log.write("buildMiListForUser MOD " + k + " " + attrs.get(k), LdapHelper.class);
+                    miList.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs.get(k)));
+                }
+                if (adds.contains(k)) {
+                    log.write("buildMiListForUser ADD " + k + " " + attrs.get(k), LdapHelper.class);
+                    miList.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, attrs.get(k)));
+                }
+                if (dels.contains(k)) {
+                    log.write("buildMiListForUser REM " + k + " " + attrs.get(k), LdapHelper.class);
+                    miList.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE, attrs.get(k)));
+                }
             }
         }
         return miList;
