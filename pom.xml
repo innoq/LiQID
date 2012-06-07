@@ -43,6 +43,12 @@
         <url>http://innoq.com/</url>
     </organization>
 
+    <scm>
+        <connection>scm:git:git@github.com:innoq/LiQID.git</connection>
+        <developerConnection>scm:git:git@github.com:innoq/LiQID.git</developerConnection>
+        <url>git@github.com:innoq/LiQID.git</url>
+    </scm>
+
     <developers>
         <developer>
             <id>phl</id>
