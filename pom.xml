@@ -16,6 +16,12 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.innoq</groupId>
     <artifactId>liqid</artifactId>
@@ -23,6 +29,20 @@
     <packaging>pom</packaging>
     <name>LiQID</name>
     <url>http://www.innoq.com</url>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <organization>
+        <name>innoQ Deutschland GmbH</name>
+        <url>http://innoq.com/</url>
+    </organization>
+
     <developers>
         <developer>
             <id>phl</id>
