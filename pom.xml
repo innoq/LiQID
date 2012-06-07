@@ -86,17 +86,6 @@
             </plugin>
         </plugins>
     </build>
-    <!-- must be replaced with sonatype Repository -->
-    <distributionManagement>
-        <repository>
-            <id>innoq.internal</id>
-            <url>https://archiva.innoq.com/archiva/repository/innoq.internal/</url>
-        </repository>
-        <snapshotRepository>
-            <id>innoq.internal</id>
-            <url>https://archiva.innoq.com/archiva/repository/innoq.internal/</url>
-        </snapshotRepository>
-    </distributionManagement>    
     <modules>
         <module>model</module>
         <module>utils</module>
