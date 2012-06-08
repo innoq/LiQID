@@ -1,13 +1,54 @@
+<?xml version="1.0"?>
+<!--
+  Copyright (C) 2012 innoQ Deutschland GmbH
 
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.innoq</groupId>
-    <artifactId>liqid</artifactId>
+    <groupId>com.innoq.liqid</groupId>
+    <artifactId>liqid-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>LiQID</name>
-    <url>http://www.innoq.com</url>
+    <url>https://github.com/innoq/LiQID</url>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <organization>
+        <name>innoQ Deutschland GmbH</name>
+        <url>http://innoq.com/</url>
+    </organization>
+
+    <scm>
+        <connection>scm:git:git@github.com:innoq/LiQID.git</connection>
+        <developerConnection>scm:git:git@github.com:innoq/LiQID.git</developerConnection>
+        <url>git@github.com:innoq/LiQID.git</url>
+    </scm>
+
     <developers>
         <developer>
             <id>phl</id>
@@ -51,17 +92,6 @@
             </plugin>
         </plugins>
     </build>
-    <!-- must be replaced with sonatype Repository -->
-    <distributionManagement>
-        <repository>
-            <id>innoq.internal</id>
-            <url>https://archiva.innoq.com/archiva/repository/innoq.internal/</url>
-        </repository>
-        <snapshotRepository>
-            <id>innoq.internal</id>
-            <url>https://archiva.innoq.com/archiva/repository/innoq.internal/</url>
-        </snapshotRepository>
-    </distributionManagement>    
     <modules>
         <module>model</module>
         <module>utils</module>
