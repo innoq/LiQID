@@ -16,7 +16,6 @@
 /**
  * LogFile
  * 16.12.2011
- * @author Philipp Haussleiter
  *
  */
 package com.innoq.liqid.log;

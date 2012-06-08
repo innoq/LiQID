@@ -19,10 +19,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Group
+ * LdapGroup
  * 14.04.2011
- * @author Philipp Haussleiter
- *
  */
 public class LdapGroup extends LdapNode implements Comparable<LdapGroup> {
 

@@ -14,10 +14,8 @@
   limitations under the License.
 */
 /**
- * Node
+ * LdapNode
  * 10.12.2011
- * @author Philipp Haussleiter
- *
  */
 package com.innoq.ldap.connector;
 

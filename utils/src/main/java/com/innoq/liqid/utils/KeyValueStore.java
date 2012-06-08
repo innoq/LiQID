@@ -16,7 +16,6 @@
 /**
  * KeyValueStore
  * 14.02.2012
- * @author Philipp Haussleiter
  *
  */
 package com.innoq.liqid.utils;

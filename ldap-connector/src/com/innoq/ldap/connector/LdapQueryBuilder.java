@@ -16,8 +16,6 @@
 /**
  * LdapQueryBuilder
  * 27.05.2012
- * @author Philipp Haussleiter
- *
  */
 package com.innoq.ldap.connector;
 

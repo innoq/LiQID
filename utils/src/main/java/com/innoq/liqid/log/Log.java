@@ -16,14 +16,12 @@
 /**
  * Log
  * 16.12.2011
- * @author Philipp Haussleiter
  *
  */
 package com.innoq.liqid.log;
 
 /**
  * Interface for a basic Log-Representation.
- * @author Philipp Haußleiter
  */
 public interface Log {
     /**

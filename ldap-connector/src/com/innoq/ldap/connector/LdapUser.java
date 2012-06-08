@@ -22,10 +22,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * User
+ * LdapUser
  * 04.12.2011
- * @author Philipp Haussleiter
- *
  */
 public class LdapUser extends LdapNode implements Comparable<LdapUser> {
 

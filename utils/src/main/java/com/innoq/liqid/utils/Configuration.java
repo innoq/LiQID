@@ -23,7 +23,6 @@ import java.util.Properties;
 /**
  * Configuration
  * 14.04.2011
- * @author Philipp Haussleiter
  *
  */
 public class Configuration {

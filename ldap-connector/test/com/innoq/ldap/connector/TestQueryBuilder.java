@@ -27,8 +27,6 @@ import static org.junit.Assert.*;
 /**
  * TestQueryBuilder
  * 27.05.2012
- * @author Philipp Haussleiter
- *
  */
 public class TestQueryBuilder {
 

@@ -30,8 +30,6 @@ import static org.junit.Assert.*;
 /**
  * TestGroup
  * 11.12.2011
- * @author Philipp Haussleiter
- *
  */
 public class TestGroup {
 

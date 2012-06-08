@@ -51,8 +51,6 @@ import javax.swing.ImageIcon;
 /**
  * LdapHelper
  * 14.04.2011
- * @author Philipp Haussleiter
- *
  */
 public class LdapHelper implements Helper {
 

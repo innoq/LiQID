@@ -16,8 +16,6 @@
 /**
  * LdapException
  * 22.05.2012
- * @author Philipp Haussleiter
- *
  */
 package com.innoq.ldap.connector;
 

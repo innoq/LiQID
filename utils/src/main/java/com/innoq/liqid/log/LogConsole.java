@@ -16,7 +16,6 @@
 /**
  * LogConsole
  * 10.05.2012
- * @author Philipp Haussleiter
  *
  */
 package com.innoq.liqid.log;

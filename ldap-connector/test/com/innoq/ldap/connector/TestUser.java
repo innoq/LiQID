@@ -29,8 +29,6 @@ import static org.junit.Assert.*;
 /**
  * TestUser
  * 11.12.2011
- * @author Philipp Haussleiter
- *
  */
 public class TestUser {
 

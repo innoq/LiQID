@@ -26,10 +26,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * TestUtils
+ * Utils
  * 27.05.2012
- * @author Philipp Haussleiter
- *
  */
 public class Utils {
 

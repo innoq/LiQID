@@ -16,7 +16,6 @@
 /**
  * ObjectCache
  * 23.02.2012
- * @author Philipp Haussleiter
  *
  */
 package com.innoq.liqid.utils;
