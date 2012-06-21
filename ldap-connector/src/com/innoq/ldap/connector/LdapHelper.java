@@ -71,9 +71,10 @@ public class LdapHelper implements Helper {
     private long deletionCount;
     private final static String GROUP_CN_FORMAT = "cn=%s,%s";
     private final static String USER_UID_FORMAT = "uid=%s,%s";
-    public final static String DEFAULT_JABBER_SERVER = "jabber.example.com";
-    public final static String DEFAULT_SSH_KEY = "<!-- no key -->";
-
+    private final static String DEFAULT_JABBER_SERVER = "jabber.example.com";
+    private final static String DEFAULT_SSH_KEY = "<!-- no key -->";
+    private final static String DEFAULT_MOBILE = "0000";
+    
     public static LdapHelper getInstance() {
         String defaultLdap = Configuration.getProperty("default.ldap");
         return getInstance(defaultLdap);
@@ -377,6 +378,18 @@ public class LdapHelper implements Helper {
     }
 
     /**
+     * Returns a Value from the Default Collection.
+     * @param key the key of the default-collection.
+     * @return the default value for that key if exists otherwise an empty string.
+     */
+    public String getDefault(final String key){
+        if(defaultValues.containsKey(key)){
+            return defaultValues.get(key);
+        }
+        return "";
+    }
+
+    /**
      * Returns the uid for an User-DN.
      * @param dn the dn of an user.
      * @return the uid for that DN.
@@ -507,17 +520,23 @@ public class LdapHelper implements Helper {
             user.addObjectClass(oc.trim());
         }
         user = (LdapUser) updateObjectClasses(user);
+
+        user.set("mobile", defaultValues.get("mobile"));
+
         // for inetOrgPerson
         user.set("sn", uid);
+
         // for JabberAccount
         if (user.getObjectClasses().contains("JabberAccount")) {
             user.set("jabberID", uid + "@" + defaultValues.get("jabberServer"));
             user.set("jabberAccess", "TRUE");
         }
+
         // for posixAccount
         user.set("uidNumber", "0");
         user.set("gidNumber", "0");
         user.set("homeDirectory", "/dev/null");
+
         // for ldapPublicKey
         if (user.getObjectClasses().contains("ldapPublicKey")) {
             user.set("sshPublicKey", defaultValues.get("sshKey"));
@@ -920,6 +939,8 @@ public class LdapHelper implements Helper {
 
         defaultValues.put("jabberServer", Configuration.getProperty("ldap.jabberServer", DEFAULT_JABBER_SERVER));
         defaultValues.put("sshKey", Configuration.getProperty("ldap.sshKey", DEFAULT_SSH_KEY));
+        defaultValues.put("mobile", Configuration.getProperty("ldap.mobile", DEFAULT_MOBILE));
+
         try {
             ctx = new InitialDirContext(env);
             online = true;

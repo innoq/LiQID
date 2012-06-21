@@ -152,15 +152,19 @@ public class TestUser {
     @Test
     public void testDefaultConfig() {
         String jabberServer = Configuration.getProperty("ldap.jabberServer");
-        String sshKey = Configuration.getProperty("sshKey");
+        String sshKey = Configuration.getProperty("ldap.sshKey");
+        String mobile = Configuration.getProperty("ldap.mobile");
         Configuration.setProperty("ldap.jabberServer", null);
         Configuration.setProperty("ldap.sshKey", null);
+        Configuration.setProperty("ldap.mobile", null);
         HELPER.reload();
         LdapUser u1 = HELPER.getUserTemplate(UID);
-        assertEquals(UID + "@" + LdapHelper.DEFAULT_JABBER_SERVER, u1.get("jabberID"));
-        assertEquals(LdapHelper.DEFAULT_SSH_KEY, u1.get("sshPublicKey"));
+        assertEquals(UID + "@" + HELPER.getDefault("jabberServer"), u1.get("jabberID"));
+        assertEquals(HELPER.getDefault("sshKey"), u1.get("sshPublicKey"));
+        assertEquals(HELPER.getDefault("mobile"), u1.get("mobile"));
         Configuration.setProperty("ldap.jabberServer", jabberServer);
         Configuration.setProperty("ldap.sshKey", sshKey);
+        Configuration.setProperty("ldap.mobile", mobile);
         HELPER.reload();
     }
 }
