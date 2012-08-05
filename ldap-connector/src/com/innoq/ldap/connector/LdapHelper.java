@@ -1,18 +1,18 @@
 /*
-  Copyright (C) 2012 innoQ Deutschland GmbH
+Copyright (C) 2012 innoQ Deutschland GmbH
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-  http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*/
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+ */
 package com.innoq.ldap.connector;
 
 import com.innoq.liqid.log.Log;
@@ -74,7 +74,7 @@ public class LdapHelper implements Helper {
     private final static String DEFAULT_JABBER_SERVER = "jabber.example.com";
     private final static String DEFAULT_SSH_KEY = "<!-- no key -->";
     private final static String DEFAULT_MOBILE = "0000";
-    
+
     public static LdapHelper getInstance() {
         String defaultLdap = Configuration.getProperty("default.ldap");
         return getInstance(defaultLdap);
@@ -382,8 +382,8 @@ public class LdapHelper implements Helper {
      * @param key the key of the default-collection.
      * @return the default value for that key if exists otherwise an empty string.
      */
-    public String getDefault(final String key){
-        if(defaultValues.containsKey(key)){
+    public String getDefault(final String key) {
+        if (defaultValues.containsKey(key)) {
             return defaultValues.get(key);
         }
         return "";
@@ -492,7 +492,9 @@ public class LdapHelper implements Helper {
         StringBuilder sb = new StringBuilder("uid=").append(uid).append(",");
         sb.append(Configuration.getProperty(instance + ".ou_people")).append(",");
         sb.append(baseDn);
-
+        if (uid == null || uid.isEmpty() || password == null || password.isEmpty()) {
+            return false;
+        }
         try {
             Hashtable environment = (Hashtable) ctx.getEnvironment().clone();
             environment.put(Context.SECURITY_PRINCIPAL, sb.toString());
