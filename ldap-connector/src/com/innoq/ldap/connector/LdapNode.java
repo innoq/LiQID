@@ -72,7 +72,7 @@ public class LdapNode implements Node {
                 && !value.isEmpty()
                 && key != null
                 && !key.isEmpty()) {
-            attributes.put(new BasicAttribute(key, value, true));
+            addAttribute(new BasicAttribute(key, value, true));
         }
     }
 
