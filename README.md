@@ -8,8 +8,7 @@ This is Library should help java developers to use LDAP-Directories in a simple 
 Model
 -------------
 
-![LiQID Model](images/Node-UML.png "LiQID Model")
-
+<img src="images/Node-UML.png" alt="LiQID Model" />
 
 Utils
 -------------
