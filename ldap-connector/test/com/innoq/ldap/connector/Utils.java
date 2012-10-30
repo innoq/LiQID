@@ -37,7 +37,6 @@ public class Utils {
 
     public static LdapHelper getHelper() {
         if (HELPER == null) {
-            Configuration.getInstance().setPropertiesFile("test/test.ldap.properties");
             Configuration.getInstance().setTmpDir("target");
             HELPER = LdapHelper.getInstance();
             HELPER.setLog(new LogConsole());
