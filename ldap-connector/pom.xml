@@ -95,7 +95,6 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <mkdir dir="${project.build.directory}/lib"/>
                                 <jar destfile="${project.build.directory}/${project.artifactId}-${project.version}.jar">
                                     <fileset dir="${project.build.directory}/classes"/>
                                     <fileset dir="${project.build.directory}/dependency"/>
