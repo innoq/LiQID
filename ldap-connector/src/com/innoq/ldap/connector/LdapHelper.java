@@ -1,26 +1,26 @@
 /*
-Copyright (C) 2012 innoQ Deutschland GmbH
+ Copyright (C) 2012 innoQ Deutschland GmbH
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
  */
 package com.innoq.ldap.connector;
 
 import com.innoq.liqid.log.Log;
 import com.innoq.liqid.log.LogZero;
-import com.innoq.liqid.utils.Configuration;
 import com.innoq.liqid.model.Helper;
 import com.innoq.liqid.model.Node;
 import com.innoq.liqid.model.QueryBuilder;
+import com.innoq.liqid.utils.Configuration;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -49,8 +49,7 @@ import javax.naming.directory.SearchResult;
 import javax.swing.ImageIcon;
 
 /**
- * LdapHelper
- * 14.04.2011
+ * LdapHelper 14.04.2011
  */
 public class LdapHelper implements Helper {
 
@@ -82,6 +81,7 @@ public class LdapHelper implements Helper {
 
     /**
      * Returns a new Instance of LdapHelper.
+     *
      * @return a new Instance.
      */
     public static LdapHelper getInstance(String instance) {
@@ -97,6 +97,7 @@ public class LdapHelper implements Helper {
 
     /**
      * Returns a Listing of all LDAPs from the properties file (ldap.listing).
+     *
      * @return the Listing as String Array.
      */
     public static String[] getLdaps() {
@@ -107,6 +108,7 @@ public class LdapHelper implements Helper {
 
     /**
      * Returns an Instance of the LdapHelper.
+     *
      * @param instance
      */
     public LdapHelper(String instance) {
@@ -116,6 +118,7 @@ public class LdapHelper implements Helper {
 
     /**
      * Sets the Log of that LdapHelper.
+     *
      * @param log the Log writer to use.
      */
     public void setLog(Log log) {
@@ -124,6 +127,7 @@ public class LdapHelper implements Helper {
 
     /**
      * Writes the modifications on an user object back to the LDAP.
+     *
      * @param user the modfied user.
      * @return true if the user was set correct, false otherwise.
      */
@@ -154,6 +158,7 @@ public class LdapHelper implements Helper {
 
     /**
      * Deletes an LDAP-User.
+     *
      * @param node of the LDAP-User to be deleted.
      * @return true if User was deleted, otherwise false.
      */
@@ -175,6 +180,7 @@ public class LdapHelper implements Helper {
 
     /**
      * Deletes a LDAP-Group.
+     *
      * @param node of the LDAP-Group to be deleted.
      * @return true if Group was deleted, otherwise false.
      */
@@ -196,6 +202,7 @@ public class LdapHelper implements Helper {
 
     /**
      * Adds or updates a LDAP-Group.
+     *
      * @param node of the LDAP-Group to be set.
      * @return true if the Group was added/updated, otherwise false.
      * @throws Exception
@@ -227,9 +234,11 @@ public class LdapHelper implements Helper {
 
     /**
      * Returns an LDAP-User.
+     *
      * @param uid the uid of the User.
      * @see com.innoq.liqid.model.Node#getName().
-     * @return the Node of that User, either filled (if User was found), or empty.
+     * @return the Node of that User, either filled (if User was found), or
+     * empty.
      */
     public Node getUser(final String uid) {
         Node user = new LdapUser(uid);
@@ -238,6 +247,7 @@ public class LdapHelper implements Helper {
             SearchResult searchResult = null;
             Attributes attributes = null;
             SearchControls controls = new SearchControls();
+            controls.setReturningAttributes(new String[]{"*", "modifyTimestamp", "modifiersName"});
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             NamingEnumeration results = ctx.search("", query, controls);
             queryCount++;
@@ -254,6 +264,7 @@ public class LdapHelper implements Helper {
 
     /**
      * Returns several LDAP-Users for a given search-String.
+     *
      * @param uid the uid or part of uid of the Users.
      * @return Users as a Set of com.innoq.liqid.model.Node.
      */
@@ -278,11 +289,13 @@ public class LdapHelper implements Helper {
             SearchResult searchResult = null;
             Attributes attributes = null;
             SearchControls controls = new SearchControls();
+            controls.setReturningAttributes(new String[]{"*", "modifyTimestamp", "modifiersName"});
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             NamingEnumeration results = ctx.search("", query, controls);
             queryCount++;
             while (results.hasMore()) {
                 searchResult = (SearchResult) results.next();
+                //searchResult
                 attributes = searchResult.getAttributes();
                 LdapUser user = new LdapUser();
                 user = fillAttributesInUser(user, attributes);
@@ -296,9 +309,11 @@ public class LdapHelper implements Helper {
 
     /**
      * Returns a LDAP-Group.
+     *
      * @param cn the cn of that Group.
      * @see com.innoq.liqid.model.Node#getName().
-     * @return the Node of that Group, either filled (if Group was found), or empty.
+     * @return the Node of that Group, either filled (if Group was found), or
+     * empty.
      */
     public Node getGroup(final String cn) {
         Node group = new LdapGroup(cn);
@@ -307,6 +322,7 @@ public class LdapHelper implements Helper {
             SearchResult searchResult = null;
             Attributes attributes = null;
             SearchControls controls = new SearchControls();
+            controls.setReturningAttributes(new String[]{"*", "modifyTimestamp", "modifiersName"});
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             NamingEnumeration results = ctx.search("", query, controls);
             queryCount++;
@@ -323,6 +339,7 @@ public class LdapHelper implements Helper {
 
     /**
      * Returns several LDAP-Groups for a given search-String.
+     *
      * @param cn the cn (or part of cn) for the groups.
      * @return Groups as a Set of Nodes.
      */
@@ -347,6 +364,7 @@ public class LdapHelper implements Helper {
             SearchResult searchResult = null;
             Attributes attributes = null;
             SearchControls controls = new SearchControls();
+            controls.setReturningAttributes(new String[]{"*", "modifyTimestamp", "modifiersName"});
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             NamingEnumeration results = ctx.search("", query, controls);
             queryCount++;
@@ -365,7 +383,9 @@ public class LdapHelper implements Helper {
 
     /**
      * Returns the LDAP-Principal as a LdapUser.
-     * @return the Principal of that instance as a Node @see com.innoq.liqid.model.Node.
+     *
+     * @return the Principal of that instance as a Node
+     * @see com.innoq.liqid.model.Node.
      */
     public Node getPrincipal() {
         if (principal == null) {
@@ -379,8 +399,10 @@ public class LdapHelper implements Helper {
 
     /**
      * Returns a Value from the Default Collection.
+     *
      * @param key the key of the default-collection.
-     * @return the default value for that key if exists otherwise an empty string.
+     * @return the default value for that key if exists otherwise an empty
+     * string.
      */
     public String getDefault(final String key) {
         if (defaultValues.containsKey(key)) {
@@ -391,6 +413,7 @@ public class LdapHelper implements Helper {
 
     /**
      * Returns the uid for an User-DN.
+     *
      * @param dn the dn of an user.
      * @return the uid for that DN.
      */
@@ -403,6 +426,7 @@ public class LdapHelper implements Helper {
 
     /**
      * Returns the DN (Distinguished Name) for a Node.
+     *
      * @param node the given Node.
      * @return the DN of that Node.
      */
@@ -416,6 +440,7 @@ public class LdapHelper implements Helper {
 
     /**
      * Returns the OU (Organisation-Unit) an Node.
+     *
      * @param node the given node.
      * @return the DN of the OU of that node.
      */
@@ -431,6 +456,7 @@ public class LdapHelper implements Helper {
 
     /**
      * Load all Groups for a given User.
+     *
      * @param user the given User.
      * @return Groups as a Set of Nodes for that User.
      */
@@ -457,6 +483,7 @@ public class LdapHelper implements Helper {
 
     /**
      * Load all Users for a given Group.
+     *
      * @param group the given Group.
      * @return Users as a Set of Nodes for that Group.
      */
@@ -481,9 +508,9 @@ public class LdapHelper implements Helper {
     }
 
     /**
-     * We use this method to check the given credentials to be valid.
-     * To prevent the check every action call,
-     * the result (if true) will be cached for 60s.
+     * We use this method to check the given credentials to be valid. To prevent
+     * the check every action call, the result (if true) will be cached for 60s.
+     *
      * @param uid the given uid.
      * @param password the given password.
      * @return true if credentials are valid, otherwise false.
@@ -511,6 +538,7 @@ public class LdapHelper implements Helper {
 
     /**
      * Returns a basic LDAP-User-Template for a new LDAP-User.
+     *
      * @param uid of the new LDAP-User.
      * @return the (prefiled) User-Template.
      */
@@ -548,8 +576,9 @@ public class LdapHelper implements Helper {
     }
 
     /**
-     * Returns a basic LDAP-Group-Template for a new LDAP-Group.
-     * The Group contains always the LDAP-Principal User (for Reading).
+     * Returns a basic LDAP-Group-Template for a new LDAP-Group. The Group
+     * contains always the LDAP-Principal User (for Reading).
+     *
      * @param cn of the new LDAP-Group.
      * @return the (pre-filled) Group-Template.
      */
@@ -823,7 +852,11 @@ public class LdapHelper implements Helper {
                 if ("uid".equals(key)) {
                     user.setUid(getAttributeOrNa(attributes, key));
                 }
-                if ("userPassword".equals(key)) {
+                if ("modifyTimestamp".equals(key)) {
+                    user.setModifyTimestamp(getAttributeOrNa(attributes, key));
+                } else if ("modifiersName".equals(key)) {
+                    user.setModifiersName(getAttributeOrNa(attributes, key));
+                } else if ("userPassword".equals(key)) {
                     user.addAttribute(new BasicAttribute("userPassword", null));
                 } else {
                     user.addAttribute((BasicAttribute) attributes.get(key));
@@ -843,7 +876,13 @@ public class LdapHelper implements Helper {
             group = (LdapGroup) fillObjectClasses(group, attributes);
             while (keys.hasMoreElements()) {
                 key = keys.nextElement();
-                group.addAttribute((BasicAttribute) attributes.get(key));
+                if ("modifyTimestamp".equals(key)) {
+                    group.setModifyTimestamp(getAttributeOrNa(attributes, key));
+                } else if ("modifiersName".equals(key)) {
+                    group.setModifiersName(getAttributeOrNa(attributes, key));
+                } else {
+                    group.addAttribute((BasicAttribute) attributes.get(key));
+                }
                 if ("cn".equals(key)) {
                     group.setCn(getAttributeOrNa(attributes, key));
                 }

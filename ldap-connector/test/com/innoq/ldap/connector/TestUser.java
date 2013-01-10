@@ -16,15 +16,15 @@
 package com.innoq.ldap.connector;
 
 import com.innoq.liqid.model.Node;
+import com.innoq.liqid.utils.Configuration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.innoq.liqid.utils.Configuration;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * TestUser
@@ -93,6 +93,7 @@ public class TestUser {
         LdapUser testUser = Utils.getTestUser(UID);
         LOG.log(Level.INFO, "testUser: {0}", testUser);
         LOG.log(Level.INFO, "ldapUser: {0}", ldapUser);
+        assertFalse("User should be not new!", ldapUser.isNew());
         assertTrue("Differences: " + Utils.compare(testUser, ldapUser), testUser.equals(ldapUser));
     }
 

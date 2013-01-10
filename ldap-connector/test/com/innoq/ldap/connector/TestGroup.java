@@ -16,16 +16,16 @@
 package com.innoq.ldap.connector;
 
 import com.innoq.liqid.model.Node;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import java.util.ArrayList;
-import java.util.List;
-import static org.junit.Assert.*;
 
 /**
  * TestGroup
@@ -68,6 +68,7 @@ public class TestGroup {
         LdapGroup group = (LdapGroup) HELPER.getGroup("Administratoren");
         group.debug();
         LOG.log(Level.INFO, "\nmembers: {0}\n", group.get("member"));
+        assertFalse(group.isNew());
         assertFalse(group.isEmpty());
     }
 

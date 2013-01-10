@@ -1,21 +1,20 @@
 /*
-  Copyright (C) 2012 innoQ Deutschland GmbH
+ Copyright (C) 2012 innoQ Deutschland GmbH
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-  http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 /**
- * LdapNode
- * 10.12.2011
+ * LdapNode 10.12.2011
  */
 package com.innoq.ldap.connector;
 
@@ -34,9 +33,12 @@ public class LdapNode implements Node {
     protected Set<String> objectClasses = null;
     protected String name;
     protected String dn = null;
+    protected String modifyTimestamp = null;
+    protected String modifiersName = null;
 
     /**
      * Returns an entry for a given key.
+     *
      * @param key the key for the entry.
      * @return the value of the entry, null if the entry does not exists.
      */
@@ -56,6 +58,7 @@ public class LdapNode implements Node {
 
     /**
      * There might be always a root entry (uid or cn).
+     *
      * @return true it this Node is empty, false otherwise.
      */
     public boolean isEmpty() {
@@ -64,6 +67,7 @@ public class LdapNode implements Node {
 
     /**
      * Sets the value of an entry.
+     *
      * @param key the key of that entry.
      * @param value the new value for that entry.
      */
@@ -77,7 +81,9 @@ public class LdapNode implements Node {
     }
 
     /**
-     * Returns all BasicAttributes of that Node @see javax.naming.directory.BasicAttributes.
+     * Returns all BasicAttributes of that Node
+     *
+     * @see javax.naming.directory.BasicAttributes.
      * @return all BasicAttributes.
      */
     public BasicAttributes getAttributes() {
@@ -86,15 +92,23 @@ public class LdapNode implements Node {
 
     /**
      * Sets (overwrites) all BasicAttributes of that Node.
+     *
      * @param attributes the new Attributes of that node.
      */
     public void setAttributes(BasicAttributes attributes) {
         this.attributes = attributes;
     }
 
+    public boolean isNew() {
+        return (this.modifiersName == null && this.modifyTimestamp == null);
+    }
+
     public void debug() {
-        StringBuilder sb = new StringBuilder("\n");
+        StringBuilder sb = new StringBuilder("\n============================================================\n");
         sb.append("\t").append("dn").append(" : ").append(getDn()).append("\n");
+        if (!isNew()) {
+            sb.append("\tupdated: ").append(this.modifyTimestamp).append(" by ").append(this.modifiersName).append("\n");
+        }
         sb.append("============================================================\n");
         for (String key : getKeys()) {
             sb.append("\t");
@@ -134,7 +148,7 @@ public class LdapNode implements Node {
         return objectClasses;
     }
 
-    public void addObjectClass(String objectClass) {
+    public void addObjectClass(final String objectClass) {
         this.objectClasses.add(objectClass);
     }
 
@@ -149,7 +163,16 @@ public class LdapNode implements Node {
         return dn;
     }
 
-    public void setDn(String dn) {
+    public void setDn(final String dn) {
         this.dn = dn;
+    }
+
+    public void setModifyTimestamp(final String modifyTimestamp) {
+        Logger.getLogger(LdapNode.class.getName()).info("set modifyTimestamp to " + modifyTimestamp);
+        this.modifyTimestamp = modifyTimestamp.trim();
+    }
+
+    public void setModifiersName(final String modifiersName) {
+        this.modifiersName = modifiersName.trim();
     }
 }
