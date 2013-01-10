@@ -168,11 +168,18 @@ public class LdapNode implements Node {
     }
 
     public void setModifyTimestamp(final String modifyTimestamp) {
-        Logger.getLogger(LdapNode.class.getName()).info("set modifyTimestamp to " + modifyTimestamp);
         this.modifyTimestamp = modifyTimestamp.trim();
     }
 
     public void setModifiersName(final String modifiersName) {
         this.modifiersName = modifiersName.trim();
+    }
+
+    public String getModifiersName() {
+        return this.modifiersName;
+    }
+
+    public String getModifyTimestamp() {
+        return this.modifyTimestamp;
     }
 }

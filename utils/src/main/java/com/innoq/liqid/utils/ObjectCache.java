@@ -45,10 +45,10 @@ public class ObjectCache {
         Node node = null;
         File cacheFile = new File(filename);
         if (cacheFile.exists()) {
-            FileInputStream f_in = null;
+            FileInputStream fileIn = null;
             try {
-                f_in = new FileInputStream(filename);
-                ObjectInputStream obj_in = new ObjectInputStream(f_in);
+                fileIn = new FileInputStream(filename);
+                ObjectInputStream obj_in = new ObjectInputStream(fileIn);
                 Object obj = obj_in.readObject();
                 if (obj instanceof Node) {
                     node = (Node) obj;
@@ -61,7 +61,7 @@ public class ObjectCache {
                 LOG.log(Level.SEVERE, null, ex);
             } finally {
                 try {
-                    f_in.close();
+                    fileIn.close();
                 } catch (IOException ex) {
                     LOG.log(Level.SEVERE, null, ex);
                 }
@@ -79,11 +79,11 @@ public class ObjectCache {
         Set<Node> nodes = null;
         File cacheFile = new File(filename);
         if (cacheFile.exists()) {
-            FileInputStream f_in = null;
+            FileInputStream fileIn = null;
             try {
-                f_in = new FileInputStream(filename);
-                ObjectInputStream obj_in = new ObjectInputStream(f_in);
-                Object obj = obj_in.readObject();
+                fileIn = new FileInputStream(filename);
+                ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+                Object obj = objectIn.readObject();
                 if (obj instanceof Set) {
                     nodes = (Set<Node>) obj;
                 }
@@ -95,7 +95,7 @@ public class ObjectCache {
                 LOG.log(Level.SEVERE, null, ex);
             } finally {
                 try {
-                    f_in.close();
+                    fileIn.close();
                 } catch (IOException ex) {
                     LOG.log(Level.SEVERE, null, ex);
                 }
@@ -109,18 +109,18 @@ public class ObjectCache {
      * @param filename
      */
     public static void saveNodesCache(Set<Node> nodes, String filename) {
-        FileOutputStream f_out = null;
+        FileOutputStream fileOut = null;
         try {
-            f_out = new FileOutputStream(filename);
-            ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
-            obj_out.writeObject(nodes);
+            fileOut = new FileOutputStream(filename);
+            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+            objectOut.writeObject(nodes);
         } catch (FileNotFoundException ex) {
             LOG.log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         } finally {
             try {
-                f_out.close();
+                fileOut.close();
             } catch (IOException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
@@ -132,18 +132,18 @@ public class ObjectCache {
      * @param filename
      */
     public static void saveNodeCache(Node node, String filename) {
-        FileOutputStream f_out = null;
+        FileOutputStream fileOut = null;
         try {
-            f_out = new FileOutputStream(filename);
-            ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
-            obj_out.writeObject(node);
+            fileOut = new FileOutputStream(filename);
+            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+            objectOut.writeObject(node);
         } catch (FileNotFoundException ex) {
             LOG.log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         } finally {
             try {
-                f_out.close();
+                fileOut.close();
             } catch (IOException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }

@@ -52,6 +52,17 @@ import javax.swing.ImageIcon;
  * LdapHelper 14.04.2011
  */
 public class LdapHelper implements Helper {
+    private static final String MODIFY_TIMESTAMP = "modifyTimestamp";
+    private static final String MODIFIERS_NAME = "modifiersName";
+    private static final String ASTERISK = "*";
+    private static final String MEMBER = "member";
+    private static final String OBJECT_CLASS = "objectClass";
+    private static final String JPEG_PHOTO = "jpegPhoto";
+    private static final String USER_PASSWORD = "userPassword";
+    private static final String UID = "uid";
+    private static final String CN = "cn";
+    private static final String PERSON = "person";
+    private static final String GROUP_OF_NAMES = "groupOfNames";
 
     private Log log = new LogZero();
     private Node principal = null;
@@ -247,7 +258,7 @@ public class LdapHelper implements Helper {
             SearchResult searchResult = null;
             Attributes attributes = null;
             SearchControls controls = new SearchControls();
-            controls.setReturningAttributes(new String[]{"*", "modifyTimestamp", "modifiersName"});
+            controls.setReturningAttributes(new String[]{ASTERISK, MODIFY_TIMESTAMP, MODIFIERS_NAME});
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             NamingEnumeration results = ctx.search("", query, controls);
             queryCount++;
@@ -271,10 +282,10 @@ public class LdapHelper implements Helper {
     public Set<Node> findUsers(final String uid) {
         QueryBuilder qb = new LdapQueryBuilder();
         if (uid.equals("*")) {
-            qb.append("objectClass", "person");
+            qb.append(OBJECT_CLASS, PERSON);
         } else {
-            qb.append("objectClass", "person");
-            qb.append("uid", uid + "*");
+            qb.append(OBJECT_CLASS, PERSON);
+            qb.append(UID, uid + "*");
         }
         return findUsers(qb);
     }
@@ -289,7 +300,7 @@ public class LdapHelper implements Helper {
             SearchResult searchResult = null;
             Attributes attributes = null;
             SearchControls controls = new SearchControls();
-            controls.setReturningAttributes(new String[]{"*", "modifyTimestamp", "modifiersName"});
+            controls.setReturningAttributes(new String[]{ASTERISK, MODIFY_TIMESTAMP, MODIFIERS_NAME});
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             NamingEnumeration results = ctx.search("", query, controls);
             queryCount++;
@@ -322,7 +333,7 @@ public class LdapHelper implements Helper {
             SearchResult searchResult = null;
             Attributes attributes = null;
             SearchControls controls = new SearchControls();
-            controls.setReturningAttributes(new String[]{"*", "modifyTimestamp", "modifiersName"});
+            controls.setReturningAttributes(new String[]{ASTERISK, MODIFY_TIMESTAMP, MODIFIERS_NAME});
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             NamingEnumeration results = ctx.search("", query, controls);
             queryCount++;
@@ -346,10 +357,10 @@ public class LdapHelper implements Helper {
     public Set<Node> findGroups(final String cn) {
         QueryBuilder qb = new LdapQueryBuilder();
         if (cn.equals("*")) {
-            qb.append("objectClass", "groupOfNames");
+            qb.append(OBJECT_CLASS, GROUP_OF_NAMES);
         } else {
-            qb.append("objectClass", "groupOfNames");
-            qb.append("cn", cn + "*");
+            qb.append(OBJECT_CLASS, GROUP_OF_NAMES);
+            qb.append(CN, cn + "*");
         }
         return findGroups(qb);
     }
@@ -364,7 +375,7 @@ public class LdapHelper implements Helper {
             SearchResult searchResult = null;
             Attributes attributes = null;
             SearchControls controls = new SearchControls();
-            controls.setReturningAttributes(new String[]{"*", "modifyTimestamp", "modifiersName"});
+            controls.setReturningAttributes(new String[]{ASTERISK, MODIFY_TIMESTAMP, MODIFIERS_NAME});
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             NamingEnumeration results = ctx.search("", query, controls);
             queryCount++;
@@ -432,9 +443,9 @@ public class LdapHelper implements Helper {
      */
     public String getDNForNode(final LdapNode node) {
         if (node instanceof LdapGroup) {
-            return String.format(GROUP_CN_FORMAT, node.get("cn"), baseGroupDn);
+            return String.format(GROUP_CN_FORMAT, node.get(CN), baseGroupDn);
         } else {
-            return String.format(USER_UID_FORMAT, node.get("uid"), basePeopleDn);
+            return String.format(USER_UID_FORMAT, node.get(UID), basePeopleDn);
         }
     }
 
@@ -447,10 +458,10 @@ public class LdapHelper implements Helper {
     public String getOuForNode(final LdapNode node) {
         if (node instanceof LdapGroup) {
             String ouGroup = Configuration.getProperty(instance + ".ou_group");
-            return String.format(GROUP_CN_FORMAT, node.get("cn"), ouGroup);
+            return String.format(GROUP_CN_FORMAT, node.get(CN), ouGroup);
         } else {
             String ouPeople = Configuration.getProperty(instance + ".ou_people");
-            return String.format(USER_UID_FORMAT, node.get("uid"), ouPeople);
+            return String.format(USER_UID_FORMAT, node.get(UID), ouPeople);
         }
     }
 
@@ -473,7 +484,7 @@ public class LdapHelper implements Helper {
             while (results.hasMore()) {
                 searchResult = (SearchResult) results.next();
                 attributes = searchResult.getAttributes();
-                groups.add(getGroup(getAttributeOrNa(attributes, "cn")));
+                groups.add(getGroup(getAttributeOrNa(attributes, CN)));
             }
         } catch (NamingException ex) {
             throw new LdapException(user, ex);
@@ -499,7 +510,7 @@ public class LdapHelper implements Helper {
             while (results.hasMore()) {
                 searchResult = (SearchResult) results.next();
                 attributes = searchResult.getAttributes();
-                users.add(getUser(getAttributeOrNa(attributes, "uid")));
+                users.add(getUser(getAttributeOrNa(attributes, UID)));
             }
         } catch (NamingException ex) {
             throw new LdapException(group, ex);
@@ -640,20 +651,20 @@ public class LdapHelper implements Helper {
 
     private LdapGroup updateGroupMembers(LdapGroup group) {
         LdapUser p = (LdapUser) principal;
-        group.getAttributes().remove("member");
+        group.getAttributes().remove(MEMBER);
         if (!group.getUsers().contains(p)) {
             group.addUser(p);
         }
         for (LdapUser user : group.getUsers()) {
             if (user != null) {
-                group.addAttribute(new BasicAttribute("member", user.getDn()));
+                group.addAttribute(new BasicAttribute(MEMBER, user.getDn()));
             }
         }
         return group;
     }
 
     private LdapNode updateObjectClasses(LdapNode node) {
-        BasicAttribute ocattrs = new BasicAttribute("objectClass");
+        BasicAttribute ocattrs = new BasicAttribute(OBJECT_CLASS);
         for (String oc : node.getObjectClasses()) {
             ocattrs.add(oc);
         }
@@ -667,7 +678,7 @@ public class LdapHelper implements Helper {
         List<String> dels = new ArrayList<String>();
         Attributes attrs = new BasicAttributes();
         for (String key : newLdapGroup.getKeys()) {
-            if (!"member".equals(key) && !"objectClass".equals(key)) {
+            if (!MEMBER.equals(key) && !OBJECT_CLASS.equals(key)) {
                 if (oldLdapGroup.get(key) != null && !newLdapGroup.get(key).equals(oldLdapGroup.get(key))) {
                     attrs.put(key, newLdapGroup.get(key));
                     mods.add(key);
@@ -680,8 +691,8 @@ public class LdapHelper implements Helper {
         }
 
         for (String key : oldLdapGroup.getKeys()) {
-            if (!"member".equals(key)
-                    && !"objectClass".equals(key)
+            if (!MEMBER.equals(key)
+                    && !OBJECT_CLASS.equals(key)
                     && newLdapGroup.get(key) == null) {
                 attrs.put(key, newLdapGroup.get(key));
                 dels.add(key);
@@ -729,13 +740,13 @@ public class LdapHelper implements Helper {
         BasicAttribute a;
         for (LdapUser member : newLdapGroup.getUsers()) {
             if (!oldLdapGroup.getUsers().contains(member)) {
-                a = new BasicAttribute("member", member.getDn());
+                a = new BasicAttribute(MEMBER, member.getDn());
                 miList.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, a));
             }
         }
         for (LdapUser member : oldLdapGroup.getUsers()) {
             if (!newLdapGroup.getUsers().contains(member)) {
-                a = new BasicAttribute("member", member.getDn());
+                a = new BasicAttribute(MEMBER, member.getDn());
                 miList.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE, a));
             }
         }
@@ -746,13 +757,13 @@ public class LdapHelper implements Helper {
         BasicAttribute a;
         for (String oc : node.getObjectClasses()) {
             if (!ldapNode.getObjectClasses().contains(oc)) {
-                a = new BasicAttribute("objectClass", oc);
+                a = new BasicAttribute(OBJECT_CLASS, oc);
                 miList.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, a));
             }
         }
         for (String oc : ldapNode.getObjectClasses()) {
             if (!node.getObjectClasses().contains(oc)) {
-                a = new BasicAttribute("objectClass", oc);
+                a = new BasicAttribute(OBJECT_CLASS, oc);
                 miList.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE, a));
             }
         }
@@ -765,7 +776,7 @@ public class LdapHelper implements Helper {
         List<String> dels = new ArrayList<String>();
         Attributes attrs = new BasicAttributes();
         for (String key : newLdapUser.getKeys()) {
-            if (!"objectClass".equals(key)) {
+            if (!OBJECT_CLASS.equals(key)) {
                 if (oldLdapUser.get(key) != null && !newLdapUser.get(key).equals(oldLdapUser.get(key))) {
                     attrs.put(key, newLdapUser.get(key));
                     mods.add(key);
@@ -777,7 +788,7 @@ public class LdapHelper implements Helper {
             }
         }
         for (String key : oldLdapUser.getKeys()) {
-            if (!"objectClass".equals(key) && newLdapUser.get(key) == null) {
+            if (!OBJECT_CLASS.equals(key) && newLdapUser.get(key) == null) {
                 attrs.put(key, newLdapUser.get(key));
                 dels.add(key);
             }
@@ -788,7 +799,7 @@ public class LdapHelper implements Helper {
         miList = buildObjectClassChangeSets(miList, oldLdapUser, newLdapUser);
         miList = buildMiListForUser(miList, attrs, mods, adds, dels);
         if (newLdapUser.getPassword() != null) {
-            BasicAttribute pwAttr = new BasicAttribute("userPassword", "{SHA}" + newLdapUser.getPassword());
+            BasicAttribute pwAttr = new BasicAttribute(USER_PASSWORD, "{SHA}" + newLdapUser.getPassword());
             log.write("update Password", LdapHelper.class);
             miList.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, pwAttr));
         }
@@ -819,7 +830,7 @@ public class LdapHelper implements Helper {
         String k;
         while (keys.hasMoreElements()) {
             k = keys.nextElement();
-            if (!"userPassword".equals(k)) {
+            if (!USER_PASSWORD.equals(k)) {
                 if (mods.contains(k)) {
                     log.write("buildMiListForUser MOD " + k + " " + attrs.get(k), LdapHelper.class);
                     miList.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs.get(k)));
@@ -844,20 +855,20 @@ public class LdapHelper implements Helper {
             user = (LdapUser) fillObjectClasses(user, attributes);
             while (keys.hasMoreElements()) {
                 key = keys.nextElement();
-                if ("jpegPhoto".equals(key) && attributes.get("jpegPhoto") != null) {
-                    Object photo = attributes.get("jpegPhoto").get();
+                if (JPEG_PHOTO.equals(key) && attributes.get(JPEG_PHOTO) != null) {
+                    Object photo = attributes.get(JPEG_PHOTO).get();
                     byte[] buf = (byte[]) photo;
                     user.setAvatar(getUserAvatarAsFile(new ImageIcon(buf), user.getUid()));
                 }
-                if ("uid".equals(key)) {
+                if (UID.equals(key)) {
                     user.setUid(getAttributeOrNa(attributes, key));
                 }
-                if ("modifyTimestamp".equals(key)) {
+                if (MODIFY_TIMESTAMP.equals(key)) {
                     user.setModifyTimestamp(getAttributeOrNa(attributes, key));
-                } else if ("modifiersName".equals(key)) {
+                } else if (MODIFIERS_NAME.equals(key)) {
                     user.setModifiersName(getAttributeOrNa(attributes, key));
-                } else if ("userPassword".equals(key)) {
-                    user.addAttribute(new BasicAttribute("userPassword", null));
+                } else if (USER_PASSWORD.equals(key)) {
+                    user.addAttribute(new BasicAttribute(USER_PASSWORD, null));
                 } else {
                     user.addAttribute((BasicAttribute) attributes.get(key));
                 }
@@ -876,18 +887,18 @@ public class LdapHelper implements Helper {
             group = (LdapGroup) fillObjectClasses(group, attributes);
             while (keys.hasMoreElements()) {
                 key = keys.nextElement();
-                if ("modifyTimestamp".equals(key)) {
+                if (MODIFY_TIMESTAMP.equals(key)) {
                     group.setModifyTimestamp(getAttributeOrNa(attributes, key));
-                } else if ("modifiersName".equals(key)) {
+                } else if (MODIFIERS_NAME.equals(key)) {
                     group.setModifiersName(getAttributeOrNa(attributes, key));
                 } else {
                     group.addAttribute((BasicAttribute) attributes.get(key));
                 }
-                if ("cn".equals(key)) {
+                if (CN.equals(key)) {
                     group.setCn(getAttributeOrNa(attributes, key));
                 }
             }
-            NamingEnumeration members = attributes.get("member").getAll();
+            NamingEnumeration members = attributes.get(MEMBER).getAll();
             while (members.hasMoreElements()) {
                 String memberDN = (String) members.nextElement();
                 member = new LdapUser(getUidForDN(memberDN));
@@ -903,7 +914,7 @@ public class LdapHelper implements Helper {
     private LdapNode fillObjectClasses(LdapNode node, Attributes attributes) {
         try {
 
-            NamingEnumeration objectClasses = attributes.get("objectClass").getAll();
+            NamingEnumeration objectClasses = attributes.get(OBJECT_CLASS).getAll();
 
             while (objectClasses.hasMoreElements()) {
                 String oc = (String) objectClasses.nextElement();
@@ -1038,7 +1049,7 @@ public class LdapHelper implements Helper {
 
     private BasicAttributes getOuAttributes(String dn) {
         BasicAttributes attrs = new BasicAttributes();
-        BasicAttribute ocattrs = new BasicAttribute("objectClass");
+        BasicAttribute ocattrs = new BasicAttribute(OBJECT_CLASS);
         ocattrs.add("top");
         ocattrs.add("organizationalUnit");
         attrs.put(ocattrs);

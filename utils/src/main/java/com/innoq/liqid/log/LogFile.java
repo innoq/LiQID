@@ -29,8 +29,8 @@ import java.util.logging.Logger;
 
 public class LogFile implements Log {
 
-    BufferedOutputStream bos;
-    File logFile;
+    private BufferedOutputStream bos;
+    private File logFile;
 
     public LogFile(String logFilePath) {
         try {

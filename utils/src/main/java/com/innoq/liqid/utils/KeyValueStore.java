@@ -65,11 +65,11 @@ public class KeyValueStore implements Serializable {
     public static KeyValueStore loadKeyValueStore(String filename) {
         File cacheFile = new File(filename);
         if (cacheFile.exists()) {
-            FileInputStream f_in = null;
+            FileInputStream fileIn = null;
             try {
-                f_in = new FileInputStream(filename);
-                ObjectInputStream obj_in = new ObjectInputStream(f_in);
-                Object obj = obj_in.readObject();
+                fileIn = new FileInputStream(filename);
+                ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+                Object obj = objectIn.readObject();
                 if (obj instanceof KeyValueStore) {
                     return (KeyValueStore) obj;
                 }
@@ -81,7 +81,7 @@ public class KeyValueStore implements Serializable {
                 LOG.log(Level.SEVERE, null, ex);
             } finally {
                 try {
-                    f_in.close();
+                    fileIn.close();
                 } catch (IOException ex) {
                     LOG.log(Level.SEVERE, null, ex);
                 }
@@ -97,11 +97,11 @@ public class KeyValueStore implements Serializable {
      * @return true if successful saved, false otherwise.
      */
     public static boolean saveKeyValueStore(String filename, KeyValueStore store) {
-        FileOutputStream f_out = null;
+        FileOutputStream fileOut = null;
         try {
-            f_out = new FileOutputStream(filename);
-            ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
-            obj_out.writeObject(store);
+            fileOut = new FileOutputStream(filename);
+            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+            objectOut.writeObject(store);
             return true;
         } catch (FileNotFoundException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -109,7 +109,7 @@ public class KeyValueStore implements Serializable {
             LOG.log(Level.SEVERE, null, ex);
         } finally {
             try {
-                f_out.close();
+                fileOut.close();
             } catch (IOException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
