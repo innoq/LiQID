@@ -1,21 +1,20 @@
 /*
-  Copyright (C) 2012 innoQ Deutschland GmbH
+ Copyright (C) 2012 innoQ Deutschland GmbH
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-  http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 /**
- * KeyValueStore
- * 14.02.2012
+ * KeyValueStore 14.02.2012
  *
  */
 package com.innoq.liqid.utils;
@@ -59,15 +58,16 @@ public class KeyValueStore implements Serializable {
 
     /**
      * Loads a KeyValueStore from a given File
+     *
      * @param filename the serialized KV-Store
      * @return the deserialized KV-Store, a new KV-Store, if file is invalid.
      */
     public static KeyValueStore loadKeyValueStore(String filename) {
-        File cacheFile = new File(filename);
+        File cacheFile = new File(Configuration.getVersionedFilename(filename));
         if (cacheFile.exists()) {
             FileInputStream fileIn = null;
             try {
-                fileIn = new FileInputStream(filename);
+                fileIn = new FileInputStream(Configuration.getVersionedFilename(filename));
                 ObjectInputStream objectIn = new ObjectInputStream(fileIn);
                 Object obj = objectIn.readObject();
                 if (obj instanceof KeyValueStore) {
@@ -92,6 +92,7 @@ public class KeyValueStore implements Serializable {
 
     /**
      * Saves a KeyValueStore.
+     *
      * @param filename to serialize KV-Store.
      * @param store the KV-Store Object.
      * @return true if successful saved, false otherwise.
@@ -99,7 +100,7 @@ public class KeyValueStore implements Serializable {
     public static boolean saveKeyValueStore(String filename, KeyValueStore store) {
         FileOutputStream fileOut = null;
         try {
-            fileOut = new FileOutputStream(filename);
+            fileOut = new FileOutputStream(Configuration.getVersionedFilename(filename));
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(store);
             return true;

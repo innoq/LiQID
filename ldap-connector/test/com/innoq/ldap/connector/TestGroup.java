@@ -1,18 +1,18 @@
 /*
-  Copyright (C) 2012 innoQ Deutschland GmbH
+ Copyright (C) 2012 innoQ Deutschland GmbH
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-  http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 package com.innoq.ldap.connector;
 
 import com.innoq.liqid.model.Node;
@@ -28,15 +28,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * TestGroup
- * 11.12.2011
+ * TestGroup 11.12.2011
  */
 public class TestGroup {
 
     private static LdapHelper HELPER;
     private static final Logger LOG = Logger.getLogger(TestUser.class.getName());
     private static String CN = "Administratoren";
-    private static LdapUser testUser;
+    private static LdapUser testUser1, testUser2;
 
     public TestGroup() {
     }
@@ -45,14 +44,15 @@ public class TestGroup {
     public static void setUpClass() throws Exception {
         HELPER = Utils.getHelper();
         CN = "G_" + System.currentTimeMillis();
-        testUser = HELPER.getUserTemplate("U_" + System.currentTimeMillis());
-        testUser.set("cn", testUser.getUid());
-        HELPER.setUser(testUser);
+        testUser1 = HELPER.getUserTemplate("U_" + System.currentTimeMillis());
+        testUser1.set("cn", testUser1.getUid());
+        HELPER.setUser(testUser1);
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
-        HELPER.rmUser(testUser);
+        HELPER.rmUser(testUser1);
+        HELPER.rmUser(testUser2);
     }
 
     @Before
@@ -89,7 +89,7 @@ public class TestGroup {
     @Test
     public void testAddUserToGroup() throws Exception {
         LdapGroup g1 = (LdapGroup) HELPER.getGroup(CN);
-        g1.addUser(testUser);
+        g1.addUser(testUser1);
         if (HELPER.setGroup(g1)) {
             LOG.log(Level.INFO, "updated Group {0}", CN);
         }
@@ -121,6 +121,20 @@ public class TestGroup {
         g1.debug();
         assertTrue(g1.getUsers().size() == (count - 1));
         Utils.removeTestUsers(users);
+    }
+
+    @Test
+    public void testAddUsersToGroup() throws Exception {
+        testUser2 = HELPER.getUserTemplate("U_" + System.currentTimeMillis());
+        testUser2.set("cn", testUser2.getUid());
+        HELPER.setUser(testUser2);
+        LdapGroup g1 = (LdapGroup) HELPER.getGroup(CN);
+        g1.addUser(testUser1);
+        g1.addUser(testUser2);
+        HELPER.setGroup(g1);
+        g1 = (LdapGroup) HELPER.getGroup(CN);
+        LOG.log(Level.INFO, "user count Group {0} is {1}", new Object[]{CN, g1.getUsers().size()});
+        assertTrue(g1.getUsers().size() > 2);
     }
 
     @Test

@@ -33,6 +33,7 @@ public class Configuration {
     private static Configuration instance = new Configuration();
     private String tmpDir = null;
     private String cacheDir = null;
+    private String version = null;
     private Properties properties = null;
     private String filename = getEnvFileLocation();
 
@@ -60,6 +61,13 @@ public class Configuration {
         }
     }
 
+    public String getVersion() {
+        if (version == null) {
+            version = getProperty("version", "DEFAULT");
+        }
+        return version;
+    }
+
     public String getTmpDir() {
         if (tmpDir == null) {
             tmpDir = getProperty("tmp", TMP_DIR);
@@ -82,6 +90,10 @@ public class Configuration {
 
     public void setTmpDir(String tmpDir) {
         this.tmpDir = tmpDir;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     public void setCacheDir(String cacheDir) {
@@ -121,4 +133,8 @@ public class Configuration {
         this.filename = filename;
         loadProperties();
     }
+    
+    public static String getVersionedFilename(final String filename) {
+        return filename + "-" + Configuration.getInstance().getVersion();
+    }    
 }

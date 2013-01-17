@@ -43,11 +43,11 @@ public class ObjectCache {
      */
     public static Node loadNodeCache(String filename) {
         Node node = null;
-        File cacheFile = new File(filename);
+        File cacheFile = new File(Configuration.getVersionedFilename(filename));
         if (cacheFile.exists()) {
             FileInputStream fileIn = null;
             try {
-                fileIn = new FileInputStream(filename);
+                fileIn = new FileInputStream(Configuration.getVersionedFilename(filename));
                 ObjectInputStream obj_in = new ObjectInputStream(fileIn);
                 Object obj = obj_in.readObject();
                 if (obj instanceof Node) {
@@ -77,11 +77,11 @@ public class ObjectCache {
      */
     public static Set<Node> loadNodesCache(String filename) {
         Set<Node> nodes = null;
-        File cacheFile = new File(filename);
+        File cacheFile = new File(Configuration.getVersionedFilename(filename));
         if (cacheFile.exists()) {
             FileInputStream fileIn = null;
             try {
-                fileIn = new FileInputStream(filename);
+                fileIn = new FileInputStream(Configuration.getVersionedFilename(filename));
                 ObjectInputStream objectIn = new ObjectInputStream(fileIn);
                 Object obj = objectIn.readObject();
                 if (obj instanceof Set) {
@@ -111,7 +111,7 @@ public class ObjectCache {
     public static void saveNodesCache(Set<Node> nodes, String filename) {
         FileOutputStream fileOut = null;
         try {
-            fileOut = new FileOutputStream(filename);
+            fileOut = new FileOutputStream(Configuration.getVersionedFilename(filename));
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(nodes);
         } catch (FileNotFoundException ex) {
@@ -134,7 +134,7 @@ public class ObjectCache {
     public static void saveNodeCache(Node node, String filename) {
         FileOutputStream fileOut = null;
         try {
-            fileOut = new FileOutputStream(filename);
+            fileOut = new FileOutputStream(Configuration.getVersionedFilename(filename));
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(node);
         } catch (FileNotFoundException ex) {
