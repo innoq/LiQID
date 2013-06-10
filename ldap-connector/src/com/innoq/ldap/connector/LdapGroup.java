@@ -1,31 +1,30 @@
 /*
-  Copyright (C) 2012 innoQ Deutschland GmbH
+ Copyright (C) 2012 innoQ Deutschland GmbH
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-  http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 package com.innoq.ldap.connector;
 
 import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * LdapGroup
- * 14.04.2011
+ * LdapGroup 14.04.2011
  */
 public class LdapGroup extends LdapNode implements Comparable<LdapGroup> {
 
-    private String cn;
     private Set<LdapUser> users = new TreeSet<LdapUser>();
+
     public LdapGroup() {
         super();
     }
@@ -40,6 +39,7 @@ public class LdapGroup extends LdapNode implements Comparable<LdapGroup> {
 
     /**
      * Get all users from this group.
+     *
      * @return Set if Users.
      */
     public Set<LdapUser> getUsers() {
@@ -48,6 +48,7 @@ public class LdapGroup extends LdapNode implements Comparable<LdapGroup> {
 
     /**
      * Adds an user to the group.
+     *
      * @param user
      */
     public void addUser(LdapUser user) {
@@ -56,29 +57,22 @@ public class LdapGroup extends LdapNode implements Comparable<LdapGroup> {
 
     /**
      * Removes an user from the group.
+     *
      * @param user
      */
-    public void rmUser(LdapUser user){
+    public void rmUser(LdapUser user) {
         this.users.remove(user);
     }
-    
+
     /**
      * Removes every user from the group.
      */
-    public void clearUsers(){
+    public void clearUsers() {
         this.users.clear();
     }
 
-    public void setCn(String cn){
-        this.cn = cn;
-    }
-    
-    public String getCn() {
-        return this.cn == null ? "" : this.cn;
-    }
-
     @Override
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return attributes.size() < 3;
     }
 
@@ -107,7 +101,7 @@ public class LdapGroup extends LdapNode implements Comparable<LdapGroup> {
 
     @Override
     public int compareTo(LdapGroup t) {
-        if(t == null){
+        if (t == null) {
             return 1;
         }
         return getCn().compareTo(t.getCn());

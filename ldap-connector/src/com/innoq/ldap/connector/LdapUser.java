@@ -1,18 +1,18 @@
 /*
-  Copyright (C) 2012 innoQ Deutschland GmbH
+ Copyright (C) 2012 innoQ Deutschland GmbH
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-  http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 package com.innoq.ldap.connector;
 
 import com.innoq.liqid.model.Node;
@@ -22,12 +22,13 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * LdapUser
- * 04.12.2011
+ * LdapUser 04.12.2011
  */
 public class LdapUser extends LdapNode implements Comparable<LdapUser> {
 
-    /** Users uid. */
+    /**
+     * Users uid.
+     */
     private String uid = "";
     private Set<LdapGroup> groups = null;
     private String password = null;
@@ -39,6 +40,7 @@ public class LdapUser extends LdapNode implements Comparable<LdapUser> {
 
     public LdapUser(String uid) {
         super();
+        this.cn = uid;
         this.uid = uid;
         this.name = uid;
         set("uid", uid);
@@ -47,7 +49,7 @@ public class LdapUser extends LdapNode implements Comparable<LdapUser> {
     public Set<LdapGroup> getGroups() {
         if (this.groups == null) {
             this.groups = new TreeSet<LdapGroup>();
-            for(Node n : LdapHelper.getInstance().getGroupsForUser(this)){
+            for (Node n : LdapHelper.getInstance().getGroupsForUser(this)) {
                 this.groups.add((LdapGroup) n);
             }
         }
@@ -80,7 +82,7 @@ public class LdapUser extends LdapNode implements Comparable<LdapUser> {
     }
 
     @Override
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return attributes.size() < 2;
     }
 
@@ -104,8 +106,8 @@ public class LdapUser extends LdapNode implements Comparable<LdapUser> {
         if ((this.uid == null) ? (other.uid != null) : !this.uid.equals(other.uid)) {
             return false;
         }
-        for(String key : this.getKeys()){
-            if(!this.get(key).equals(other.get(key))){
+        for (String key : this.getKeys()) {
+            if (!this.get(key).equals(other.get(key))) {
                 return false;
             }
         }
@@ -114,7 +116,7 @@ public class LdapUser extends LdapNode implements Comparable<LdapUser> {
 
     @Override
     public int compareTo(LdapUser t) {
-        if(t == null){
+        if (t == null) {
             return 1;
         }
         return getUid().compareTo(t.getUid());

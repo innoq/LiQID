@@ -64,6 +64,7 @@ public class LdapHelper implements Helper {
     private static final String CN = "cn";
     private static final String PERSON = "person";
     private static final String GROUP_OF_NAMES = "groupOfNames";
+    private static final String OWNER = "owner";
     private Log log = new LogZero();
     private Node principal = null;
     private DirContext ctx = null;
@@ -81,9 +82,9 @@ public class LdapHelper implements Helper {
     private long deletionCount;
     private final static String GROUP_CN_FORMAT = "cn=%s,%s";
     private final static String USER_UID_FORMAT = "uid=%s,%s";
+    private final static String ENTRY_CN_FORMAT = "cn=%s,%s";
     private final static String DEFAULT_JABBER_SERVER = "jabber.example.com";
     private final static String DEFAULT_SSH_KEY = "<!-- no key -->";
-    private final static String DEFAULT_MOBILE = "0000";
 
     public static LdapHelper getInstance() {
         String defaultLdap = Configuration.getProperty("default.ldap");
@@ -147,7 +148,7 @@ public class LdapHelper implements Helper {
         try {
             LdapUser oldLdapUser = (LdapUser) getUser(newLdapUser.getUid());
             if (oldLdapUser.isEmpty()) {
-                newLdapUser.setPassword(newLdapUser.getName());
+                newLdapUser.setPassword("!" + System.currentTimeMillis());
                 log.write("bind: " + getOuForNode(newLdapUser) + "\n", LdapHelper.class);
                 ctx.bind(getOuForNode(newLdapUser), null, newLdapUser.getAttributes());
                 creationCount++;
@@ -243,6 +244,42 @@ public class LdapHelper implements Helper {
         }
     }
 
+    public boolean setEntry(Node node) throws Exception {
+        LdapEntry newLdapEntry = (LdapEntry) node;
+        try {
+            LdapEntry oldLdapEntry = (LdapEntry) getEntry(newLdapEntry.getCn(), newLdapEntry.getOwner());
+            if (oldLdapEntry.isEmpty()) {
+                creationCount++;
+                log.write("bind: " + getOuForNode(newLdapEntry) + "\n", LdapHelper.class);
+                ctx.bind(getOuForNode(newLdapEntry), null, newLdapEntry.getAttributes());
+            } else {
+                ModificationItem[] mods = buildModificationsForEntry(newLdapEntry, oldLdapEntry);
+                if (mods.length > 0) {
+                    modificationCount++;
+                    log.write("modifyAttributes: " + getOuForNode(newLdapEntry) + "\n", LdapHelper.class);
+                    ctx.modifyAttributes(getOuForNode(newLdapEntry), mods);
+                }
+            }
+            return true;
+        } catch (NamingException ex) {
+            throw new LdapException(newLdapEntry, ex);
+        } finally {
+            return false;
+        }
+    }
+
+    /**
+     * Returns an Sub-Entry of an LDAP User/LDAP Group.
+     * @param cn of that Entry.
+     * @param owner DN of Parent Node.
+     * @return a new Entry.
+     */
+    public Node getEntry(final String cn, final String owner){
+        // TODO implement me!
+        Node entry = new LdapEntry(cn, owner); 
+        return entry;
+    }
+    
     /**
      * Returns an LDAP-User.
      *
@@ -459,10 +496,13 @@ public class LdapHelper implements Helper {
         if (node instanceof LdapGroup) {
             String ouGroup = Configuration.getProperty(instance + ".ou_group");
             return String.format(GROUP_CN_FORMAT, node.get(CN), ouGroup);
-        } else {
+        }
+        if (node instanceof LdapUser) {
             String ouPeople = Configuration.getProperty(instance + ".ou_people");
             return String.format(USER_UID_FORMAT, node.get(UID), ouPeople);
         }
+        return String.format(ENTRY_CN_FORMAT, node.get(CN), node.get(OWNER));
+
     }
 
     /**
@@ -561,8 +601,6 @@ public class LdapHelper implements Helper {
             user.addObjectClass(oc.trim());
         }
         user = (LdapUser) updateObjectClasses(user);
-
-        user.set("mobile", defaultValues.get("mobile"));
 
         // for inetOrgPerson
         user.set("sn", uid);
@@ -753,21 +791,57 @@ public class LdapHelper implements Helper {
         return miList;
     }
 
-    private List<ModificationItem> buildObjectClassChangeSets(List<ModificationItem> miList, LdapNode ldapNode, LdapNode node) {
+    private List<ModificationItem> buildObjectClassChangeSets(List<ModificationItem> miList, LdapNode oldNode, LdapNode newNode) {
         BasicAttribute a;
-        for (String oc : node.getObjectClasses()) {
-            if (!ldapNode.getObjectClasses().contains(oc)) {
+        for (String oc : newNode.getObjectClasses()) {
+            if (!oldNode.getObjectClasses().contains(oc)) {
                 a = new BasicAttribute(OBJECT_CLASS, oc);
                 miList.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, a));
             }
         }
-        for (String oc : ldapNode.getObjectClasses()) {
-            if (!node.getObjectClasses().contains(oc)) {
+        for (String oc : oldNode.getObjectClasses()) {
+            if (!newNode.getObjectClasses().contains(oc)) {
                 a = new BasicAttribute(OBJECT_CLASS, oc);
                 miList.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE, a));
             }
         }
         return miList;
+    }
+
+    private ModificationItem[] buildModificationsForEntry(final LdapEntry newLdapEntry, final LdapEntry oldLdapEntry) {
+        List<String> mods = new ArrayList<String>();
+        List<String> adds = new ArrayList<String>();
+        List<String> dels = new ArrayList<String>();
+        Attributes attrs = new BasicAttributes();
+        for (String key : newLdapEntry.getKeys()) {
+            if (!OBJECT_CLASS.equals(key)) {
+                if (oldLdapEntry.get(key) != null && !newLdapEntry.get(key).equals(oldLdapEntry.get(key))) {
+                    attrs.put(key, newLdapEntry.get(key));
+                    mods.add(key);
+                }
+                if (oldLdapEntry.get(key) == null) {
+                    attrs.put(key, newLdapEntry.get(key));
+                    adds.add(key);
+                }
+            }
+        }
+        for (String key : oldLdapEntry.getKeys()) {
+            if (!OBJECT_CLASS.equals(key) && newLdapEntry.get(key) == null) {
+                attrs.put(key, newLdapEntry.get(key));
+                dels.add(key);
+            }
+        }
+        attrs = filterForNullAttributes(attrs);
+        List<ModificationItem> miList = new ArrayList<ModificationItem>();
+        miList = buildObjectClassChangeSets(miList, oldLdapEntry, newLdapEntry);
+        miList = buildMiListForEntry(miList, attrs, mods, adds, dels);
+        int c = 0;
+        ModificationItem[] miArray = new ModificationItem[miList.size()];
+        for (ModificationItem m : miList) {
+            miArray[c] = m;
+            c++;
+        }
+        return miArray;
     }
 
     private ModificationItem[] buildModificationsForUser(final LdapUser newLdapUser, final LdapUser oldLdapUser) {
@@ -823,6 +897,27 @@ public class LdapHelper implements Helper {
             }
         }
         return attrs;
+    }
+
+    private List<ModificationItem> buildMiListForEntry(List<ModificationItem> miList, Attributes attrs, List<String> mods, List<String> adds, List<String> dels) {
+        Enumeration<String> keys = attrs.getIDs();
+        String k;
+        while (keys.hasMoreElements()) {
+            k = keys.nextElement();
+            if (mods.contains(k)) {
+                log.write("buildMiListForEntry MOD " + k + " " + attrs.get(k) + "\n", LdapHelper.class);
+                miList.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs.get(k)));
+            }
+            if (adds.contains(k)) {
+                log.write("buildMiListForEntry ADD " + k + " " + attrs.get(k) + "\n", LdapHelper.class);
+                miList.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, attrs.get(k)));
+            }
+            if (dels.contains(k)) {
+                log.write("buildMiListForEntry REM " + k + " " + attrs.get(k) + "\n", LdapHelper.class);
+                miList.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE, attrs.get(k)));
+            }
+        }
+        return miList;
     }
 
     private List<ModificationItem> buildMiListForUser(List<ModificationItem> miList, Attributes attrs, List<String> mods, List<String> adds, List<String> dels) {
@@ -991,7 +1086,6 @@ public class LdapHelper implements Helper {
 
         defaultValues.put("jabberServer", Configuration.getProperty("ldap.jabberServer", DEFAULT_JABBER_SERVER));
         defaultValues.put("sshKey", Configuration.getProperty("ldap.sshKey", DEFAULT_SSH_KEY));
-        defaultValues.put("mobile", Configuration.getProperty("ldap.mobile", DEFAULT_MOBILE));
 
         try {
             ctx = new InitialDirContext(env);
