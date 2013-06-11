@@ -1,22 +1,21 @@
 /*
-  Copyright (C) 2012 innoQ Deutschland GmbH
+ Copyright (C) 2012 innoQ Deutschland GmbH
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-  http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 package com.innoq.ldap.connector;
 
 import com.innoq.liqid.model.Node;
-import com.innoq.liqid.utils.Configuration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
@@ -27,14 +26,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * TestUser
- * 11.12.2011
+ * TestUser 11.12.2011
  */
 public class TestUser {
 
     private static LdapHelper HELPER;
     private static final Logger LOG = Logger.getLogger(TestUser.class.getName());
     private static String UID;
+    private static String PW;
 
     public TestUser() {
     }
@@ -43,6 +42,7 @@ public class TestUser {
     public static void setUpClass() throws Exception {
         HELPER = Utils.getHelper();
         UID = "U_" + System.currentTimeMillis();
+        PW = UID.substring(0, 5) + UID.substring(5);
     }
 
     @AfterClass
@@ -63,13 +63,14 @@ public class TestUser {
         Node u1 = HELPER.getUser(UID);
         assertTrue(u1.isEmpty());
         LdapUser t1 = Utils.getTestUser(UID);
+        t1.setPassword(UID);
         t1 = Utils.updatedUser(t1, UID);
         try {
             if (HELPER.setUser(t1)) {
                 LOG.log(Level.INFO, "created User {0}", UID);
             }
         } catch (Exception ex) {
-            LOG.log(Level.SEVERE, "setUser fails", ex);
+            LOG.log(Level.SEVERE, "setUser failed", ex);
         }
         u1 = HELPER.getUser(UID);
         assertFalse(u1.isEmpty());
@@ -77,14 +78,23 @@ public class TestUser {
 
     @Test
     public void testValidLogin() {
+        LdapUser t1 = Utils.getTestUser(UID);
+        t1.setPassword(UID);
+        try {
+            if (HELPER.setUser(t1)) {
+                LOG.log(Level.INFO, "updated User {0} for login", UID);
+            }
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "updated User {0} for login failed", ex);
+        }
         boolean login = HELPER.checkCredentials(UID, UID);
-        assertTrue("testValidLogin: should be true", login);
+        assertTrue("testValidLogin: should be true for "+UID, login);
     }
 
     @Test
     public void testInvalidLogin() {
         boolean login = HELPER.checkCredentials(UID, "test");
-        assertFalse("testInvalidLogin: should be false", login);
+        assertFalse("testInvalidLogin: should be false "+UID, login);
     }
 
     @Test
@@ -125,6 +135,7 @@ public class TestUser {
         assertTrue("should be true", login);
         Utils.resetTestUser(UID);
     }
+
     @Test
     public void testUpdateUser() throws Exception {
         Node u1 = HELPER.getUser(UID);
@@ -134,7 +145,7 @@ public class TestUser {
         u1 = HELPER.getUser(UID);
         assertEquals(u1.get("description"), "Company for  " + UID);
     }
-    
+
     @Test
     public void testDeleteUser() {
         Node u1 = HELPER.getUser(UID);
@@ -152,20 +163,12 @@ public class TestUser {
 
     @Test
     public void testDefaultConfig() {
-        String jabberServer = Configuration.getProperty("ldap.jabberServer");
-        String sshKey = Configuration.getProperty("ldap.sshKey");
-        String mobile = Configuration.getProperty("ldap.mobile");
-        Configuration.setProperty("ldap.jabberServer", null);
-        Configuration.setProperty("ldap.sshKey", null);
-        Configuration.setProperty("ldap.mobile", null);
+        //String sshKey = Configuration.getProperty("ldap.sshKey");
+        //Configuration.setProperty("ldap.sshKey", null);
         HELPER.reload();
         LdapUser u1 = HELPER.getUserTemplate(UID);
-        assertEquals(UID + "@" + HELPER.getDefault("jabberServer"), u1.get("jabberID"));
-        assertEquals(HELPER.getDefault("sshKey"), u1.get("sshPublicKey"));
-        assertEquals(HELPER.getDefault("mobile"), u1.get("mobile"));
-        Configuration.setProperty("ldap.jabberServer", jabberServer);
-        Configuration.setProperty("ldap.sshKey", sshKey);
-        Configuration.setProperty("ldap.mobile", mobile);
+        //assertEquals(HELPER.getDefault("sshKey"), u1.get("sshPublicKey"));
+        //Configuration.setProperty("ldap.sshKey", sshKey);
         HELPER.reload();
     }
 }

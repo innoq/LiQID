@@ -13,16 +13,23 @@
 #  limitations under the License.
 #
 #LDAP Settings
+
+ldap.user.objectClasses=top, organizationalPerson, inetOrgPerson, extensibleObject, person, posixAccount, shadowAccount
+ldap.group.objectClasses=top, groupOfNames, shadowAccount, extensibleObject
+ldap.entry.objectClasses=top, organizationalRole, extensibleObject
+
+ldap.sshKey=<!-- no key -->
+ldap.jabberServer=jabber.innoq.com
+# Users in these Groups do not have the full access to LDAP Entries.
+ldap.ext_blocked=Benutzer,Externe,confluence-users,jira-users,users
+
+group.admin=Administratoren
+# group.benutzer=Benutzer
+group.extern=Externe
+
 default.ldap=ldap1
 # LDAP Listsing, divided by ","
-#ldap.listing=ldap1,ldap2
-
 ldap.listing=ldap1
-
-ldap.user.objectClasses=top, organizationalPerson, inetOrgPerson, person, posixAccount, shadowAccount,  JabberAccount, ldapPublicKey
-ldap.group.objectClasses=groupOfNames, shadowAccount
-ldap.sshKey=<!-- no key -->
-ldap.jabberServer=jabber.example.com
 
 ldap1.base_dn=dc=example,dc=com
 ldap1.ou_people=ou=People

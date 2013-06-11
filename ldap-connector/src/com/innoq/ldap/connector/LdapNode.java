@@ -28,6 +28,7 @@ import javax.naming.directory.BasicAttributes;
 
 public class LdapNode implements Node {
 
+    private static final String LINE = "============================================================\n";
     protected BasicAttributes attributes = new BasicAttributes(false);
     protected Set<String> keys = null;
     protected Set<String> objectClasses = null;
@@ -35,6 +36,7 @@ public class LdapNode implements Node {
     protected String dn = null;
     protected String modifyTimestamp = null;
     protected String modifiersName = null;
+    protected String cn = null;
 
     /**
      * Returns an entry for a given key.
@@ -99,17 +101,26 @@ public class LdapNode implements Node {
         this.attributes = attributes;
     }
 
+    public void setCn(String cn) {
+        this.cn = cn;
+    }
+
+    public String getCn() {
+        return this.cn == null ? "" : this.cn;
+    }
+
     public boolean isNew() {
         return (this.modifiersName == null && this.modifyTimestamp == null);
     }
 
     public void debug() {
-        StringBuilder sb = new StringBuilder("\n============================================================\n");
+        StringBuilder sb = new StringBuilder("\n");
+        sb.append(LINE);
         sb.append("\t").append("dn").append(" : ").append(getDn()).append("\n");
         if (!isNew()) {
             sb.append("\tupdated: ").append(this.modifyTimestamp).append(" by ").append(this.modifiersName).append("\n");
         }
-        sb.append("============================================================\n");
+        sb.append(LINE);
         for (String key : getKeys()) {
             sb.append("\t");
             sb.append(key);
@@ -117,7 +128,7 @@ public class LdapNode implements Node {
             sb.append(get(key));
             sb.append("\n");
         }
-        sb.append("============================================================\n");
+        sb.append(LINE);
         Logger.getLogger(LdapNode.class.getName()).info(sb.toString());
     }
 
