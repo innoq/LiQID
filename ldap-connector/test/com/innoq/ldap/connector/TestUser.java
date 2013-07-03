@@ -121,8 +121,8 @@ public class TestUser {
     @Test
     public void testAlterUser() {
         LdapUser user1 = Utils.getTestUser(UID);
-        user1.set("givenName", "Testname");
-        user1.set("mail", "test@example.com");
+        user1.set("description", "altered Test User");
+        user1.set("sn", "Test User");
         try {
             HELPER.setUser(user1);
         } catch (Exception ex) {
