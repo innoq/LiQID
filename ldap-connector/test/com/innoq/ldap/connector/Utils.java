@@ -1,24 +1,25 @@
 /*
-  Copyright (C) 2012 innoQ Deutschland GmbH
+ Copyright (C) 2012 innoQ Deutschland GmbH
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-  http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 package com.innoq.ldap.connector;
 
 import com.innoq.liqid.log.LogConsole;
 import com.innoq.liqid.model.Node;
 import com.innoq.liqid.utils.Configuration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Utils
- * 27.05.2012
+ * Utils 27.05.2012
  */
 public class Utils {
 
@@ -40,42 +40,59 @@ public class Utils {
             Configuration.getInstance().setTmpDir("target");
             HELPER = LdapHelper.getInstance();
             HELPER.setLog(new LogConsole());
+            showConfigInfo();
         }
         return HELPER;
     }
 
     public static LdapUser updatedUser(LdapUser user, String name) {
+        List<String> ocs = Arrays.asList(HELPER.getUserObjectClasses());
         user.setUid(name);
         user.setPassword(name);
-        user.set("cn", name);
-        user.set("uid", name);
-        user.set("gecos", "User " + name);
+        user.set(HELPER.getUserIdentifyer(), name);
+        if (ocs.contains("posixAccount")) {
+            user.set("gecos", "User " + name);
+            user.set("cn", name);
+        }
         return user;
     }
 
     public static Map<String, String> getTestUserAttributes(String uid) {
+        List<String> ocs = Arrays.asList(HELPER.getUserObjectClasses());
         Map<String, String> attributes = new HashMap<String, String>();
-        attributes.put("cn", uid);
-        attributes.put("gidNumber", "3");
-        attributes.put("homeDirectory", "/home/" + uid);
         attributes.put("sn", uid.toUpperCase());
-        attributes.put("uid", uid);
-        attributes.put("uidNumber", "3");
+        attributes.put(HELPER.getUserIdentifyer(), uid);
         attributes.put("description", uid);
-        attributes.put("displayName", "Test2 Test1");
-        attributes.put("gecos", "User " + uid);
-        attributes.put("givenName", uid + "2");
-        attributes.put("l", "Ratingen");
-        attributes.put("loginShell", "/bin/bash");
-        attributes.put("mail", "test@test.com");
-        attributes.put("mobile", "+12345678910");
-        attributes.put("postalAddress", "a Street 123 17$12345 a City$NRW$Germany");
-        attributes.put("postalCode", "12345");
-        attributes.put("shadowInactive", "0");
-        attributes.put("shadowLastChange", "15055");
-        attributes.put("shadowMax", "99999");
-        attributes.put("shadowWarning", "7");
-        attributes.put("street", "a Street 123");
+
+        if (ocs.contains("inetOrgPerson")) {
+            attributes.put("displayName", "Test2 Test1");
+            attributes.put("givenName", uid + "2");
+        }
+        if (ocs.contains("posixAccount")) {
+            attributes.put("cn", uid);
+            attributes.put("uidNumber", "3");
+            attributes.put("gidNumber", "3");
+            attributes.put("homeDirectory", "/home/" + uid);
+            attributes.put("gecos", "User " + uid);
+            attributes.put("loginShell", "/bin/bash");
+        }
+
+        if (ocs.contains("shadowAccount")) {
+            attributes.put("shadowInactive", "0");
+            attributes.put("shadowLastChange", "15055");
+            attributes.put("shadowMax", "99999");
+            attributes.put("shadowWarning", "7");
+        }
+
+        if (ocs.contains("inetOrgPerson")) {
+            attributes.put("mail", "test@test.com");
+            attributes.put("l", "Ratingen");
+            attributes.put("mobile", "+12345678910");
+            attributes.put("postalAddress", "a Street 123 17$12345 a City$NRW$Germany");
+            attributes.put("postalCode", "12345");
+            attributes.put("street", "a Street 123");
+        }
+
         return attributes;
     }
 
@@ -106,8 +123,7 @@ public class Utils {
 
     public static LdapGroup updatedGroup(LdapGroup group, String name) {
         group.setCn(name);
-        group.set("cn", name);
-        group.set("uid", name);
+        group.set(HELPER.getGroupIdentifyer(), name);
         return group;
     }
 
@@ -124,6 +140,7 @@ public class Utils {
     public static LdapUser getTestUser(String uid) {
         LdapUser user = HELPER.getUserTemplate(uid);
         user = Utils.addAttributes(user, uid);
+        LOG.log(Level.INFO, "\n{0}", user.toLdif(HELPER));
         return user;
     }
 
@@ -132,7 +149,6 @@ public class Utils {
         List<LdapUser> users = new ArrayList<LdapUser>();
         for (String name : names) {
             user = HELPER.getUserTemplate(name);
-            user.set("cn", user.getUid());
             HELPER.setUser(user);
             users.add(user);
         }
@@ -147,7 +163,25 @@ public class Utils {
 
     public static LdapGroup getTestGroup(String cn) {
         LdapGroup group = HELPER.getGroupTemplate(cn);
-        group.debug();
+        LOG.log(Level.INFO, "\n{0}", group.toLdif(HELPER));
         return group;
+    }
+
+    private static void showConfigInfo() {
+        StringBuilder sb = new StringBuilder("\n");
+        sb.append("------------------------------------------------------------------------\n");
+        sb.append("CONFIGURATION:\n");
+        sb.append("------------------------------------------------------------------------\n");
+        sb.append(" Version:\t").append(Configuration.getInstance().getVersion()).append("\n");
+        sb.append(" File:\t").append(Configuration.getInstance().getFilename()).append("\n");
+        sb.append(" Tmp-Dir:\t").append(Configuration.getInstance().getTmpDir()).append("\n");
+        sb.append(" Cache-Dir:\t").append(Configuration.getInstance().getCacheDir()).append("\n");
+        List<String> ocs;
+        ocs = Arrays.asList(HELPER.getUserObjectClasses());
+        sb.append(" User oc List:\t").append(ocs.toString()).append("\n");
+        ocs = Arrays.asList(HELPER.getGroupObjectClasses());
+        sb.append(" Group oc List:\t").append(ocs.toString()).append("\n");
+        sb.append("------------------------------------------------------------------------\n");
+        LOG.log(Level.INFO, sb.toString());
     }
 }

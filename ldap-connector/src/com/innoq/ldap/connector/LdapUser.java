@@ -38,12 +38,22 @@ public class LdapUser extends LdapNode implements Comparable<LdapUser> {
         super();
     }
 
+    /**
+     * @deprecated Don't use this method any more. This Constructor will use the
+     * default LdapHelper instance.
+     * @see LdapUser(String uid, LdapHelper Instance)
+     */
+    @Deprecated
     public LdapUser(String uid) {
+        this(uid, LdapHelper.getInstance());
+    }
+
+    public LdapUser(String uid, LdapHelper instance) {
         super();
         this.cn = uid;
         this.uid = uid;
         this.name = uid;
-        set("uid", uid);
+        set(instance.getUserIdentifyer(), uid);
     }
 
     public Set<LdapGroup> getGroups() {
@@ -125,5 +135,21 @@ public class LdapUser extends LdapNode implements Comparable<LdapUser> {
     @Override
     public String toString() {
         return getUid() + " # " + attributes.size();
+    }
+    
+    @Override
+    public String toLdif(LdapHelper instance){
+        StringBuilder sb = new StringBuilder("version: 1\n\n");
+        sb.append("dn: ").append(getDn()).append("\n");
+        for(String oc : getObjectClasses()) {
+            sb.append("objectClass: ").append(oc).append("\n");
+        }
+        for (String key : getKeys()) {
+            if (!"objectClass".equals(key)) {
+                sb.append(key).append(": ").append(get(key)).append("\n");
+            }
+        }
+        sb.append("\n");
+        return sb.toString();
     }
 }

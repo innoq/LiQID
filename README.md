@@ -29,8 +29,8 @@ A valid properties file looks like this:
 
     #LDAP Settings
     default.ldap=ldap1
-    # LDAP Listsing, divided by ","
-    #ldap.listing=ldap1,ldap2
+
+    # LDAP Listsing, divided by "," - e.g. ldap.listing=ldap1,ldap2
     ldap.listing=ldap1
 
     ldap.user.objectClasses=top, organizationalPerson, inetOrgPerson, person, posixAccount, shadowAccount,  JabberAccount, ldapPublicKey
@@ -39,15 +39,24 @@ A valid properties file looks like this:
     ldap.jabberServer=jabber.example.com
     ldap.mobile=0000
 
+
+    # base LDAP Settings
     ldap1.base_dn=dc=example,dc=com
     ldap1.ou_people=ou=People
     ldap1.ou_group=ou=Group
+
+    # LDAP Object Attributes
+    ldap1.user.object.class=person
+    ldap1.user.id.attribute=uid
+    ldap1.group.id.attribute=cn
+    ldap1.group.object.class=groupOfUniqueNames
+    ldap1.group.member.attribute=uniqueMember    
 
     # should OUs be autocreatet if they not exist?
     ldap1.ou.autocreate=true
     ldap1.url=ldaps://ldap.example.com:636
     ldap1.principal=cn=admin,dc=example,dc=com
-    ldap1.credentials=secret'
+    ldap1.credentials=secret
 
 
 ### Loading a User from the LDAP Directory
@@ -55,8 +64,10 @@ A valid properties file looks like this:
     public void testUserLoad() {
         // loads an user with uid "test" from LDAP
         LdapUser ldapUser = (LdapUser) HELPER.getUser("test");
+
         // loads a preset test-user
         LdapUser testUser = getTestUser();
+        
         // compares both users
         LOG.log(Level.INFO, "testUser: {0}", testUser);
         LOG.log(Level.INFO, "ldapUser: {0}", ldapUser);

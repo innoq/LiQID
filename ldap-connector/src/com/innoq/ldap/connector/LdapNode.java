@@ -28,7 +28,7 @@ import javax.naming.directory.BasicAttributes;
 
 public class LdapNode implements Node {
 
-    private static final String LINE = "============================================================\n";
+    private static final String LINE = "------------------------------------------------------------------------\n";
     protected BasicAttributes attributes = new BasicAttributes(false);
     protected Set<String> keys = null;
     protected Set<String> objectClasses = null;
@@ -192,5 +192,20 @@ public class LdapNode implements Node {
 
     public String getModifyTimestamp() {
         return this.modifyTimestamp;
+    }
+
+    public String toLdif(LdapHelper instance) {
+        StringBuilder sb = new StringBuilder("version: 1\n\n");
+        sb.append("dn: ").append(getDn()).append("\n");
+        for (String oc : getObjectClasses()) {
+            sb.append("objectClass: ").append(oc).append("\n");
+        }
+        for (String key : getKeys()) {
+            if (!"objectClass".equals(key)) {
+                sb.append(key).append(": ").append(get(key)).append("\n");
+            }
+        }
+        sb.append("\n");
+        return sb.toString();
     }
 }

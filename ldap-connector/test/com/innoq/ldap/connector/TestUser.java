@@ -77,6 +77,17 @@ public class TestUser {
     }
 
     @Test
+    public void testLoginWithNull() {
+        boolean login;
+        login = HELPER.checkCredentials(UID, null);
+        assertFalse("testValidLogin: should be false for " + UID + ":null", login);
+        login = HELPER.checkCredentials(null, UID);
+        assertFalse("testValidLogin: should be false for null:" + UID, login);
+        login = HELPER.checkCredentials(null, null);
+        assertFalse("testValidLogin: should be false for null:null", login);
+    }
+
+    @Test
     public void testValidLogin() {
         LdapUser t1 = Utils.getTestUser(UID);
         t1.setPassword(UID);
@@ -88,13 +99,13 @@ public class TestUser {
             LOG.log(Level.SEVERE, "updated User {0} for login failed", ex);
         }
         boolean login = HELPER.checkCredentials(UID, UID);
-        assertTrue("testValidLogin: should be true for "+UID, login);
+        assertTrue("testValidLogin: should be true for " + UID, login);
     }
 
     @Test
     public void testInvalidLogin() {
         boolean login = HELPER.checkCredentials(UID, "test");
-        assertFalse("testInvalidLogin: should be false "+UID, login);
+        assertFalse("testInvalidLogin: should be false " + UID, login);
     }
 
     @Test
