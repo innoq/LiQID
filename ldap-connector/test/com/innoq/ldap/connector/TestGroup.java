@@ -34,7 +34,7 @@ public class TestGroup {
 
     private static LdapHelper HELPER;
     private static final Logger LOG = Logger.getLogger(TestUser.class.getName());
-    private static String CN = "Administratoren";
+    private static String CN;
     private static LdapUser testUser1, testUser2;
 
     public TestGroup() {
@@ -65,9 +65,9 @@ public class TestGroup {
 
     @Test
     public void testGroupLoad() {
-        LdapGroup group = (LdapGroup) HELPER.getGroup("Administratoren");
+        LdapGroup group = (LdapGroup) HELPER.getGroup(HELPER.getAdminGroupIdentifiyer());
         group.debug();
-        LOG.log(Level.INFO, "\nmembers: {0}\n", group.get("member"));
+        LOG.log(Level.INFO, "\nmembers: {0}\n", group.get(HELPER.getGroupMemberAttribut()));
         assertFalse(group.isNew());
         assertFalse(group.isEmpty());
     }

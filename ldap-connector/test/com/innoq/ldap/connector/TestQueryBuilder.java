@@ -44,11 +44,14 @@ public class TestQueryBuilder {
         UID2 = "U2_" + System.currentTimeMillis();
         CN1 = "G1_" + System.currentTimeMillis();
         CN1 = "G2_" + System.currentTimeMillis();
-
+        LdapUser u1 = Utils.getTestUser(UID1);
+        HELPER.setUser(u1);
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+        Node u1 = HELPER.getUser(UID1);
+        HELPER.rmUser(u1);
     }
 
     @Test
@@ -61,11 +64,11 @@ public class TestQueryBuilder {
 
     @Test
     public void testForMultiValues() {
-        String expectedValues = "(&(l=Monheim am Rhein)(objectClass=person)(uid=ph*))";
+        String expectedValues = "(&(l=Berlin)(objectClass=person)(uid=U1_*))";
         QueryBuilder qb = new LdapQueryBuilder();
         qb.append("objectClass", "person");
-        qb.append("l", "Monheim am Rhein");
-        qb.append("uid", "ph*");
+        qb.append("l", "Berlin");
+        qb.append("uid", "U1_*");
         assertEquals(expectedValues, qb.getQuery());
     }
 
@@ -80,9 +83,8 @@ public class TestQueryBuilder {
 
     @Test
     public void testSearchUsersByAttributes() {
-        String l = "Monheim am Rhein";
         QueryBuilder qb = new LdapQueryBuilder();
-        qb.append("l", l);
+        qb.append(HELPER.getUserIdentifyer(), UID1);
         Set<Node> users = HELPER.findUsers(qb);
         assertTrue(users.size() > 0);
     }

@@ -86,7 +86,7 @@ public class Utils {
 
         if (ocs.contains("inetOrgPerson")) {
             attributes.put("mail", "test@test.com");
-            attributes.put("l", "Ratingen");
+            attributes.put("l", "Berlin");
             attributes.put("mobile", "+12345678910");
             attributes.put("postalAddress", "a Street 123 17$12345 a City$NRW$Germany");
             attributes.put("postalCode", "12345");
