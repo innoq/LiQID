@@ -1,25 +1,25 @@
-
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <assembly>
-    <id>distribution</id>
-    <formats>
-        <format>jar</format>
-    </formats>
-    <includeBaseDirectory>false</includeBaseDirectory>
-    <fileSets>
-        <fileSet>
-            <directory>target/classes</directory>
-            <outputDirectory>/</outputDirectory>
-        </fileSet>
-    </fileSets>
-    <dependencySets>
-        <dependencySet>
-            <outputDirectory>/</outputDirectory>
-            <unpack>true</unpack>
-            <scope>runtime</scope>
-            <includes>
-                <include>com.innoq.liqid:utils</include>
-                <include>com.innoq.liqid:model</include>
-            </includes>
-        </dependencySet>
-    </dependencySets>
+	<id>distribution</id>
+	<formats>
+		<format>jar</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<fileSets>
+		<fileSet>
+			<directory>target/classes</directory>
+			<outputDirectory>/</outputDirectory>
+		</fileSet>
+	</fileSets>
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>/</outputDirectory>
+			<unpack>true</unpack>
+			<scope>runtime</scope>
+			<includes>
+				<include>com.innoq.liqid:utils</include>
+				<include>com.innoq.liqid:model</include>
+			</includes>
+		</dependencySet>
+	</dependencySets>
 </assembly>
