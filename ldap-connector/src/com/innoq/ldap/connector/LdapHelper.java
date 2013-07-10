@@ -1116,11 +1116,11 @@ public class LdapHelper implements Helper {
         env.put(Context.SECURITY_PRINCIPAL, Configuration.getProperty(instance + ".principal"));
         env.put(Context.SECURITY_CREDENTIALS, Configuration.getProperty(instance + ".credentials"));
         adminGroupIdentifiyer = Configuration.getProperty(instance + ".admin.group.id", LdapKeys.ADMIN_GROUP_CN).trim();
-        userIdentifyer = Configuration.getProperty(instance + ".user.id.attribute", LdapKeys.UID).trim();
-        userObjectClass = Configuration.getProperty(instance + ".user.object.class", LdapKeys.PERSON).trim();
-        groupIdentifyer = Configuration.getProperty(instance + ".group.id.attribute", LdapKeys.CN).trim();
-        groupObjectClass = Configuration.getProperty(instance + ".group.object.class", LdapKeys.GROUP_OF_NAMES).trim();
-        groupMemberAttribut = Configuration.getProperty(instance + ".group.member.attribute", LdapKeys.MEMBER).trim();
+        userIdentifyer = Configuration.getProperty(instance + ".user.id.attribute", LdapKeys.USER_ID_ATTRIBUTE).trim();
+        userObjectClass = Configuration.getProperty(instance + ".user.object.class", LdapKeys.USER_OBJECTCLASS).trim();
+        groupIdentifyer = Configuration.getProperty(instance + ".group.id.attribute", LdapKeys.GROUP_ID_ATTRIBTUE).trim();
+        groupObjectClass = Configuration.getProperty(instance + ".group.object.class", LdapKeys.GROUP_OBJECTCLASS).trim();
+        groupMemberAttribut = Configuration.getProperty(instance + ".group.member.attribute", LdapKeys.GROUP_MEMBER_ATTRIBUTE).trim();
         userObjectClasses = Configuration.getProperty("ldap.user.objectClasses").split(",");
         groupObjectClasses = Configuration.getProperty("ldap.group.objectClasses").split(",");
         env.put(Context.PROVIDER_URL, Configuration.getProperty(instance + ".url") + "/" + baseDn);

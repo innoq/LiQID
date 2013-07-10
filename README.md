@@ -1,20 +1,20 @@
 LiQID
 =====
-
 LDAP innoQ ID Manager
+
+# Abstract
 
 This is Library should help java developers to use LDAP-Directories in a simple way. Without the hazzle of JNDI (Java Naming and Directory Interface).
 
-Model
--------------
+# Model
+TBD
 
 Diagram needs to be updated.
 
-Utils
--------------
+# Utils
+TBD
 
-LDAP-Connector
--------------
+# LDAP-Connector
 
 Building:
 
@@ -25,39 +25,59 @@ There are 3 possibilities to define the location of this file:
 2. store the file in the default location: user_dir/.liqid/liqid.properties
 3. use the Enviroment Variabel LIQID_PROPERTIES to set the location of the properties file.
 
-A valid properties file looks like this:
+## Configuration
+This Lib needs to have some proper Configuration to work. You can use a separate Properties File or you can add the necessary Entries to your existing Java Application Configuration. 
 
-    #LDAP Settings
-    default.ldap=ldap1
+> $ java -jar ldap-connector-1.3-SNAPSHOT.jar -generate
 
-    # LDAP Listsing, divided by "," - e.g. ldap.listing=ldap1,ldap2
-    ldap.listing=ldap1
+will create an example liqid.properties:
 
-    ldap.user.objectClasses=top, organizationalPerson, inetOrgPerson, person, posixAccount, shadowAccount,  JabberAccount, ldapPublicKey
-    ldap.group.objectClasses=groupOfNames, shadowAccount
-    ldap.sshKey=<!-- no key -->
-    ldap.jabberServer=jabber.example.com
-    ldap.mobile=0000
+    # example liqid.properties
+    # created 10.07.13 14:40
+    
+	# LDAP Settings
+	
+	## LDAP Listing, divided by ","
+	ldap.listing=ldap1
+	## Default LDAP (with leading information)
+	default.ldap=ldap1
+	
+	## Mandatory Configuration:
+	ldap.user.objectClasses=person
+	ldap.group.objectClasses=groupOfUniqueNames
+	
+	### OUs for this LDAP instances
+	ldap1.ou_people=ou=users
+	ldap1.ou_group=ou=roles
+	
+	### ldap|ldaps :// <host>:<port>
+	ldap1.url=ldap://localhost:389
+	ldap1.principal=dc=Manager,dc=example,dc=com
+	ldap1.credentials=password
+	ldap1.base_dn=dc=example,dc=com
+	
+	## Optional Configuration:
+	### User ID Attribute - DEFAULT: uid
+	# ldap1.user.id.attribute=cn
+	
+	### User ObjectClass - DEFAULT: person
+	# ldap1.user.object.class=person
+	
+	### Group ID Attribute - DEFAULT: cn
+	# ldap1.group.id.attribute=cn
+	
+	### Group ObjectClass - DEFAULT: groupOfNames
+	# ldap1.group.object.class=groupOfUniqueNames
+	
+	### Group Member Attribute - DEFAULT: member
+	# ldap1.group.member.attribute=uniqueMember
 
 
-    # base LDAP Settings
-    ldap1.base_dn=dc=example,dc=com
-    ldap1.ou_people=ou=People
-    ldap1.ou_group=ou=Group
+You can change the location of that file manually via
 
-    # LDAP Object Attributes
-    ldap1.user.object.class=person
-    ldap1.user.id.attribute=uid
-    ldap1.group.id.attribute=cn
-    ldap1.group.object.class=groupOfUniqueNames
-    ldap1.group.member.attribute=uniqueMember    
-
-    # should OUs be autocreatet if they not exist?
-    ldap1.ou.autocreate=true
-    ldap1.url=ldaps://ldap.example.com:636
-    ldap1.principal=cn=admin,dc=example,dc=com
-    ldap1.credentials=secret
-
+    Configuration.setPropertiesLocation("/var/apps/config/liqid.properties");
+    
+The Default location is __~/.liqid/liqid.properties__    
 
 ### Loading a User from the LDAP Directory
 
@@ -89,8 +109,7 @@ A valid properties file looks like this:
         assertFalse(user.isEmpty());
     }	
 
-Legal
-=====
+# Legal
 
   Copyright (C) 2012 innoQ Deutschland GmbH
 

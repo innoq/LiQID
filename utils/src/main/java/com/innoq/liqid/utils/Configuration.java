@@ -61,6 +61,10 @@ public class Configuration {
         }
     }
 
+    public static void setPropertiesLocation(String filepath) {
+        instance.setPropertiesFile(filepath);
+    }
+
     public String getVersion() {
         if (version == null) {
             version = getProperty("version", "DEFAULT");
@@ -133,8 +137,8 @@ public class Configuration {
         this.filename = filename;
         loadProperties();
     }
-    
+
     public static String getVersionedFilename(final String filename) {
         return filename + "-" + Configuration.getInstance().getVersion();
-    }    
+    }
 }

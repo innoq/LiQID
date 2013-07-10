@@ -6,14 +6,11 @@
  */
 package com.innoq.ldap.util;
 
+import com.innoq.ldap.connector.LdapKeys;
 import static com.innoq.liqid.utils.Configuration.SEP;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.sun.jndi.ldap.LdapClient;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class App {
 
@@ -30,10 +27,7 @@ public class App {
                 }
                 if ("-generate".equals(arg)) {
                     System.out.println(app.getExampelConfig());
-                }
-                if ("-generate".equals(args[i - 1]) && "-out".equals(arg)) {
-                    app.out = args[i + 1];
-                    app.writeConfig(app.getExampelConfig());
+                    System.exit(0);
                 }
                 i++;
             }
@@ -42,52 +36,38 @@ public class App {
         }
     }
 
-    private FileOutputStream getFile() {
-        File file = new File(out);
-        FileOutputStream fos = null;
-        try {
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            fos = new FileOutputStream(file);
-
-        } catch (IOException ex) {
-            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return fos;
-    }
-
-    private void writeConfig(final String content) {
-        try {
-            FileOutputStream fos = getFile();
-            fos.write(content.getBytes("UTF-8"));
-            fos.flush();
-            fos.close();
-        } catch (IOException ex) {
-            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
     private String getExampelConfig() {
         SimpleDateFormat sdf = new SimpleDateFormat();
         StringBuilder sb = new StringBuilder();
-        sb.append("# example liqid.properties").append("\n");
+        sb.append("\n# example liqid.properties").append("\n");
         sb.append("# created ").append(sdf.format(new Date())).append("\n");
-        sb.append("\n# Mandatory").append("\n");
-        sb.append("\n# Example Object Classes:\n");
-        sb.append("ldap.user.objectClasses=top, organizationalPerson, inetOrgPerson, person, posixAccount").append("\n");
-        sb.append("ldap.group.objectClasses=groupOfNames").append("\n");
-        sb.append("\n# LDAP Settings:\n");
+        sb.append("\n# LDAP Settings\n");
+        sb.append("\n## LDAP Listing, divided by \",\"").append("\n");
+        sb.append("ldap.listing=ldap1\n");
+        sb.append("## Default LDAP (with leading information)\n");
         sb.append("default.ldap=ldap1\n");
-        sb.append("# LDAP Listsing, divided by \",\"").append("\n");
-        sb.append("ldap.listing=ldap1").append("\n");
-
-        sb.append("ldap1.base_dn=dc=example,dc=com").append("\n");
-        sb.append("ldap1.ou_people=ou=People").append("\n");
-        sb.append("ldap1.ou_group=ou=Group").append("\n");
-        sb.append("ldap1.url=ldaps://localhost:636").append("\n");
-        sb.append("ldap1.principal=cn=admin,dc=example,dc=com").append("\n");
-        sb.append("ldap1.credentials=secret").append("\n");
+        sb.append("\n## Mandatory Configuration:").append("\n");
+        sb.append("ldap.user.objectClasses=person\n");
+        sb.append("ldap.group.objectClasses=groupOfUniqueNames\n");
+        sb.append("\n### OUs for this LDAP instances\n");
+        sb.append("ldap1.ou_people=ou=users\n");
+        sb.append("ldap1.ou_group=ou=roles\n");
+        sb.append("\n### ldap|ldaps :// <host>:<port>\n");
+        sb.append("ldap1.url=ldap://localhost:389\n");
+        sb.append("ldap1.principal=dc=Manager,dc=example,dc=com\n");
+        sb.append("ldap1.credentials=password\n");
+        sb.append("ldap1.base_dn=dc=example,dc=com\n");
+        sb.append("\n## Optional Configuration:").append("\n");
+        sb.append("### User ID Attribute - DEFAULT: ").append(LdapKeys.USER_ID_ATTRIBUTE).append("\n");
+        sb.append("# ldap1.user.id.attribute=cn\n\n");
+        sb.append("### User ObjectClass - DEFAULT: ").append(LdapKeys.USER_OBJECTCLASS).append("\n");
+        sb.append("# ldap1.user.object.class=person\n\n");
+        sb.append("### Group ID Attribute - DEFAULT: ").append(LdapKeys.GROUP_ID_ATTRIBTUE).append("\n");
+        sb.append("# ldap1.group.id.attribute=cn\n\n");
+        sb.append("### Group ObjectClass - DEFAULT: ").append(LdapKeys.GROUP_OBJECTCLASS).append("\n");
+        sb.append("# ldap1.group.object.class=groupOfUniqueNames\n\n");
+        sb.append("### Group Member Attribute - DEFAULT: ").append(LdapKeys.GROUP_MEMBER_ATTRIBUTE).append("\n");
+        sb.append("# ldap1.group.member.attribute=uniqueMember\n\n");
         sb.append("\n");
         return sb.toString();
     }
@@ -97,7 +77,6 @@ public class App {
         System.out.println("java -jar ldap-connetor.jar ");
         System.out.println("  -help                  this help");
         System.out.println("  -generate              generates an example liqid.properties as output.");
-        System.out.println("  -generate -out FILE    generates an example liqid.properties at FILE");
         System.out.println(HR + "\n");
         System.exit(0);
     }
