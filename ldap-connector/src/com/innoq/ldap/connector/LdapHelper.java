@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2012 innoQ Deutschland GmbH
+ Copyright (C) 2014 innoQ Deutschland GmbH
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -581,6 +581,7 @@ public class LdapHelper implements Helper {
         return false;
     }
 
+    // TODO externalize User Template (e.g. as LDIF)
     /**
      * Returns a basic LDAP-User-Template for a new LDAP-User.
      *
@@ -596,7 +597,6 @@ public class LdapHelper implements Helper {
         user = (LdapUser) updateObjectClasses(user);
 
         // TODO this needs to be cleaner :-/.
-
         // for inetOrgPerson
         if (user.getObjectClasses().contains("inetOrgPerson")
                 || user.getObjectClasses().contains("person")) {
@@ -625,6 +625,7 @@ public class LdapHelper implements Helper {
         return user;
     }
 
+    // TODO externalize Group Template (e.g. as LDIF)
     /**
      * Returns a basic LDAP-Group-Template for a new LDAP-Group. The Group
      * contains always the LDAP-Principal User (for Reading).
@@ -1126,8 +1127,14 @@ public class LdapHelper implements Helper {
         env.put(Context.PROVIDER_URL, Configuration.getProperty(instance + ".url") + "/" + baseDn);
         if (Configuration.getProperty(instance + ".url").startsWith("ldaps")) {
             env.put(Context.SECURITY_PROTOCOL, "ssl");
+            if (Configuration.getProperty("keystore.path") != null) {
+                env.put("java.naming.ldap.factory.socket", "com.innoq.ldap.ssl.SelfSignedSSLSocketFactory");
+                log.write("Using Keystore from " + Configuration.getProperty("keystore.path") + " for Certificate Validation\n", LdapHelper.class);
+            } else if ("true".equals(Configuration.getProperty(instance + ".disable.cert.validation"))) {
+                env.put("java.naming.ldap.factory.socket", "com.innoq.ldap.ssl.AllowAllSSLSocketFactory");
+                log.write("Disable SSL Cert check for " + instance + "\n", LdapHelper.class);
+            }
         }
-
         defaultValues.put("jabberServer", Configuration.getProperty("ldap.jabberServer", LdapKeys.DEFAULT_JABBER_SERVER));
         defaultValues.put("sshKey", Configuration.getProperty("ldap.sshKey", LdapKeys.DEFAULT_SSH_KEY));
 
@@ -1141,6 +1148,7 @@ public class LdapHelper implements Helper {
         } catch (NamingException ex) {
             online = false;
             log.write("could not connect to " + instance + "\n", LdapHelper.class);
+            log.write("reason: " + ex.getRootCause().getMessage() + "\n " + ex.getMessage() + "\n", LdapHelper.class);
             handleNamingException(instance + ": loadProperties", ex);
         }
     }

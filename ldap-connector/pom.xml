@@ -104,7 +104,7 @@
                             <outputDirectory>${project.build.directory}</outputDirectory>
                             <workDirectory>target/assembly/work</workDirectory>
                             <appendAssemblyId>false</appendAssemblyId>
-                            <finalName>lib/${project.artifactId}</finalName>
+                            <finalName>${project.artifactId}-${project.version}-standalone</finalName>
                         </configuration>
                     </execution>
                 </executions>

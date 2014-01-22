@@ -89,6 +89,7 @@ public class TestQueryBuilder {
         assertTrue(users.size() > 0);
     }
 
+    // TODO finish stuff here....
     private static void preparesUsers() {
         LdapUser u1 = Utils.getTestUser(UID1);
         LdapUser u2 = Utils.getTestUser(UID2);

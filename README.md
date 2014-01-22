@@ -32,46 +32,56 @@ This Lib needs to have some proper Configuration to work. You can use a separate
 
 will create an example liqid.properties:
 
-    # example liqid.properties
-    # created 10.07.13 14:40
-    
-	# LDAP Settings
-	
-	## LDAP Listing, divided by ","
-	ldap.listing=ldap1
-	## Default LDAP (with leading information)
-	default.ldap=ldap1
-	
-	## Mandatory Configuration:
-	ldap.user.objectClasses=person
-	ldap.group.objectClasses=groupOfUniqueNames
-	
-	### OUs for this LDAP instances
-	ldap1.ou_people=ou=users
-	ldap1.ou_group=ou=roles
-	
-	### ldap|ldaps :// <host>:<port>
-	ldap1.url=ldap://localhost:389
-	ldap1.principal=dc=Manager,dc=example,dc=com
-	ldap1.credentials=password
-	ldap1.base_dn=dc=example,dc=com
-	
-	## Optional Configuration:
-	### User ID Attribute - DEFAULT: uid
-	# ldap1.user.id.attribute=cn
-	
-	### User ObjectClass - DEFAULT: person
-	# ldap1.user.object.class=person
-	
-	### Group ID Attribute - DEFAULT: cn
-	# ldap1.group.id.attribute=cn
-	
-	### Group ObjectClass - DEFAULT: groupOfNames
-	# ldap1.group.object.class=groupOfUniqueNames
-	
-	### Group Member Attribute - DEFAULT: member
-	# ldap1.group.member.attribute=uniqueMember
+<pre><code>
+# example liqid.properties
+# created 22.01.14 21:47
+# created with java -jar ldap-connetor.jar -generate
 
+# LDAP Settings
+
+## LDAP Listing, divided by ","
+ldap.listing=ldap1
+## Default LDAP (with leading information)
+default.ldap=ldap1
+
+
+## Mandatory Configuration:
+ldap.user.objectClasses=person
+ldap.group.objectClasses=groupOfUniqueNames
+
+### OUs for this LDAP instances
+ldap1.ou_people=ou=users
+ldap1.ou_group=ou=roles
+
+### ldap|ldaps :// <host>:<port>
+ldap1.url=ldap://localhost:389
+ldap1.principal=dc=Manager,dc=example,dc=com
+ldap1.credentials=password
+ldap1.base_dn=dc=example,dc=com
+
+
+## Optional Configuration:
+### Use for Self-Signed Certifcates of use own Keystoreldap1.disable.cert.validation=true
+### User ID Attribute - DEFAULT: uid
+# ldap1.user.id.attribute=cn
+
+### User ObjectClass - DEFAULT: person
+# ldap1.user.object.class=person
+
+### Group ID Attribute - DEFAULT: cn
+# ldap1.group.id.attribute=cn
+
+### Group ObjectClass - DEFAULT: groupOfNames
+# ldap1.group.object.class=groupOfUniqueNames
+
+### Group Member Attribute - DEFAULT: member
+# ldap1.group.member.attribute=uniqueMember
+
+### Define your own Keystore here:
+# keystore.password=changeme
+# keystore.path=/Users/philipp/.liqid/liqid.keystore
+
+</code></pre>
 
 You can change the location of that file manually via
 
