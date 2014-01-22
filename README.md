@@ -61,7 +61,9 @@ ldap1.base_dn=dc=example,dc=com
 
 
 ## Optional Configuration:
-### Use for Self-Signed Certifcates of use own Keystoreldap1.disable.cert.validation=true
+### Use for Self-Signed Certifcates of use own Keystore
+# ldap1.disable.cert.validation=true
+
 ### User ID Attribute - DEFAULT: uid
 # ldap1.user.id.attribute=cn
 
