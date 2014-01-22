@@ -74,8 +74,8 @@ public class App {
         sb.append("ldap1.credentials=password\n");
         sb.append("ldap1.base_dn=dc=example,dc=com\n");
         sb.append("\n\n## Optional Configuration:").append("\n");
-        sb.append("### Use for Self-Signed Certifcates of use own Keystore");
-        sb.append("ldap1.disable.cert.validation=true\n");
+        sb.append("### Use for Self-Signed Certifcates of use own Keystore\n");
+        sb.append("# ldap1.disable.cert.validation=true\n\n");
         sb.append("### User ID Attribute - DEFAULT: ").append(LdapKeys.USER_ID_ATTRIBUTE).append("\n");
         sb.append("# ldap1.user.id.attribute=cn\n\n");
         sb.append("### User ObjectClass - DEFAULT: ").append(LdapKeys.USER_OBJECTCLASS).append("\n");
