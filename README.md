@@ -16,7 +16,7 @@ TBD
 
 # LDAP-Connector
 
-Building:
+## Building:
 
 You need a proper Configuration in a properties file.
 There are 3 possibilities to define the location of this file:
@@ -91,11 +91,31 @@ You can change the location of that file manually via
     
 The Default location is __~/.liqid/liqid.properties__    
 
+## Logging
+
+The Helper will Log to __stdout__ as Standard.
+You can change the Logger, with 
+
+    LdapHelper#setLog(com.innoq.liqid.log.Log log)
+
+
+## Examples
+
+### Get an Instance of LdapHelper
+
+	// using the configured Default Instance
+    LdapHelper helper = LdapHelper.getInstance();
+    
+or
+	
+	// using Instance named ldap1
+    LdapHelper helper = LdapHelper.getInstance("ldap1");
+
 ### Loading a User from the LDAP Directory
 
     public void testUserLoad() {
         // loads an user with uid "test" from LDAP
-        LdapUser ldapUser = (LdapUser) HELPER.getUser("test");
+        LdapUser ldapUser = (LdapUser) helper.getUser("test");
 
         // loads a preset test-user
         LdapUser testUser = getTestUser();
@@ -109,7 +129,7 @@ The Default location is __~/.liqid/liqid.properties__
 ### Creating a new User in the LDAP Directory
 
     public void testUserCreate() {
-        LdapUser user = HELPER.getUserTemplate("foobar");
+        LdapUser user = helper.getUserTemplate("foobar");
         try {
             if (HELPER.setUser(user)) {
                 LOG.log(Level.INFO, "created User {0}", user.getName());
@@ -120,6 +140,8 @@ The Default location is __~/.liqid/liqid.properties__
         user = HELPER.getUser("foobar");
         assertFalse(user.isEmpty());
     }	
+    
+For more Examples have a look into the [JUnit Test Files](https://github.com/innoq/LiQID/tree/master/ldap-connector/test/com/innoq/ldap/connector).
 
 # Legal
 
