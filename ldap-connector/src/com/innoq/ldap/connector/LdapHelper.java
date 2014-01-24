@@ -16,6 +16,7 @@
 package com.innoq.ldap.connector;
 
 import com.innoq.liqid.log.Log;
+import com.innoq.liqid.log.LogSystemOutput;
 import com.innoq.liqid.log.LogZero;
 import com.innoq.liqid.model.Helper;
 import com.innoq.liqid.model.Node;
@@ -53,7 +54,7 @@ import javax.swing.ImageIcon;
  */
 public class LdapHelper implements Helper {
 
-    private Log log = new LogZero();
+    private Log log = new LogSystemOutput();
     private Node principal = null;
     private DirContext ctx = null;
     private String baseDn;
