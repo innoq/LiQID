@@ -6,3 +6,9 @@ ldap-connector/test/test.ldap.properties
 
 .DS_Store
 **/.DS_Store
+
+ldap-connector/nb-configuration.xml
+
+model/nb-configuration.xml
+
+utils/nb-configuration.xml

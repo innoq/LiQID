@@ -12,12 +12,25 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
+ *//*
+ Copyright (C) 2014 innoQ Deutschland GmbH
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
  */
 package com.innoq.ldap.connector;
 
 import com.innoq.liqid.log.Log;
-import com.innoq.liqid.log.LogSystemOutput;
-import com.innoq.liqid.log.LogZero;
+import com.innoq.liqid.log.LogConsole;
 import com.innoq.liqid.model.Helper;
 import com.innoq.liqid.model.Node;
 import com.innoq.liqid.model.QueryBuilder;
@@ -54,7 +67,7 @@ import javax.swing.ImageIcon;
  */
 public class LdapHelper implements Helper {
 
-    private Log log = new LogSystemOutput();
+    private Log log = new LogConsole();
     private Node principal = null;
     private DirContext ctx = null;
     private String baseDn;
@@ -71,7 +84,7 @@ public class LdapHelper implements Helper {
     private Map<String, String> defaultValues = new HashMap<String, String>();
     private static Map<String, LdapHelper> helpers = new HashMap<String, LdapHelper>();
     private boolean online = false;
-    private String instance;
+    private final String instanceName;
     private long queryCount;
     private long modificationCount;
     private long validationCount;
@@ -86,6 +99,7 @@ public class LdapHelper implements Helper {
     /**
      * Returns a new Instance of LdapHelper.
      *
+     * @param instance
      * @return a new Instance.
      */
     public static LdapHelper getInstance(String instance) {
@@ -116,7 +130,7 @@ public class LdapHelper implements Helper {
      * @param instance
      */
     public LdapHelper(String instance) {
-        this.instance = instance;
+        this.instanceName = instance;
         checkDirs();
     }
 
@@ -132,32 +146,42 @@ public class LdapHelper implements Helper {
     /**
      * Writes the modifications on an user object back to the LDAP.
      *
-     * @param user the modfied user.
      * @return true if the user was set correct, false otherwise.
+     * @throws java.lang.Exception
      */
     public boolean setUser(final Node node) throws Exception {
-        LdapUser newLdapUser = (LdapUser) node;
-        try {
-            LdapUser oldLdapUser = (LdapUser) getUser(newLdapUser.getUid());
-            if (oldLdapUser.isEmpty()) {
-                newLdapUser.setPassword("!" + System.currentTimeMillis());
-                log.write("bind: " + getOuForNode(newLdapUser) + "\n", LdapHelper.class);
-                ctx.bind(getOuForNode(newLdapUser), null, newLdapUser.getAttributes());
-                creationCount++;
-            } else {
-                ModificationItem[] mods = buildModificationsForUser(newLdapUser, oldLdapUser);
-                if (mods.length > 0) {
-                    log.write("modifyAttributes: " + getOuForNode(newLdapUser) + "\n", LdapHelper.class);
-                    ctx.modifyAttributes(getOuForNode(newLdapUser), mods);
-                    modificationCount++;
-                }
-            }
-            return true;
-        } catch (NamingException ex) {
-            handleNamingException(newLdapUser, ex);
-        } finally {
+        return setUserInContext(ctx, node);
+    }
+
+    /**
+     * Writes the modifications on an user object back to the LDAP using a
+     * specific context.
+     *
+     * @param node
+     * @param uid
+     * @param password
+     * @return true if the user was set correct, false otherwise.
+     * @throws Exception
+     */
+    public boolean setUserAsUser(Node node, String uid, String password) throws Exception {
+        boolean status = false;
+        StringBuilder sb = new StringBuilder(userIdentifyer + "=").append(uid).append(",");
+        sb.append(Configuration.getProperty(instanceName + ".ou_people")).append(",");
+        sb.append(baseDn);
+        if (uid == null || uid.isEmpty() || password == null || password.isEmpty()) {
             return false;
         }
+        try {
+            Hashtable environment = (Hashtable) ctx.getEnvironment().clone();
+            environment.put(Context.SECURITY_PRINCIPAL, sb.toString());
+            environment.put(Context.SECURITY_CREDENTIALS, password);
+            DirContext dirContext = new InitialDirContext(environment);
+            status = setUserInContext(dirContext, node);
+            dirContext.close();
+        } catch (NamingException ex) {
+            handleNamingException("NamingException " + ex.getLocalizedMessage() + "\n", ex);
+        }
+        return status;
     }
 
     /**
@@ -175,11 +199,7 @@ public class LdapHelper implements Helper {
             handleNamingException(user, ex);
         }
         Node ldapUser = getUser(user.getUid());
-        if (ldapUser.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
+        return ldapUser.isEmpty();
     }
 
     /**
@@ -197,11 +217,7 @@ public class LdapHelper implements Helper {
             handleNamingException(group, ex);
         }
         Node ldapGroup = getGroup(group.getCn());
-        if (ldapGroup.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
+        return ldapGroup.isEmpty();
     }
 
     /**
@@ -213,27 +229,23 @@ public class LdapHelper implements Helper {
      */
     public boolean setGroup(Node node) throws Exception {
         LdapGroup newLdapGroup = (LdapGroup) node;
-        try {
-            newLdapGroup = updateGroupMembers(newLdapGroup);
-            LdapGroup oldLdapGroup = (LdapGroup) getGroup(newLdapGroup.getCn());
-            if (oldLdapGroup.isEmpty()) {
-                creationCount++;
-                log.write("bind: " + getOuForNode(newLdapGroup) + "\n", LdapHelper.class);
-                ctx.bind(getOuForNode(newLdapGroup), null, newLdapGroup.getAttributes());
-            } else {
-                ModificationItem[] mods = buildModificationsForGroup(newLdapGroup, oldLdapGroup);
-                if (mods.length > 0) {
-                    modificationCount++;
-                    log.write("modifyAttributes: " + getOuForNode(newLdapGroup) + "\n", LdapHelper.class);
-                    ctx.modifyAttributes(getOuForNode(newLdapGroup), mods);
-                }
-            }
+        newLdapGroup = updateGroupMembers(newLdapGroup);
+        LdapGroup oldLdapGroup = (LdapGroup) getGroup(newLdapGroup.getCn());
+        if (oldLdapGroup.isEmpty()) {
+            creationCount++;
+            log.write("bind: " + getOuForNode(newLdapGroup) + "\n", LdapHelper.class);
+            ctx.bind(getOuForNode(newLdapGroup), null, newLdapGroup.getAttributes());
             return true;
-        } catch (NamingException ex) {
-            handleNamingException(newLdapGroup, ex);
-        } finally {
-            return false;
+        } else {
+            ModificationItem[] mods = buildModificationsForGroup(newLdapGroup, oldLdapGroup);
+            if (mods.length > 0) {
+                modificationCount++;
+                log.write("modifyAttributes: " + getOuForNode(newLdapGroup) + "\n", LdapHelper.class);
+                ctx.modifyAttributes(getOuForNode(newLdapGroup), mods);
+                return true;
+            }
         }
+        return false;
     }
 
     public boolean setEntry(Node node) throws Exception {
@@ -255,7 +267,6 @@ public class LdapHelper implements Helper {
             return true;
         } catch (NamingException ex) {
             handleNamingException(newLdapEntry, ex);
-        } finally {
             return false;
         }
     }
@@ -298,7 +309,7 @@ public class LdapHelper implements Helper {
                 user = fillAttributesInUser((LdapUser) user, attributes);
             }
         } catch (NamingException ex) {
-            handleNamingException(instance + ":" + uid, ex);
+            handleNamingException(instanceName + ":" + uid, ex);
         }
         return user;
     }
@@ -343,7 +354,7 @@ public class LdapHelper implements Helper {
                 users.add(user);
             }
         } catch (NamingException ex) {
-            handleNamingException(instance + ":" + qb.getQuery(), ex);
+            handleNamingException(instanceName + ":" + qb.getQuery(), ex);
         }
         return users;
     }
@@ -373,7 +384,7 @@ public class LdapHelper implements Helper {
                 group = fillAttributesInGroup((LdapGroup) group, attributes);
             }
         } catch (NamingException ex) {
-            handleNamingException(instance + ":" + cn, ex);
+            handleNamingException(instanceName + ":" + cn, ex);
         }
         return group;
     }
@@ -417,7 +428,7 @@ public class LdapHelper implements Helper {
                 groups.add(group);
             }
         } catch (NamingException ex) {
-            handleNamingException(instance + ":" + qb.getQuery(), ex);
+            handleNamingException(instanceName + ":" + qb.getQuery(), ex);
         }
         return groups;
     }
@@ -425,14 +436,14 @@ public class LdapHelper implements Helper {
     /**
      * Returns the LDAP-Principal as a LdapUser.
      *
-     * @return the Principal of that instance as a Node
+     * @return the Principal of that instanceName as a Node
      * @see com.innoq.liqid.model.Node.
      */
     public Node getPrincipal() {
         if (principal == null) {
             principal = new LdapUser();
             LdapUser p = (LdapUser) principal;
-            p.setDn(Configuration.getProperty(instance + ".principal").trim());
+            p.setDn(Configuration.getProperty(instanceName + ".principal").trim());
             p.setUid(getUidForDN(p.getDn()));
         }
         return principal;
@@ -488,11 +499,11 @@ public class LdapHelper implements Helper {
      */
     public String getOuForNode(final LdapNode node) {
         if (node instanceof LdapGroup) {
-            String ouGroup = Configuration.getProperty(instance + ".ou_group");
+            String ouGroup = Configuration.getProperty(instanceName + ".ou_group");
             return String.format(LdapKeys.GROUP_CN_FORMAT, groupIdentifyer, node.get(groupIdentifyer), ouGroup);
         }
         if (node instanceof LdapUser) {
-            String ouPeople = Configuration.getProperty(instance + ".ou_people");
+            String ouPeople = Configuration.getProperty(instanceName + ".ou_people");
             return String.format(LdapKeys.USER_UID_FORMAT, userIdentifyer, node.get(userIdentifyer), ouPeople);
         }
         return String.format(LdapKeys.ENTRY_CN_FORMAT, groupIdentifyer, node.get(groupIdentifyer), node.get(LdapKeys.OWNER));
@@ -563,7 +574,7 @@ public class LdapHelper implements Helper {
      */
     public boolean checkCredentials(final String uid, final String password) {
         StringBuilder sb = new StringBuilder(userIdentifyer + "=").append(uid).append(",");
-        sb.append(Configuration.getProperty(instance + ".ou_people")).append(",");
+        sb.append(Configuration.getProperty(instanceName + ".ou_people")).append(",");
         sb.append(baseDn);
         if (uid == null || uid.isEmpty() || password == null || password.isEmpty()) {
             return false;
@@ -591,7 +602,6 @@ public class LdapHelper implements Helper {
      */
     public LdapUser getUserTemplate(String uid) {
         LdapUser user = new LdapUser(uid, this);
-        user.setDn(user.getDn());
         for (String oc : userObjectClasses) {
             user.addObjectClass(oc.trim());
         }
@@ -636,7 +646,6 @@ public class LdapHelper implements Helper {
      */
     public LdapGroup getGroupTemplate(String cn) {
         LdapGroup group = new LdapGroup(cn, this);
-        group.setDn(group.getDn());
         for (String oc : groupObjectClasses) {
             group.addObjectClass(oc.trim());
         }
@@ -728,8 +737,35 @@ public class LdapHelper implements Helper {
         return groupObjectClasses;
     }
 
+    public String getInstanceName() {
+        return this.instanceName;
+    }
+
+    private boolean setUserInContext(DirContext ldapCtx, Node node) throws NamingException {
+        LdapUser newLdapUser = (LdapUser) node;
+        LdapUser oldLdapUser = (LdapUser) getUser(newLdapUser.getUid());
+        oldLdapUser.debug();
+        newLdapUser.debug();
+        if (oldLdapUser.isEmpty()) {
+            if (newLdapUser.getPassword() == null) {
+                newLdapUser.setPassword("!" + System.currentTimeMillis());
+            }
+            log.write("bind: " + getOuForNode(newLdapUser) + "\n", LdapHelper.class);
+            ldapCtx.bind(getOuForNode(newLdapUser), null, newLdapUser.getAttributes());
+            creationCount++;
+        } else {
+            ModificationItem[] mods = buildModificationsForUser(newLdapUser, oldLdapUser);
+            if (mods.length > 0) {
+                log.write("modifyAttributes: " + getOuForNode(newLdapUser) + "\n", LdapHelper.class);
+                ldapCtx.modifyAttributes(getOuForNode(newLdapUser), mods);
+                modificationCount++;
+            }
+        }
+        return true;
+    }
+
     private LdapGroup updateGroupMembers(LdapGroup group) {
-        LdapUser p = (LdapUser) principal;
+        LdapUser p = (LdapUser) getPrincipal();
         group.getAttributes().remove(groupMemberAttribut);
         if (!group.getUsers().contains(p)) {
             group.addUser(p);
@@ -1064,16 +1100,16 @@ public class LdapHelper implements Helper {
 
     private File getUserAvatarAsFile(ImageIcon avatar, String uid) {
         String tmpDir = Configuration.getInstance().getTmpDir();
-        File folder = new File(tmpDir + "/ldap/" + instance + "/avatars");
+        File folder = new File(tmpDir + "/ldap/" + instanceName + "/avatars");
         if (!folder.exists()) {
             folder.mkdirs();
         }
-        File file = new File(tmpDir + "/ldap/" + instance + "/avatars" + "/" + uid + ".png");
+        File file = new File(tmpDir + "/ldap/" + instanceName + "/avatars" + "/" + uid + ".png");
         if (!file.exists()) {
             try {
                 file.createNewFile();
             } catch (IOException ex) {
-                throw new LdapException(instance + ":" + uid + ":" + file.getAbsolutePath(), ex);
+                throw new LdapException(instanceName + ":" + uid + ":" + file.getAbsolutePath(), ex);
             }
         }
         BufferedImage bi = null;
@@ -1085,12 +1121,12 @@ public class LdapHelper implements Helper {
             g2.drawImage(img, 0, 0, null);
             g2.dispose();
         } catch (IllegalArgumentException ex) {
-            throw new LdapException(instance + ":" + uid + ":" + file.getAbsolutePath(), ex);
+            throw new LdapException(instanceName + ":" + uid + ":" + file.getAbsolutePath(), ex);
         }
         try {
             ImageIO.write(bi, "png", file);
         } catch (IOException ex) {
-            throw new LdapException(instance + ":" + uid + ":" + file.getAbsolutePath(), ex);
+            throw new LdapException(instanceName + ":" + uid + ":" + file.getAbsolutePath(), ex);
         }
         return file;
     }
@@ -1109,31 +1145,31 @@ public class LdapHelper implements Helper {
         validationCount = 0L;
         creationCount = 0L;
         deletionCount = 0L;
-        baseDn = Configuration.getProperty(instance + ".base_dn");
-        basePeopleDn = Configuration.getProperty(instance + ".ou_people") + "," + baseDn;
-        baseGroupDn = Configuration.getProperty(instance + ".ou_group") + "," + baseDn;
+        baseDn = Configuration.getProperty(instanceName + ".base_dn");
+        basePeopleDn = Configuration.getProperty(instanceName + ".ou_people") + "," + baseDn;
+        baseGroupDn = Configuration.getProperty(instanceName + ".ou_group") + "," + baseDn;
         Hashtable env = new Hashtable();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
-        env.put(Context.SECURITY_PRINCIPAL, Configuration.getProperty(instance + ".principal"));
-        env.put(Context.SECURITY_CREDENTIALS, Configuration.getProperty(instance + ".credentials"));
-        adminGroupIdentifiyer = Configuration.getProperty(instance + ".admin.group.id", LdapKeys.ADMIN_GROUP_CN).trim();
-        userIdentifyer = Configuration.getProperty(instance + ".user.id.attribute", LdapKeys.USER_ID_ATTRIBUTE).trim();
-        userObjectClass = Configuration.getProperty(instance + ".user.object.class", LdapKeys.USER_OBJECTCLASS).trim();
-        groupIdentifyer = Configuration.getProperty(instance + ".group.id.attribute", LdapKeys.GROUP_ID_ATTRIBTUE).trim();
-        groupObjectClass = Configuration.getProperty(instance + ".group.object.class", LdapKeys.GROUP_OBJECTCLASS).trim();
-        groupMemberAttribut = Configuration.getProperty(instance + ".group.member.attribute", LdapKeys.GROUP_MEMBER_ATTRIBUTE).trim();
+        env.put(Context.SECURITY_PRINCIPAL, Configuration.getProperty(instanceName + ".principal"));
+        env.put(Context.SECURITY_CREDENTIALS, Configuration.getProperty(instanceName + ".credentials"));
+        adminGroupIdentifiyer = Configuration.getProperty(instanceName + ".admin.group.id", LdapKeys.ADMIN_GROUP_CN).trim();
+        userIdentifyer = Configuration.getProperty(instanceName + ".user.id.attribute", LdapKeys.USER_ID_ATTRIBUTE).trim();
+        userObjectClass = Configuration.getProperty(instanceName + ".user.object.class", LdapKeys.USER_OBJECTCLASS).trim();
+        groupIdentifyer = Configuration.getProperty(instanceName + ".group.id.attribute", LdapKeys.GROUP_ID_ATTRIBTUE).trim();
+        groupObjectClass = Configuration.getProperty(instanceName + ".group.object.class", LdapKeys.GROUP_OBJECTCLASS).trim();
+        groupMemberAttribut = Configuration.getProperty(instanceName + ".group.member.attribute", LdapKeys.GROUP_MEMBER_ATTRIBUTE).trim();
         userObjectClasses = Configuration.getProperty("ldap.user.objectClasses").split(",");
         groupObjectClasses = Configuration.getProperty("ldap.group.objectClasses").split(",");
-        env.put(Context.PROVIDER_URL, Configuration.getProperty(instance + ".url") + "/" + baseDn);
-        if (Configuration.getProperty(instance + ".url").startsWith("ldaps")) {
+        env.put(Context.PROVIDER_URL, Configuration.getProperty(instanceName + ".url") + "/" + baseDn);
+        if (Configuration.getProperty(instanceName + ".url").startsWith("ldaps")) {
             env.put(Context.SECURITY_PROTOCOL, "ssl");
             if (Configuration.getProperty("keystore.path") != null) {
                 env.put("java.naming.ldap.factory.socket", "com.innoq.ldap.ssl.SelfSignedSSLSocketFactory");
                 log.write("Using Keystore from " + Configuration.getProperty("keystore.path") + " for Certificate Validation\n", LdapHelper.class);
-            } else if ("true".equals(Configuration.getProperty(instance + ".disable.cert.validation"))) {
+            } else if ("true".equals(Configuration.getProperty(instanceName + ".disable.cert.validation"))) {
                 env.put("java.naming.ldap.factory.socket", "com.innoq.ldap.ssl.AllowAllSSLSocketFactory");
-                log.write("Disable SSL Cert check for " + instance + "\n", LdapHelper.class);
+                log.write("Disable SSL Cert check for " + instanceName + "\n", LdapHelper.class);
             }
         }
         defaultValues.put("jabberServer", Configuration.getProperty("ldap.jabberServer", LdapKeys.DEFAULT_JABBER_SERVER));
@@ -1142,15 +1178,15 @@ public class LdapHelper implements Helper {
         try {
             ctx = new InitialDirContext(env);
             online = true;
-            log.write("connected to " + instance + "\n", LdapHelper.class);
-            if ("true".equals(Configuration.getProperty(instance + ".ou.autocreate"))) {
+            log.write("connected to " + instanceName + "\n", LdapHelper.class);
+            if ("true".equals(Configuration.getProperty(instanceName + ".ou.autocreate"))) {
                 checkOus();
             }
         } catch (NamingException ex) {
             online = false;
-            log.write("could not connect to " + instance + "\n", LdapHelper.class);
+            log.write("could not connect to " + instanceName + "\n", LdapHelper.class);
             log.write("reason: " + ex.getRootCause().getMessage() + "\n " + ex.getMessage() + "\n", LdapHelper.class);
-            handleNamingException(instance + ": loadProperties", ex);
+            handleNamingException(instanceName + ": loadProperties", ex);
         }
     }
 
@@ -1178,7 +1214,7 @@ public class LdapHelper implements Helper {
                 }
             }
             Hashtable environment = (Hashtable) ctx.getEnvironment().clone();
-            environment.put(Context.PROVIDER_URL, Configuration.getProperty(instance + ".url"));
+            environment.put(Context.PROVIDER_URL, Configuration.getProperty(instanceName + ".url"));
             DirContext dirContext = new InitialDirContext(environment);
             for (String ou : ous) {
                 log.write("checking ou: " + ou + "\n", LdapHelper.class);
@@ -1190,7 +1226,7 @@ public class LdapHelper implements Helper {
             }
             dirContext.close();
         } catch (NamingException ex) {
-            handleNamingException(instance + ": checkOus", ex);
+            handleNamingException(instanceName + ": checkOus", ex);
         }
     }
 
@@ -1207,7 +1243,7 @@ public class LdapHelper implements Helper {
     private void checkDirs() {
         String tmpDir = Configuration.getInstance().getTmpDir();
         String ldapDir = tmpDir + "/ldap";
-        String subFolders[] = {instance + "/avatars"};
+        String subFolders[] = {instanceName + "/avatars"};
         for (String subFolder : subFolders) {
             File aFolder = new File(ldapDir + "/" + subFolder);
             if (!aFolder.exists()) {
@@ -1223,14 +1259,14 @@ public class LdapHelper implements Helper {
         } else if (ne instanceof javax.naming.AuthenticationException) {
             log.write(position + " AuthenticationException !", LdapHelper.class);
         } else {
-            throw new LdapException(instance + ": checkOus", ne);
+            throw new LdapException(instanceName + ": checkOus", ne);
         }
     }
 
     private void handleNamingException(Node node, NamingException ne) {
         if (ne instanceof javax.naming.CommunicationException) {
             this.online = false;
-            log.write(node.getName() + " Instance " + instance + " offline try to re-connect the next time!", LdapHelper.class);
+            log.write(node.getName() + " Instance " + instanceName + " offline try to re-connect the next time!", LdapHelper.class);
         } else if (ne instanceof javax.naming.AuthenticationException) {
             log.write(" AuthenticationException: " + node.toString(), LdapHelper.class);
         } else {

@@ -30,6 +30,7 @@ public class LdapGroup extends LdapNode implements Comparable<LdapGroup> {
     }
 
     /**
+     * @param cn
      * @deprecated Don't use this method any more. This Constructor will use the
      * default LdapHelper instance.
      * @see LdapGroup(String uid, LdapHelper Instance)
@@ -39,9 +40,15 @@ public class LdapGroup extends LdapNode implements Comparable<LdapGroup> {
         this(cn, LdapHelper.getInstance());
     }
 
+    /**
+     * Creates a Group Object Instance within a specific LdapHelper instance.
+     *
+     * @param cn
+     * @param instance
+     */
     public LdapGroup(String cn, LdapHelper instance) {
         super();
-        this.cn = cn;
+        setCn(cn);
         this.name = cn;
         set(instance.getGroupIdentifyer(), cn);
     }

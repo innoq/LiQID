@@ -45,7 +45,10 @@ public class LdapNode implements Node {
      * @return the value of the entry, null if the entry does not exists.
      */
     public String get(String key) {
-        if (getKeys().contains(key)) {
+        if (key != null
+                && attributes != null
+                && getKeys().contains(key)
+                && attributes.get(key) != null) {
             return attributes.get(key).toString().replace(key + ":", "").trim();
         }
         return null;
@@ -145,11 +148,12 @@ public class LdapNode implements Node {
     }
 
     public Set<String> getKeys() {
-        if (keys == null) {
+        if (keys == null
+                && attributes != null) {
             keys = new HashSet<String>();
             NamingEnumeration<String> attrkeys = attributes.getIDs();
             while (attrkeys.hasMoreElements()) {
-                keys.add((String) attrkeys.nextElement());
+                keys.add(attrkeys.nextElement());
             }
         }
         return keys;

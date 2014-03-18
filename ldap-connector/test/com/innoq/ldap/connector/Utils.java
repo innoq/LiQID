@@ -184,4 +184,24 @@ public class Utils {
         sb.append("------------------------------------------------------------------------\n");
         LOG.log(Level.INFO, sb.toString());
     }
+
+    public static void removeTestGroup(LdapGroup g1) {
+        HELPER.rmGroup(g1);
+    }
+
+    public static LdapGroup createTestGroup(String cn) throws Exception {
+        LdapGroup g1 = HELPER.getGroupTemplate(cn);
+        HELPER.setGroup(g1);
+        return g1;
+    }
+    
+    public static LdapUser createTestUser(String uid) throws Exception{
+        LdapUser u1 = HELPER.getUserTemplate(uid);
+        HELPER.setUser(u1);
+        return u1;
+    }
+    
+    public static boolean removeTestUser(LdapUser u1) {
+        return HELPER.rmUser(u1);
+    }
 }

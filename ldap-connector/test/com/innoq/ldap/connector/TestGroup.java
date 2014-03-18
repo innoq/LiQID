@@ -12,6 +12,104 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
+ *//*
+ Copyright (C) 2012 innoQ Deutschland GmbH
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ *//*
+ Copyright (C) 2012 innoQ Deutschland GmbH
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ *//*
+ Copyright (C) 2012 innoQ Deutschland GmbH
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ *//*
+ Copyright (C) 2012 innoQ Deutschland GmbH
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ *//*
+ Copyright (C) 2012 innoQ Deutschland GmbH
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ *//*
+ Copyright (C) 2012 innoQ Deutschland GmbH
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ *//*
+ Copyright (C) 2012 innoQ Deutschland GmbH
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
  */
 package com.innoq.ldap.connector;
 
@@ -88,18 +186,19 @@ public class TestGroup {
 
     @Test
     public void testAddUserToGroup() throws Exception {
-        LdapGroup g1 = (LdapGroup) HELPER.getGroup(CN);
+        LdapGroup g1 = Utils.createTestGroup(CN);
         g1.addUser(testUser1);
         if (HELPER.setGroup(g1)) {
             LOG.log(Level.INFO, "updated Group {0}", CN);
         }
         g1 = (LdapGroup) HELPER.getGroup(CN);
         g1.debug();
+        Utils.removeTestGroup(g1);
     }
 
     @Test
     public void testRemoveUserFromGroup() throws Exception {
-        LdapGroup g1 = (LdapGroup) HELPER.getGroup(CN);
+        LdapGroup g1 = Utils.createTestGroup(CN);
         String[] usernames = {"U1_" + System.currentTimeMillis(), "U2_" + System.currentTimeMillis()};
         if (HELPER.setGroup(g1)) {
             LOG.log(Level.INFO, "updated Group {0}", CN);
@@ -120,6 +219,7 @@ public class TestGroup {
         LOG.log(Level.INFO, "user count Group {0} is {1}", new Object[]{CN, g1.getUsers().size()});
         g1.debug();
         assertTrue(g1.getUsers().size() == (count - 1));
+        Utils.removeTestGroup(g1);
         Utils.removeTestUsers(users);
     }
 
@@ -128,28 +228,45 @@ public class TestGroup {
         testUser2 = HELPER.getUserTemplate("U_" + System.currentTimeMillis());
         testUser2.set("cn", testUser2.getUid());
         HELPER.setUser(testUser2);
-        LdapGroup g1 = (LdapGroup) HELPER.getGroup(CN);
+        LdapGroup g1 = Utils.createTestGroup(CN);
         g1.addUser(testUser1);
         g1.addUser(testUser2);
         HELPER.setGroup(g1);
         g1 = (LdapGroup) HELPER.getGroup(CN);
         LOG.log(Level.INFO, "user count Group {0} is {1}", new Object[]{CN, g1.getUsers().size()});
         assertTrue(g1.getUsers().size() > 2);
+        Utils.removeTestGroup(g1);
     }
 
     @Test
     public void testUpdateGroup() throws Exception {
-        LdapGroup g1 = (LdapGroup) HELPER.getGroup(CN);
+        LdapGroup g1 =Utils.createTestGroup(CN);
         assertNull(g1.get("description"));
         g1.set("description", "Group " + CN);
         HELPER.setGroup(g1);
         g1 = (LdapGroup) HELPER.getGroup(CN);
         assertEquals(g1.get("description"), "Group " + CN);
+        Utils.removeTestGroup(g1);
+    }
+
+    @Test
+    public void testUpdateExistingGroup() throws Exception {
+        LdapGroup g1 = (LdapGroup) HELPER.getGroup("users");
+        LOG.log(Level.INFO, "Group users description: {0}", g1.get("description"));
+        String description = g1.get("description");
+        g1.set("description", description + CN);
+        HELPER.setGroup(g1);
+        g1 = (LdapGroup) HELPER.getGroup("users");
+        assertEquals(g1.get("description"), description + CN);
+        g1.set("description", description);
+        HELPER.setGroup(g1);
+        g1 = (LdapGroup) HELPER.getGroup("users");
+        assertEquals(g1.get("description"), description);
     }
 
     @Test
     public void testUpdateEmptyGroup() throws Exception {
-        LdapGroup g1 = (LdapGroup) HELPER.getGroup(CN);
+        LdapGroup g1 = Utils.createTestGroup(CN);
         int count = g1.getUsers().size();
         LOG.log(Level.INFO, "user count Group {0} is {1}", new Object[]{CN, count});
         g1.debug();
@@ -166,11 +283,12 @@ public class TestGroup {
         LOG.log(Level.INFO, "user count Group {0} is {1}", new Object[]{CN, count});
         g1.debug();
         assertTrue(g1.getUsers().size() == 1);
+        Utils.removeTestGroup(g1);
     }
 
     @Test
-    public void testDeleteGroup() {
-        LdapGroup g1 = (LdapGroup) HELPER.getGroup(CN);
+    public void testDeleteGroup() throws Exception {
+        LdapGroup g1 = Utils.createTestGroup(CN);
         try {
             if (HELPER.rmGroup(g1)) {
                 LOG.log(Level.INFO, "deleted Group {0}", CN);

@@ -33,12 +33,12 @@ public class LdapUser extends LdapNode implements Comparable<LdapUser> {
     private Set<LdapGroup> groups = null;
     private String password = null;
     private File avatar;
-
     public LdapUser() {
         super();
     }
 
     /**
+     * @param uid
      * @deprecated Don't use this method any more. This Constructor will use the
      * default LdapHelper instance.
      * @see LdapUser(String uid, LdapHelper Instance)
@@ -48,9 +48,14 @@ public class LdapUser extends LdapNode implements Comparable<LdapUser> {
         this(uid, LdapHelper.getInstance());
     }
 
+    /**
+     * Creates a User Object Instance within a specific LdapHelper instance.
+     * @param uid
+     * @param instance 
+     */
     public LdapUser(String uid, LdapHelper instance) {
         super();
-        this.cn = uid;
+        setCn(uid);
         this.uid = uid;
         this.name = uid;
         set(instance.getUserIdentifyer(), uid);
