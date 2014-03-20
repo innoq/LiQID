@@ -12,3 +12,7 @@ ldap-connector/nb-configuration.xml
 model/nb-configuration.xml
 
 utils/nb-configuration.xml
+
+*.iml
+
+.idea
