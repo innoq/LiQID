@@ -4,7 +4,8 @@ LDAP innoQ ID Manager
 
 # Abstract
 
-This is Library should help java developers to use LDAP-Directories in a simple way. Without the hazzle of JNDI (Java Naming and Directory Interface).
+This is Library should help java developers to use LDAP-Directories in a simple way.
+Without the hazzle of JNDI (Java Naming and Directory Interface).
 
 # Model
 TBD
@@ -26,64 +27,76 @@ There are 3 possibilities to define the location of this file:
 3. use the Enviroment Variabel LIQID_PROPERTIES to set the location of the properties file.
 
 ## Configuration
-This Lib needs to have some proper Configuration to work. You can use a separate Properties File or you can add the necessary Entries to your existing Java Application Configuration. 
+This Lib needs to have some proper Configuration to work.
+You can use a separate Properties File or you can add the necessary entries to your existing
+Java Application Configuration. 
 
-> $ java -jar ldap-connector-1.3-SNAPSHOT.jar -generate
+    $ java -jar ldap-connector-1.3-SNAPSHOT.jar -generate
 
 will create an example liqid.properties:
 
-<pre><code>
-# example liqid.properties
-# created 22.01.14 21:47
-# created with java -jar ldap-connetor.jar -generate
+    # example liqid.properties
+    # created 22.01.14 21:47
+    # created with java -jar ldap-connetor.jar -generate
 
 # LDAP Settings
 
 ## LDAP Listing, divided by ","
-ldap.listing=ldap1
+
+    ldap.listing=ldap1
+    
 ## Default LDAP (with leading information)
-default.ldap=ldap1
+
+    default.ldap=ldap1
 
 
 ## Mandatory Configuration:
-ldap.user.objectClasses=person
-ldap.group.objectClasses=groupOfUniqueNames
+
+    ldap.user.objectClasses=person
+    ldap.group.objectClasses=groupOfUniqueNames
 
 ### OUs for this LDAP instances
-ldap1.ou_people=ou=users
-ldap1.ou_group=ou=roles
+
+    ldap1.ou_people=ou=users
+    ldap1.ou_group=ou=roles
 
 ### ldap|ldaps :// <host>:<port>
-ldap1.url=ldap://localhost:389
-ldap1.principal=dc=Manager,dc=example,dc=com
-ldap1.credentials=password
-ldap1.base_dn=dc=example,dc=com
+
+    ldap1.url=ldap://localhost:389
+    ldap1.principal=dc=Manager,dc=example,dc=com
+    ldap1.credentials=password
+    ldap1.base_dn=dc=example,dc=com
 
 
 ## Optional Configuration:
 ### Use for Self-Signed Certifcates of use own Keystore
-# ldap1.disable.cert.validation=true
+
+    # ldap1.disable.cert.validation=true
 
 ### User ID Attribute - DEFAULT: uid
-# ldap1.user.id.attribute=cn
+    
+    # ldap1.user.id.attribute=cn
 
 ### User ObjectClass - DEFAULT: person
-# ldap1.user.object.class=person
+
+    # ldap1.user.object.class=person
 
 ### Group ID Attribute - DEFAULT: cn
-# ldap1.group.id.attribute=cn
+
+    # ldap1.group.id.attribute=cn
 
 ### Group ObjectClass - DEFAULT: groupOfNames
-# ldap1.group.object.class=groupOfUniqueNames
+
+    # ldap1.group.object.class=groupOfUniqueNames
 
 ### Group Member Attribute - DEFAULT: member
-# ldap1.group.member.attribute=uniqueMember
+    
+    # ldap1.group.member.attribute=uniqueMember
 
 ### Define your own Keystore here:
-# keystore.password=changeme
-# keystore.path=/Users/philipp/.liqid/liqid.keystore
 
-</code></pre>
+    # keystore.password=changeme
+    # keystore.path=/Users/philipp/.liqid/liqid.keystore
 
 You can change the location of that file manually via
 
@@ -123,7 +136,8 @@ or
         // compares both users
         LOG.log(Level.INFO, "testUser: {0}", testUser);
         LOG.log(Level.INFO, "ldapUser: {0}", ldapUser);
-        assertTrue("should be test: " + testUser + " ldap: " + ldapUser, testUser.equals(ldapUser));
+        assertTrue("should be test: " + testUser + " ldap: " + ldapUser,
+            testUser.equals(ldapUser));
     }
 	
 ### Creating a new User in the LDAP Directory
@@ -141,7 +155,8 @@ or
         assertFalse(user.isEmpty());
     }	
     
-For more Examples have a look into the [JUnit Test Files](https://github.com/innoq/LiQID/tree/master/ldap-connector/test/com/innoq/ldap/connector).
+For more Examples have a look into the
+[JUnit Test Files](https://github.com/innoq/LiQID/tree/master/ldap-connector/test/com/innoq/ldap/connector).
 
 # Legal
 
