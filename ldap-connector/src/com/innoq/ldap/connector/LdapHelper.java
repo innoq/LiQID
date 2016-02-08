@@ -1159,8 +1159,16 @@ public class LdapHelper implements Helper {
         groupIdentifyer = Configuration.getProperty(instanceName + ".group.id.attribute", LdapKeys.GROUP_ID_ATTRIBTUE).trim();
         groupObjectClass = Configuration.getProperty(instanceName + ".group.object.class", LdapKeys.GROUP_OBJECTCLASS).trim();
         groupMemberAttribut = Configuration.getProperty(instanceName + ".group.member.attribute", LdapKeys.GROUP_MEMBER_ATTRIBUTE).trim();
-        userObjectClasses = Configuration.getProperty("ldap.user.objectClasses").split(",");
-        groupObjectClasses = Configuration.getProperty("ldap.group.objectClasses").split(",");
+        String userObjectClassesConfiguration = Configuration.getProperty("ldap.user.objectClasses");
+        if (userObjectClassesConfiguration == null) {
+            throw new IllegalStateException("Configuration 'ldap.user.objectClasses' not found, but is mandatory");
+        }
+        String groupObjectClassesConfiguration = Configuration.getProperty("ldap.group.objectClasses");
+        if (userObjectClassesConfiguration == null) {
+            throw new IllegalStateException("Configuration 'ldap.group.objectClasses' not found, but is mandatory");
+        }
+        userObjectClasses = userObjectClassesConfiguration.split(",");
+        groupObjectClasses = groupObjectClassesConfiguration.split(",");
         env.put(Context.PROVIDER_URL, Configuration.getProperty(instanceName + ".url") + "/" + baseDn);
         if (Configuration.getProperty(instanceName + ".url").startsWith("ldaps")) {
             env.put(Context.SECURITY_PROTOCOL, "ssl");
