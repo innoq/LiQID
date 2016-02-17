@@ -16,3 +16,6 @@ utils/nb-configuration.xml
 *.iml
 
 .idea
+.project
+.settings
+.classpath
