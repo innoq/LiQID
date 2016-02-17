@@ -129,7 +129,6 @@ public class LdapUser extends LdapNode implements Comparable<LdapUser> {
         return true;
     }
 
-    @Override
     public int compareTo(LdapUser t) {
         if (t == null) {
             return 1;

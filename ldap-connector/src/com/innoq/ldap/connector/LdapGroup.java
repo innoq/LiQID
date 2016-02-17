@@ -115,7 +115,6 @@ public class LdapGroup extends LdapNode implements Comparable<LdapGroup> {
         return true;
     }
 
-    @Override
     public int compareTo(LdapGroup t) {
         if (t == null) {
             return 1;
