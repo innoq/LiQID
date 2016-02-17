@@ -1,19 +1,5 @@
 /*
- Copyright (C) 2014 innoQ Deutschland GmbH
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- *//*
- Copyright (C) 2014 innoQ Deutschland GmbH
+ Copyright (C) 2012 innoQ Deutschland GmbH
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -343,7 +329,7 @@ public class LdapHelper implements Helper {
             SearchControls controls = new SearchControls();
             controls.setReturningAttributes(new String[]{LdapKeys.ASTERISK, LdapKeys.MODIFY_TIMESTAMP, LdapKeys.MODIFIERS_NAME});
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            NamingEnumeration results = ctx.search("", query, controls);
+            NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
             queryCount++;
             while (results.hasMore()) {
                 searchResult = (SearchResult) results.next();
@@ -1070,7 +1056,7 @@ public class LdapHelper implements Helper {
                     group.setCn(getAttributeOrNa(attributes, key));
                 }
             }
-            NamingEnumeration members = attributes.get(groupMemberAttribut).getAll();
+            NamingEnumeration<?> members = attributes.get(groupMemberAttribut).getAll();
             while (members.hasMoreElements()) {
                 String memberDN = (String) members.nextElement();
                 member = new LdapUser(getUidForDN(memberDN), this);
@@ -1086,8 +1072,7 @@ public class LdapHelper implements Helper {
     private LdapNode fillObjectClasses(LdapNode node, Attributes attributes) {
         try {
 
-            NamingEnumeration objectClasses = attributes.get(LdapKeys.OBJECT_CLASS).getAll();
-
+        	NamingEnumeration<?> objectClasses = attributes.get(LdapKeys.OBJECT_CLASS).getAll();
             while (objectClasses.hasMoreElements()) {
                 String oc = (String) objectClasses.nextElement();
                 node.addObjectClass(oc.trim());
