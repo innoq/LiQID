@@ -45,6 +45,9 @@ public class LdapNode implements Node {
      * @return the value of the entry, null if the entry does not exists.
      */
     public String get(String key) {
+    	if("dn".equals(key)) {
+    		return dn;
+    	}
         if (key != null
                 && attributes != null
                 && getKeys().contains(key)
@@ -77,7 +80,9 @@ public class LdapNode implements Node {
      * @param value the new value for that entry.
      */
     public void set(String key, String value) {
-        if (value != null
+        if("dn".equals(key)) {
+        	dn = value;
+        } else if (value != null
                 && !value.isEmpty()
                 && key != null
                 && !key.isEmpty()) {

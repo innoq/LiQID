@@ -275,11 +275,10 @@ public class LdapHelper implements Helper {
      *
      * @param uid the uid of the User.
      * @see com.innoq.liqid.model.Node#getName().
-     * @return the Node of that User, either filled (if User was found), or
-     * empty.
+     * @return the Node of that User, either filled (if User was found), or empty.
      */
     public Node getUser(final String uid) {
-        Node user = new LdapUser(uid, this);
+        
         try {
             String query = "(&(objectClass=" + userObjectClass + ")(" + userIdentifyer + "=" + uid + "))";
             SearchResult searchResult;
@@ -287,17 +286,20 @@ public class LdapHelper implements Helper {
             SearchControls controls = new SearchControls();
             controls.setReturningAttributes(new String[]{LdapKeys.ASTERISK, LdapKeys.MODIFY_TIMESTAMP, LdapKeys.MODIFIERS_NAME});
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            NamingEnumeration results = ctx.search("", query, controls);
+            NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
             queryCount++;
             if (results.hasMore()) {
                 searchResult = (SearchResult) results.next();
                 attributes = searchResult.getAttributes();
+                LdapUser user = new LdapUser(uid, this);
+                user.setDn(searchResult.getNameInNamespace());
                 user = fillAttributesInUser((LdapUser) user, attributes);
+                return user;
             }
         } catch (NamingException ex) {
             handleNamingException(instanceName + ":" + uid, ex);
         }
-        return user;
+        return new LdapUser();
     }
 
     /**
@@ -333,9 +335,9 @@ public class LdapHelper implements Helper {
             queryCount++;
             while (results.hasMore()) {
                 searchResult = (SearchResult) results.next();
-                //searchResult
                 attributes = searchResult.getAttributes();
                 LdapUser user = new LdapUser();
+                user.setDn(searchResult.getNameInNamespace());
                 user = fillAttributesInUser(user, attributes);
                 users.add(user);
             }
@@ -350,11 +352,9 @@ public class LdapHelper implements Helper {
      *
      * @param cn the cn of that Group.
      * @see com.innoq.liqid.model.Node#getName().
-     * @return the Node of that Group, either filled (if Group was found), or
-     * empty.
+     * @return the Node of that Group, either filled (if Group was found), or empty.
      */
     public Node getGroup(final String cn) {
-        Node group = new LdapGroup(cn, this);
         try {
             String query = "(&(objectClass=" + groupObjectClass + ")(" + groupIdentifyer + "=" + cn + "))";
             SearchResult searchResult = null;
@@ -362,17 +362,20 @@ public class LdapHelper implements Helper {
             SearchControls controls = new SearchControls();
             controls.setReturningAttributes(new String[]{LdapKeys.ASTERISK, LdapKeys.MODIFY_TIMESTAMP, LdapKeys.MODIFIERS_NAME});
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            NamingEnumeration results = ctx.search("", query, controls);
+            NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
             queryCount++;
             if (results.hasMore()) {
-                searchResult = (SearchResult) results.next();
+                LdapGroup group = new LdapGroup(cn, this);
+            	searchResult = (SearchResult) results.next();
+                group.setDn(searchResult.getNameInNamespace());
                 attributes = searchResult.getAttributes();
                 group = fillAttributesInGroup((LdapGroup) group, attributes);
+                return group;
             }
         } catch (NamingException ex) {
             handleNamingException(instanceName + ":" + cn, ex);
         }
-        return group;
+       return new LdapGroup();
     }
 
     /**
@@ -404,12 +407,13 @@ public class LdapHelper implements Helper {
             SearchControls controls = new SearchControls();
             controls.setReturningAttributes(new String[]{LdapKeys.ASTERISK, LdapKeys.MODIFY_TIMESTAMP, LdapKeys.MODIFIERS_NAME});
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            NamingEnumeration results = ctx.search("", query, controls);
+            NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
             queryCount++;
             while (results.hasMore()) {
                 searchResult = (SearchResult) results.next();
                 attributes = searchResult.getAttributes();
                 LdapGroup group = new LdapGroup();
+                group.setDn(searchResult.getNameInNamespace());
                 group = fillAttributesInGroup(group, attributes);
                 groups.add(group);
             }
@@ -510,7 +514,7 @@ public class LdapHelper implements Helper {
             Attributes attributes = null;
             SearchControls controls = new SearchControls();
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            NamingEnumeration results = ctx.search("", query, controls);
+            NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
             queryCount++;
             while (results.hasMore()) {
                 searchResult = (SearchResult) results.next();
@@ -538,7 +542,7 @@ public class LdapHelper implements Helper {
             Attributes attributes = null;
             SearchControls controls = new SearchControls();
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            NamingEnumeration results = ctx.search("", query, controls);
+            NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
             while (results.hasMore()) {
                 searchResult = (SearchResult) results.next();
                 attributes = searchResult.getAttributes();
@@ -566,7 +570,7 @@ public class LdapHelper implements Helper {
             return false;
         }
         try {
-            Hashtable environment = (Hashtable) ctx.getEnvironment().clone();
+            Hashtable<String,String> environment = (Hashtable<String,String>) ctx.getEnvironment().clone();
             environment.put(Context.SECURITY_PRINCIPAL, sb.toString());
             environment.put(Context.SECURITY_CREDENTIALS, password);
             DirContext dirContext = new InitialDirContext(environment);
@@ -1133,7 +1137,7 @@ public class LdapHelper implements Helper {
         baseDn = Configuration.getProperty(instanceName + ".base_dn");
         basePeopleDn = Configuration.getProperty(instanceName + ".ou_people") + "," + baseDn;
         baseGroupDn = Configuration.getProperty(instanceName + ".ou_group") + "," + baseDn;
-        Hashtable env = new Hashtable();
+        Hashtable<String, String> env = new Hashtable<String, String>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
         env.put(Context.SECURITY_PRINCIPAL, Configuration.getProperty(instanceName + ".principal"));
@@ -1149,7 +1153,7 @@ public class LdapHelper implements Helper {
             throw new IllegalStateException("Configuration 'ldap.user.objectClasses' not found, but is mandatory");
         }
         String groupObjectClassesConfiguration = Configuration.getProperty("ldap.group.objectClasses");
-        if (userObjectClassesConfiguration == null) {
+        if (groupObjectClassesConfiguration == null) {
             throw new IllegalStateException("Configuration 'ldap.group.objectClasses' not found, but is mandatory");
         }
         userObjectClasses = userObjectClassesConfiguration.split(",");
@@ -1194,7 +1198,7 @@ public class LdapHelper implements Helper {
             Attributes attributes = null;
             SearchControls controls = new SearchControls();
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            NamingEnumeration results = ctx.search("", query, controls);
+            NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
             while (results.hasMore()) {
                 searchResult = (SearchResult) results.next();
                 attributes = searchResult.getAttributes();
@@ -1206,7 +1210,8 @@ public class LdapHelper implements Helper {
                     }
                 }
             }
-            Hashtable environment = (Hashtable) ctx.getEnvironment().clone();
+            
+            Hashtable<String, String> environment = (Hashtable<String, String>) ctx.getEnvironment().clone();
             environment.put(Context.PROVIDER_URL, Configuration.getProperty(instanceName + ".url"));
             DirContext dirContext = new InitialDirContext(environment);
             for (String ou : ous) {

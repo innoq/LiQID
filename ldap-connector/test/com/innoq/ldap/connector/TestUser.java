@@ -30,6 +30,8 @@
 package com.innoq.ldap.connector;
 
 import com.innoq.liqid.model.Node;
+import com.innoq.liqid.utils.Configuration;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.junit.Assert.*;
@@ -178,4 +180,25 @@ public class TestUser {
         //Configuration.setProperty("ldap.sshKey", sshKey);
         HELPER.reload();
     }
+    
+    @Test
+    public void testPrincipalDN() {
+    	String principalDN = Configuration.getProperty(HELPER.getInstanceName() + ".principal").trim();
+    	Node principal = HELPER.getPrincipal();
+    	assertEquals(principalDN, principal.get("dn"));
+    	LOGGER.log(Level.INFO, "Node: principal matches: {0} == {1}", new String[]{principalDN, principal.get("dn")});
+    	LdapUser pUser = (LdapUser) principal;
+    	assertEquals(principalDN, pUser.getDn());
+    	LOGGER.log(Level.INFO, "User: principal matches: {0} == {1}", new String[]{principalDN, pUser.getDn()});
+    }
+    
+    @Test
+    public void testUserDN() throws Exception {
+        LdapUser testUser = Utils.createTestUser(UID);
+        LdapUser ldapUser = (LdapUser) HELPER.getUser(UID);
+        assertEquals(testUser.getDn(), ldapUser.getDn());
+    	LOGGER.log(Level.INFO, "User getDN(): User matches: {0} == {1}", new String[]{testUser.getDn(), ldapUser.getDn()});
+        assertEquals(testUser.get("dn"), ldapUser.get("dn"));
+    	LOGGER.log(Level.INFO, "User get(\"dn\"): User matches: {0} == {1}", new String[]{testUser.get("dn"), ldapUser.get("dn")});
+    }    
 }
