@@ -23,7 +23,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.innoq.liqid</groupId>
     <artifactId>liqid-parent</artifactId>
-    <version>1.6-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>LiQID</description>
     <name>LiQID</name>
@@ -32,8 +32,7 @@
         <connection>scm:git:git@github.com:innoq/LiQID.git</connection>
         <developerConnection>scm:git:git@github.com:innoq/LiQID.git</developerConnection>
         <url>https://github.com/innoq/LiQID</url>
-      <tag>HEAD</tag>
-  </scm>
+    </scm>
     <issueManagement>
         <system>GitHub</system>
         <url>https://github.com/innoq/LiQID/issues</url>
