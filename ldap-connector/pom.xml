@@ -19,12 +19,12 @@
     <parent>
         <groupId>com.innoq.liqid</groupId>
         <artifactId>liqid-parent</artifactId>
-        <version>1.5-SNAPSHOT</version>
+        <version>1.5</version>
     </parent>
     <groupId>com.innoq.liqid</groupId>
     <artifactId>ldap-connector</artifactId>
     <packaging>jar</packaging>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5</version>
     <name>LiQID LDAP-connector</name>
     <dependencies>
         <dependency>
