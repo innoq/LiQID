@@ -1,103 +1,5 @@
 /*
- Copyright (C) 2012 innoQ Deutschland GmbH
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- *//*
- Copyright (C) 2012 innoQ Deutschland GmbH
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- *//*
- Copyright (C) 2012 innoQ Deutschland GmbH
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- *//*
- Copyright (C) 2012 innoQ Deutschland GmbH
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- *//*
- Copyright (C) 2012 innoQ Deutschland GmbH
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- *//*
- Copyright (C) 2012 innoQ Deutschland GmbH
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- *//*
- Copyright (C) 2012 innoQ Deutschland GmbH
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- *//*
- Copyright (C) 2012 innoQ Deutschland GmbH
+ Copyright (C) 2016 innoQ Deutschland GmbH
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -116,6 +18,7 @@ package com.innoq.ldap.connector;
 import com.innoq.liqid.model.Node;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
@@ -209,10 +112,12 @@ public class TestGroup {
         }
         HELPER.setGroup(g1);
         g1 = (LdapGroup) HELPER.getGroup(CN);
-        int count = g1.getUsers().size();
-        LOG.log(Level.INFO, "user count Group {0} is {1}", new Object[]{CN, count});
+        int count;
+        count = g1.getUsers().size();
+        LOG.log(Level.INFO, "getUsers() count Group {0} is {1}", new Object[]{CN, count});
         g1.debug();
         assertTrue(count > 1);
+        
         g1.rmUser(users.get(0));
         HELPER.setGroup(g1);
         g1 = (LdapGroup) HELPER.getGroup(CN);
@@ -235,6 +140,12 @@ public class TestGroup {
         g1 = (LdapGroup) HELPER.getGroup(CN);
         LOG.log(Level.INFO, "user count Group {0} is {1}", new Object[]{CN, g1.getUsers().size()});
         assertTrue(g1.getUsers().size() > 2);
+        
+        Set<Node> members = HELPER.getUsersForGroup(g1);
+        LOG.log(Level.INFO, "getUsersForGroup() count Group {0} is {1}", new Object[]{CN, members.size()});
+        g1.debug();
+        assertTrue(members.size() > 2);
+        
         Utils.removeTestGroup(g1);
     }
 
