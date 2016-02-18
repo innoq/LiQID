@@ -149,26 +149,26 @@ public class LdapHelper implements Helper {
      * @return true if the user was set correct, false otherwise.
      * @throws Exception
      */
-    public boolean setUserAsUser(Node node, String uid, String password) throws Exception {
-        boolean status = false;
-        StringBuilder sb = new StringBuilder(userIdentifyer + "=").append(uid).append(",");
-        sb.append(Configuration.getProperty(instanceName + ".ou_people")).append(",");
-        sb.append(baseDn);
-        if (uid == null || uid.isEmpty() || password == null || password.isEmpty()) {
-            return false;
-        }
-        try {
-            Hashtable environment = (Hashtable) ctx.getEnvironment().clone();
-            environment.put(Context.SECURITY_PRINCIPAL, sb.toString());
-            environment.put(Context.SECURITY_CREDENTIALS, password);
-            DirContext dirContext = new InitialDirContext(environment);
-            status = setUserInContext(dirContext, node);
-            dirContext.close();
-        } catch (NamingException ex) {
-            handleNamingException("NamingException " + ex.getLocalizedMessage() + "\n", ex);
-        }
-        return status;
-    }
+	public boolean setUserAsUser(Node node, String uid, String password) throws Exception {
+		boolean status = false;
+		StringBuilder sb = new StringBuilder(userIdentifyer + "=").append(uid).append(",");
+		sb.append(Configuration.getProperty(instanceName + ".ou_people")).append(",");
+		sb.append(baseDn);
+		if (uid == null || uid.isEmpty() || password == null || password.isEmpty()) {
+			return false;
+		}
+		try {
+			Hashtable<String, String> environment = (Hashtable<String, String>) ctx.getEnvironment().clone();
+			environment.put(Context.SECURITY_PRINCIPAL, sb.toString());
+			environment.put(Context.SECURITY_CREDENTIALS, password);
+			DirContext dirContext = new InitialDirContext(environment);
+			status = setUserInContext(dirContext, node);
+			dirContext.close();
+		} catch (NamingException ex) {
+			handleNamingException("NamingException " + ex.getLocalizedMessage() + "\n", ex);
+		}
+		return status;
+	}
 
     /**
      * Deletes an LDAP-User.
@@ -178,6 +178,9 @@ public class LdapHelper implements Helper {
      */
     public boolean rmUser(final Node node) {
         LdapUser user = (LdapUser) node;
+        if(node == null) {
+        	return false;
+        }
         try {
             deletionCount++;
             ctx.unbind(getOuForNode(user));
@@ -460,11 +463,7 @@ public class LdapHelper implements Helper {
      * @return the uid for that DN.
      */
     public String getUidForDN(final String dn) {
-        if (dn.startsWith(userIdentifyer + "=")) {
-            return dn.replace("," + basePeopleDn, "").replace(userIdentifyer + "=", "").trim();
-        } else {
-            return dn.replace("," + baseDn, "").replace("cn=", "").trim();
-        }
+    	return getIdentifyerFromDN(dn, userIdentifyer);
     }
 
     /**
@@ -488,6 +487,9 @@ public class LdapHelper implements Helper {
      * @return the DN of the OU of that node.
      */
     public String getOuForNode(final LdapNode node) {
+    	if(node == null) {
+    		return null;
+    	}
         if (node instanceof LdapGroup) {
             String ouGroup = Configuration.getProperty(instanceName + ".ou_group");
             return String.format(LdapKeys.GROUP_CN_FORMAT, groupIdentifyer, node.get(groupIdentifyer), ouGroup);
@@ -533,26 +535,30 @@ public class LdapHelper implements Helper {
      * @param group the given Group.
      * @return Users as a Set of Nodes for that Group.
      */
-    public Set<Node> getUsersForGroup(Node group) {
-        Set<Node> users = new TreeSet<Node>();
-        try {
-            // TODO we need to find some solution for memberOf overlay.
-            String query = "(&(objectClass=" + userObjectClass + ") (memberOf=" + ((LdapGroup) group).getDn() + "))";
-            SearchResult searchResult = null;
-            Attributes attributes = null;
-            SearchControls controls = new SearchControls();
-            controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
-            while (results.hasMore()) {
-                searchResult = (SearchResult) results.next();
-                attributes = searchResult.getAttributes();
-                users.add(getUser(getAttributeOrNa(attributes, userIdentifyer)));
-            }
-        } catch (NamingException ex) {
-            handleNamingException(group, ex);
-        }
-        return users;
-    }
+	public Set<Node> getUsersForGroup(Node group) {
+		Set<Node> users = new TreeSet<Node>();
+		try {
+			String query = "(" + groupIdentifyer + "=" + group.getName() + ")";
+			SearchResult searchResult = null;
+			Attributes attributes = null;
+			SearchControls controls = new SearchControls();
+			controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+			NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
+			while (results.hasMore()) {
+				searchResult = (SearchResult) results.next();
+				attributes = searchResult.getAttributes();
+				NamingEnumeration<?> members = attributes.get(groupMemberAttribut).getAll();
+				while (members.hasMoreElements()) {
+					String memberDN = (String) members.nextElement();
+					String uid = getIdentifyerFromDN(memberDN, userIdentifyer);
+					users.add(getUser(uid));
+				}
+			}
+		} catch (NamingException ex) {
+			handleNamingException(group, ex);
+		}
+		return users;
+	}
 
     /**
      * We use this method to check the given credentials to be valid. To prevent
@@ -731,6 +737,26 @@ public class LdapHelper implements Helper {
         return this.instanceName;
     }
 
+    /**
+     * Return the Value of the given Identifyer from a given dn.
+     * @param dn of the entry.
+     * @param identifyer e.g. uid or cn
+     * @return the value of the identifyer.
+     */
+	public static String getIdentifyerFromDN(String dn, String identifyer) {
+		if (dn != null && identifyer != null) {
+			String[] parts = dn.split(",");
+			String[] kvs;
+			for (String part : parts) {
+				kvs = part.trim().split("=");
+				if (identifyer.equals((kvs[0].trim()))) {
+					return kvs[1].trim();
+				}
+			}
+		}
+		return dn;
+	}
+    
     private boolean setUserInContext(DirContext ldapCtx, Node node) throws NamingException {
         LdapUser newLdapUser = (LdapUser) node;
         LdapUser oldLdapUser = (LdapUser) getUser(newLdapUser.getUid());
