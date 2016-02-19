@@ -463,7 +463,7 @@ public class LdapHelper implements Helper {
      * @return the uid for that DN.
      */
     public String getUidForDN(final String dn) {
-    	return getIdentifyerFromDN(dn, userIdentifyer);
+    	return getIdentifyerValueFromDN(dn);
     }
 
     /**
@@ -518,10 +518,13 @@ public class LdapHelper implements Helper {
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
             queryCount++;
+            Node group;
             while (results.hasMore()) {
                 searchResult = (SearchResult) results.next();
                 attributes = searchResult.getAttributes();
-                groups.add(getGroup(getAttributeOrNa(attributes, groupIdentifyer)));
+                group = getGroup(getAttributeOrNa(attributes, groupIdentifyer));
+                group.setDn(searchResult.getNameInNamespace());
+                groups.add(group);
             }
         } catch (NamingException ex) {
             handleNamingException(user, ex);
@@ -544,14 +547,17 @@ public class LdapHelper implements Helper {
 			SearchControls controls = new SearchControls();
 			controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 			NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
+			Node user;
 			while (results.hasMore()) {
 				searchResult = (SearchResult) results.next();
 				attributes = searchResult.getAttributes();
 				NamingEnumeration<?> members = attributes.get(groupMemberAttribut).getAll();
 				while (members.hasMoreElements()) {
 					String memberDN = (String) members.nextElement();
-					String uid = getIdentifyerFromDN(memberDN, userIdentifyer);
-					users.add(getUser(uid));
+					String uid = getIdentifyerValueFromDN(memberDN);
+					user = getUser(uid);
+					user.setDn(memberDN);
+					users.add(user);
 				}
 			}
 		} catch (NamingException ex) {
@@ -740,23 +746,37 @@ public class LdapHelper implements Helper {
     /**
      * Return the Value of the given Identifyer from a given dn.
      * @param dn of the entry.
-     * @param identifyer e.g. uid or cn
-     * @return the value of the identifyer.
+     * @return the identifyer.
      */
-	public static String getIdentifyerFromDN(String dn, String identifyer) {
-		if (dn != null && identifyer != null) {
-			String[] parts = dn.split(",");
+	public static String getIdentifyerFromDN(String dn) {
+		if (dn != null) {
+			String[] parts = dn.trim().split(",");
 			String[] kvs;
-			for (String part : parts) {
-				kvs = part.trim().split("=");
-				if (identifyer.equals((kvs[0].trim()))) {
-					return kvs[1].trim();
-				}
+			if(parts.length > 0 && parts[0].contains("="))  {
+				kvs = parts[0].trim().split("=");
+				return kvs.length > 0 ? kvs[0] : null;
 			}
 		}
-		return dn;
+		return null;
 	}
-    
+	
+    /**
+     * Return the Value of the given Identifyer from a given dn.
+     * @param dn of the entry.
+     * @return the value of the identifyer.
+     */
+	public static String getIdentifyerValueFromDN(String dn) {
+		if (dn != null) {
+			String[] parts = dn.trim().split(",");
+			String[] kvs;
+			if(parts.length > 0 && parts[0].contains("="))  {
+				kvs = parts[0].trim().split("=");
+				return kvs.length > 0 ? kvs[1] : null;
+			}
+		}
+		return null;
+	}
+	
     private boolean setUserInContext(DirContext ldapCtx, Node node) throws NamingException {
         LdapUser newLdapUser = (LdapUser) node;
         LdapUser oldLdapUser = (LdapUser) getUser(newLdapUser.getUid());

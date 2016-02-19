@@ -38,10 +38,12 @@ public class TestHelper {
 				"dc=innoq,dc=com" 
 				};
 		String[] outputs = { "admin", "U_1455717494839", "People", "Group", "innoq" };
-		String result;
+		String value, identifyer;
 		for (int count = 0; count < outputs.length; count++) {
-			result = LdapHelper.getIdentifyerFromDN(inputs[count], keys[count]);
-			assertEquals(result, outputs[count]);
+			value = LdapHelper.getIdentifyerValueFromDN(inputs[count]);
+			identifyer = LdapHelper.getIdentifyerFromDN(inputs[count]);
+			assertEquals(value, outputs[count]);
+			assertEquals(identifyer, keys[count]);			
 		}
 	}
 }

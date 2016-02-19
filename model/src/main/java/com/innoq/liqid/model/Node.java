@@ -24,6 +24,10 @@ import java.util.Set;
 public interface Node {
 
     public String getName();
+    
+    public String getDn();
+    
+    public void setDn(String dn);
 
     public String get(String key);
 
