@@ -38,7 +38,7 @@ public class KeyValueStore implements Serializable {
     private Map<String, String> storage;
 
     public KeyValueStore() {
-        storage = new HashMap<String, String>();
+        storage = new HashMap<>();
     }
 
     public void set(String key, String value) {

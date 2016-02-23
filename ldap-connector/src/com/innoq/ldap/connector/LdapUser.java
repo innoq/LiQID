@@ -63,7 +63,7 @@ public class LdapUser extends LdapNode implements Comparable<LdapUser> {
 
     public Set<LdapGroup> getGroups() {
         if (this.groups == null) {
-            this.groups = new TreeSet<LdapGroup>();
+            this.groups = new TreeSet<>();
             for (Node n : LdapHelper.getInstance().getGroupsForUser(this)) {
                 this.groups.add((LdapGroup) n);
             }

@@ -61,7 +61,7 @@ public class LdapNode implements Node {
      * Basic Constructor.
      */
     public LdapNode() {
-        objectClasses = new HashSet<String>();
+        objectClasses = new HashSet<>();
     }
 
     /**
@@ -155,7 +155,7 @@ public class LdapNode implements Node {
     public Set<String> getKeys() {
         if (keys == null
                 && attributes != null) {
-            keys = new HashSet<String>();
+            keys = new HashSet<>();
             NamingEnumeration<String> attrkeys = attributes.getIDs();
             while (attrkeys.hasMoreElements()) {
                 keys.add(attrkeys.nextElement());
