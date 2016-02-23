@@ -329,8 +329,8 @@ public class LdapHelper implements Helper {
         Set<Node> users = new TreeSet<Node>();
         String query = qb.getQuery();
         try {
-            SearchResult searchResult = null;
-            Attributes attributes = null;
+            SearchResult searchResult;
+            Attributes attributes;
             SearchControls controls = new SearchControls();
             controls.setReturningAttributes(new String[]{LdapKeys.ASTERISK, LdapKeys.MODIFY_TIMESTAMP, LdapKeys.MODIFIERS_NAME});
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -360,8 +360,8 @@ public class LdapHelper implements Helper {
     public Node getGroup(final String cn) {
         try {
             String query = "(&(objectClass=" + groupObjectClass + ")(" + groupIdentifyer + "=" + cn + "))";
-            SearchResult searchResult = null;
-            Attributes attributes = null;
+            SearchResult searchResult;
+            Attributes attributes;
             SearchControls controls = new SearchControls();
             controls.setReturningAttributes(new String[]{LdapKeys.ASTERISK, LdapKeys.MODIFY_TIMESTAMP, LdapKeys.MODIFIERS_NAME});
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -405,8 +405,8 @@ public class LdapHelper implements Helper {
         Set<Node> groups = new TreeSet<Node>();
         String query = qb.getQuery();
         try {
-            SearchResult searchResult = null;
-            Attributes attributes = null;
+            SearchResult searchResult;
+            Attributes attributes;
             SearchControls controls = new SearchControls();
             controls.setReturningAttributes(new String[]{LdapKeys.ASTERISK, LdapKeys.MODIFY_TIMESTAMP, LdapKeys.MODIFIERS_NAME});
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -512,8 +512,8 @@ public class LdapHelper implements Helper {
         Set<Node> groups = new TreeSet<Node>();
         try {
             String query = "(& (objectClass=" + groupObjectClass + ") (" + groupMemberAttribut + "=" + ((LdapUser) user).getDn() + "))";
-            SearchResult searchResult = null;
-            Attributes attributes = null;
+            SearchResult searchResult;
+            Attributes attributes;
             SearchControls controls = new SearchControls();
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
@@ -542,8 +542,8 @@ public class LdapHelper implements Helper {
 		Set<Node> users = new TreeSet<Node>();
 		try {
 			String query = "(" + groupIdentifyer + "=" + group.getName() + ")";
-			SearchResult searchResult = null;
-			Attributes attributes = null;
+			SearchResult searchResult;
+			Attributes attributes;
 			SearchControls controls = new SearchControls();
 			controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 			NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
@@ -1240,8 +1240,8 @@ public class LdapHelper implements Helper {
         try {
             String query = "(objectClass=organizationalUnit)";
             String ouAttribute;
-            SearchResult searchResult = null;
-            Attributes attributes = null;
+            SearchResult searchResult;
+            Attributes attributes;
             SearchControls controls = new SearchControls();
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
