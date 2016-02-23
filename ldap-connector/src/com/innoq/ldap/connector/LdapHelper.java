@@ -1235,7 +1235,7 @@ public class LdapHelper implements Helper {
 
     private void checkOus() {
         log.write("checking Organisation Units\n", LdapHelper.class);
-        String ous[] = {basePeopleDn, baseGroupDn};
+        String[] ous = {basePeopleDn, baseGroupDn};
         List<String> exists = new ArrayList<String>();
         try {
             String query = "(objectClass=organizationalUnit)";
@@ -1287,7 +1287,7 @@ public class LdapHelper implements Helper {
     private void checkDirs() {
         String tmpDir = Configuration.getInstance().getTmpDir();
         String ldapDir = tmpDir + "/ldap";
-        String subFolders[] = {instanceName + "/avatars"};
+        String[] subFolders = {instanceName + "/avatars"};
         for (String subFolder : subFolders) {
             File aFolder = new File(ldapDir + "/" + subFolder);
             if (!aFolder.exists()) {
