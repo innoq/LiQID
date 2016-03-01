@@ -23,7 +23,7 @@ import java.util.TreeSet;
  */
 public class LdapGroup extends LdapNode implements Comparable<LdapGroup> {
 
-    private Set<LdapUser> users = new TreeSet<LdapUser>();
+    private Set<LdapUser> users = new TreeSet<>();
 
     public LdapGroup() {
         super();

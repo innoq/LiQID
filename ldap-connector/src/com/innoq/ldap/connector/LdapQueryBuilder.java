@@ -25,7 +25,7 @@ import java.util.TreeMap;
 
 public class LdapQueryBuilder implements QueryBuilder {
 
-    private Map<String, String> elements = new TreeMap<String, String>();
+    private Map<String, String> elements = new TreeMap<>();
 
     /**
      * {@inheritDoc}
