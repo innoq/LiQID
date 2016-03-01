@@ -38,10 +38,11 @@ public class LdapUser extends LdapNode implements Comparable<LdapUser> {
     }
 
     /**
-     * @param uid
+     *  Creates a User Object Instance.
+     * @param uid the uid of the User.
      * @deprecated Don't use this method any more. This Constructor will use the
      * default LdapHelper instance.
-     * @see LdapUser(String uid, LdapHelper Instance)
+     * @see #LdapUser(String uid, LdapHelper Instance)
      */
     @Deprecated
     public LdapUser(String uid) {
@@ -50,8 +51,8 @@ public class LdapUser extends LdapNode implements Comparable<LdapUser> {
 
     /**
      * Creates a User Object Instance within a specific LdapHelper instance.
-     * @param uid
-     * @param instance 
+     * @param uid the uid of the User.
+     * @param instance the LdapHelper instance 
      */
     public LdapUser(String uid, LdapHelper instance) {
         super();

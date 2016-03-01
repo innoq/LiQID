@@ -30,10 +30,10 @@ public class LdapGroup extends LdapNode implements Comparable<LdapGroup> {
     }
 
     /**
-     * @param cn
+     * @param cn common name
      * @deprecated Don't use this method any more. This Constructor will use the
      * default LdapHelper instance.
-     * @see LdapGroup(String uid, LdapHelper Instance)
+     * see LdapGroup(String uid, LdapHelper Instance)
      */
     @Deprecated
     public LdapGroup(String cn) {
@@ -43,8 +43,8 @@ public class LdapGroup extends LdapNode implements Comparable<LdapGroup> {
     /**
      * Creates a Group Object Instance within a specific LdapHelper instance.
      *
-     * @param cn
-     * @param instance
+     * @param cn the common name
+     * @param instance the LdapHelper instance
      */
     public LdapGroup(String cn, LdapHelper instance) {
         super();
@@ -65,7 +65,7 @@ public class LdapGroup extends LdapNode implements Comparable<LdapGroup> {
     /**
      * Adds an user to the group.
      *
-     * @param user
+     * @param user the user to be added
      */
     public void addUser(LdapUser user) {
         this.users.add(user);
@@ -74,7 +74,7 @@ public class LdapGroup extends LdapNode implements Comparable<LdapGroup> {
     /**
      * Removes an user from the group.
      *
-     * @param user
+     * @param user the user to be removed
      */
     public void rmUser(LdapUser user) {
         this.users.remove(user);

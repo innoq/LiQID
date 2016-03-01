@@ -91,9 +91,9 @@ public class LdapNode implements Node {
     }
 
     /**
-     * Returns all BasicAttributes of that Node
+     * Returns all BasicAttributes of that Node.
      *
-     * @see javax.naming.directory.BasicAttributes.
+     * see javax.naming.directory.BasicAttributes.
      * @return all BasicAttributes.
      */
     public BasicAttributes getAttributes() {

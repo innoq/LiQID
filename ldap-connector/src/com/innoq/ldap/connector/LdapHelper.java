@@ -85,7 +85,7 @@ public class LdapHelper implements Helper {
     /**
      * Returns a new Instance of LdapHelper.
      *
-     * @param instance
+     * @param instance the identifyer of the LDAP Instance (e.g. ldap1)
      * @return a new Instance.
      */
     public static LdapHelper getInstance(String instance) {
@@ -113,7 +113,7 @@ public class LdapHelper implements Helper {
     /**
      * Returns an Instance of the LdapHelper.
      *
-     * @param instance
+     * @param instance the identifyer of the LDAP Instance (e.g. ldap1)
      */
     public LdapHelper(String instance) {
         this.instanceName = instance;
@@ -133,7 +133,7 @@ public class LdapHelper implements Helper {
      * Writes the modifications on an user object back to the LDAP.
      *
      * @return true if the user was set correct, false otherwise.
-     * @throws java.lang.Exception
+     * @throws java.lang.Exception if adding Node fails.
      */
     public boolean setUser(final Node node) throws Exception {
         return setUserInContext(ctx, node);
@@ -143,11 +143,11 @@ public class LdapHelper implements Helper {
      * Writes the modifications on an user object back to the LDAP using a
      * specific context.
      *
-     * @param node
-     * @param uid
-     * @param password
+     * @param node the LDAP Node with User Content.
+     * @param uid the uid of the User that adds the Node.
+     * @param password the password of the User that adds the Node.
      * @return true if the user was set correct, false otherwise.
-     * @throws Exception
+     * @throws Exception if adding a User fails.
      */
 	public boolean setUserAsUser(Node node, String uid, String password) throws Exception {
 		boolean status = false;
@@ -214,7 +214,7 @@ public class LdapHelper implements Helper {
      *
      * @param node of the LDAP-Group to be set.
      * @return true if the Group was added/updated, otherwise false.
-     * @throws Exception
+     * @throws Exception if adding a Group fails.
      */
     public boolean setGroup(Node node) throws Exception {
         LdapGroup newLdapGroup = (LdapGroup) node;
@@ -277,7 +277,7 @@ public class LdapHelper implements Helper {
      * Returns an LDAP-User.
      *
      * @param uid the uid of the User.
-     * @see com.innoq.liqid.model.Node#getName().
+     * @see com.innoq.liqid.model.Node#getName
      * @return the Node of that User, either filled (if User was found), or empty.
      */
     public Node getUser(final String uid) {
@@ -354,7 +354,7 @@ public class LdapHelper implements Helper {
      * Returns a LDAP-Group.
      *
      * @param cn the cn of that Group.
-     * @see com.innoq.liqid.model.Node#getName().
+     * @see com.innoq.liqid.model.Node#getName()
      * @return the Node of that Group, either filled (if Group was found), or empty.
      */
     public Node getGroup(final String cn) {
@@ -430,7 +430,6 @@ public class LdapHelper implements Helper {
      * Returns the LDAP-Principal as a LdapUser.
      *
      * @return the Principal of that instanceName as a Node
-     * @see com.innoq.liqid.model.Node.
      */
     public Node getPrincipal() {
         if (principal == null) {
