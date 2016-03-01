@@ -14,10 +14,8 @@
 		<artifactId>liqid-parent</artifactId>
 		<version>1.7-SNAPSHOT</version>
 	</parent>
-	<groupId>com.innoq.liqid</groupId>
 	<artifactId>ldap-connector</artifactId>
 	<packaging>jar</packaging>
-	<version>1.7-SNAPSHOT</version>
 	<name>LiQID LDAP-connector</name>
 	<dependencies>
 		<dependency>
