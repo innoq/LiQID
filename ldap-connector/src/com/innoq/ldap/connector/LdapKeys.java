@@ -17,6 +17,8 @@ package com.innoq.ldap.connector;
 
 public class LdapKeys {
 
+	private LdapKeys() {}
+	
     public static final String USER_OBJECTCLASS = "person";
     public static final String ASTERISK = "*";
     public static final String OWNER = "owner";

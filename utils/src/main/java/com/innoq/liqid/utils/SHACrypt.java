@@ -27,6 +27,8 @@ import org.apache.commons.codec.binary.Base64;
  */
 public final class SHACrypt {
 
+	private SHACrypt() {}
+	
     public static String encrypt(final String plaintext) {
         MessageDigest md = null;
         try {
@@ -39,7 +41,7 @@ public final class SHACrypt {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e.getMessage());
         }
-        byte raw[] = md.digest();
+        byte[] raw = md.digest();
         return Base64.encodeBase64String(raw);
     }
 }
