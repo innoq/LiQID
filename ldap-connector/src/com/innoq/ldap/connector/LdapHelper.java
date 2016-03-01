@@ -67,8 +67,8 @@ public class LdapHelper implements Helper {
     private String userObjectClass;
     private String[] userObjectClasses;
     private String[] groupObjectClasses;
-    private Map<String, String> defaultValues = new HashMap<String, String>();
-    private static Map<String, LdapHelper> helpers = new HashMap<String, LdapHelper>();
+    private Map<String, String> defaultValues = new HashMap<>();
+    private static Map<String, LdapHelper> helpers = new HashMap<>();
     private boolean online = false;
     private final String instanceName;
     private long queryCount;
@@ -326,7 +326,7 @@ public class LdapHelper implements Helper {
      * {@inheritDoc}
      */
     public Set<Node> findUsers(QueryBuilder qb) {
-        Set<Node> users = new TreeSet<Node>();
+        Set<Node> users = new TreeSet<>();
         String query = qb.getQuery();
         try {
             SearchResult searchResult;
@@ -402,7 +402,7 @@ public class LdapHelper implements Helper {
      * {@inheritDoc}
      */
     public Set<Node> findGroups(QueryBuilder qb) {
-        Set<Node> groups = new TreeSet<Node>();
+        Set<Node> groups = new TreeSet<>();
         String query = qb.getQuery();
         try {
             SearchResult searchResult;
@@ -509,7 +509,7 @@ public class LdapHelper implements Helper {
      * @return Groups as a Set of Nodes for that User.
      */
     public Set<Node> getGroupsForUser(Node user) {
-        Set<Node> groups = new TreeSet<Node>();
+        Set<Node> groups = new TreeSet<>();
         try {
             String query = "(& (objectClass=" + groupObjectClass + ") (" + groupMemberAttribut + "=" + ((LdapUser) user).getDn() + "))";
             SearchResult searchResult;
@@ -539,7 +539,7 @@ public class LdapHelper implements Helper {
      * @return Users as a Set of Nodes for that Group.
      */
 	public Set<Node> getUsersForGroup(Node group) {
-		Set<Node> users = new TreeSet<Node>();
+		Set<Node> users = new TreeSet<>();
 		try {
 			String query = "(" + groupIdentifyer + "=" + group.getName() + ")";
 			SearchResult searchResult;
@@ -824,9 +824,9 @@ public class LdapHelper implements Helper {
     }
 
     private ModificationItem[] buildModificationsForGroup(final LdapGroup newLdapGroup, final LdapGroup oldLdapGroup) {
-        List<String> mods = new ArrayList<String>();
-        List<String> adds = new ArrayList<String>();
-        List<String> dels = new ArrayList<String>();
+        List<String> mods = new ArrayList<>();
+        List<String> adds = new ArrayList<>();
+        List<String> dels = new ArrayList<>();
         Attributes attrs = new BasicAttributes();
         for (String key : newLdapGroup.getKeys()) {
             if (!groupMemberAttribut.equals(key) && !LdapKeys.OBJECT_CLASS.equals(key)) {
@@ -852,7 +852,7 @@ public class LdapHelper implements Helper {
 
         attrs = filterForNullAttributes(attrs);
 
-        List<ModificationItem> miList = new ArrayList<ModificationItem>();
+        List<ModificationItem> miList = new ArrayList<>();
         miList = buildObjectClassChangeSets(miList, oldLdapGroup, newLdapGroup);
         miList = buildMiListForGroup(miList, attrs, mods, adds, dels);
         miList = buildMemberChangeSets(miList, oldLdapGroup, newLdapGroup);
@@ -922,9 +922,9 @@ public class LdapHelper implements Helper {
     }
 
     private ModificationItem[] buildModificationsForEntry(final LdapEntry newLdapEntry, final LdapEntry oldLdapEntry) {
-        List<String> mods = new ArrayList<String>();
-        List<String> adds = new ArrayList<String>();
-        List<String> dels = new ArrayList<String>();
+        List<String> mods = new ArrayList<>();
+        List<String> adds = new ArrayList<>();
+        List<String> dels = new ArrayList<>();
         Attributes attrs = new BasicAttributes();
         for (String key : newLdapEntry.getKeys()) {
             if (!LdapKeys.OBJECT_CLASS.equals(key)) {
@@ -945,7 +945,7 @@ public class LdapHelper implements Helper {
             }
         }
         attrs = filterForNullAttributes(attrs);
-        List<ModificationItem> miList = new ArrayList<ModificationItem>();
+        List<ModificationItem> miList = new ArrayList<>();
         miList = buildObjectClassChangeSets(miList, oldLdapEntry, newLdapEntry);
         miList = buildMiListForEntry(miList, attrs, mods, adds, dels);
         int c = 0;
@@ -958,9 +958,9 @@ public class LdapHelper implements Helper {
     }
 
     private ModificationItem[] buildModificationsForUser(final LdapUser newLdapUser, final LdapUser oldLdapUser) {
-        List<String> mods = new ArrayList<String>();
-        List<String> adds = new ArrayList<String>();
-        List<String> dels = new ArrayList<String>();
+        List<String> mods = new ArrayList<>();
+        List<String> adds = new ArrayList<>();
+        List<String> dels = new ArrayList<>();
         Attributes attrs = new BasicAttributes();
         for (String key : newLdapUser.getKeys()) {
             if (!LdapKeys.OBJECT_CLASS.equals(key)) {
@@ -982,7 +982,7 @@ public class LdapHelper implements Helper {
         }
 
         attrs = filterForNullAttributes(attrs);
-        List<ModificationItem> miList = new ArrayList<ModificationItem>();
+        List<ModificationItem> miList = new ArrayList<>();
         miList = buildObjectClassChangeSets(miList, oldLdapUser, newLdapUser);
         miList = buildMiListForUser(miList, attrs, mods, adds, dels);
         if (newLdapUser.getPassword() != null) {
@@ -1183,7 +1183,7 @@ public class LdapHelper implements Helper {
         baseDn = Configuration.getProperty(instanceName + ".base_dn");
         basePeopleDn = Configuration.getProperty(instanceName + ".ou_people") + "," + baseDn;
         baseGroupDn = Configuration.getProperty(instanceName + ".ou_group") + "," + baseDn;
-        Hashtable<String, String> env = new Hashtable<String, String>();
+        Hashtable<String, String> env = new Hashtable<>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
         env.put(Context.SECURITY_PRINCIPAL, Configuration.getProperty(instanceName + ".principal"));
@@ -1236,7 +1236,7 @@ public class LdapHelper implements Helper {
     private void checkOus() {
         log.write("checking Organisation Units\n", LdapHelper.class);
         String[] ous = {basePeopleDn, baseGroupDn};
-        List<String> exists = new ArrayList<String>();
+        List<String> exists = new ArrayList<>();
         try {
             String query = "(objectClass=organizationalUnit)";
             String ouAttribute;
