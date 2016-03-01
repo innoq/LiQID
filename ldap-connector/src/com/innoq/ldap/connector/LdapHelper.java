@@ -292,7 +292,7 @@ public class LdapHelper implements Helper {
             NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
             queryCount++;
             if (results.hasMore()) {
-                searchResult = (SearchResult) results.next();
+                searchResult = results.next();
                 attributes = searchResult.getAttributes();
                 LdapUser user = new LdapUser(uid, this);
                 user.setDn(searchResult.getNameInNamespace());
@@ -337,7 +337,7 @@ public class LdapHelper implements Helper {
             NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
             queryCount++;
             while (results.hasMore()) {
-                searchResult = (SearchResult) results.next();
+                searchResult = results.next();
                 attributes = searchResult.getAttributes();
                 LdapUser user = new LdapUser();
                 user.setDn(searchResult.getNameInNamespace());
@@ -369,7 +369,7 @@ public class LdapHelper implements Helper {
             queryCount++;
             if (results.hasMore()) {
                 LdapGroup group = new LdapGroup(cn, this);
-            	searchResult = (SearchResult) results.next();
+            	searchResult = results.next();
                 group.setDn(searchResult.getNameInNamespace());
                 attributes = searchResult.getAttributes();
                 group = fillAttributesInGroup((LdapGroup) group, attributes);
@@ -413,7 +413,7 @@ public class LdapHelper implements Helper {
             NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
             queryCount++;
             while (results.hasMore()) {
-                searchResult = (SearchResult) results.next();
+                searchResult = results.next();
                 attributes = searchResult.getAttributes();
                 LdapGroup group = new LdapGroup();
                 group.setDn(searchResult.getNameInNamespace());
@@ -520,7 +520,7 @@ public class LdapHelper implements Helper {
             queryCount++;
             Node group;
             while (results.hasMore()) {
-                searchResult = (SearchResult) results.next();
+                searchResult = results.next();
                 attributes = searchResult.getAttributes();
                 group = getGroup(getAttributeOrNa(attributes, groupIdentifyer));
                 group.setDn(searchResult.getNameInNamespace());
@@ -549,7 +549,7 @@ public class LdapHelper implements Helper {
 			NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
 			Node user;
 			while (results.hasMore()) {
-				searchResult = (SearchResult) results.next();
+				searchResult = results.next();
 				attributes = searchResult.getAttributes();
 				NamingEnumeration<?> members = attributes.get(groupMemberAttribut).getAll();
 				while (members.hasMoreElements()) {
@@ -1246,7 +1246,7 @@ public class LdapHelper implements Helper {
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
             while (results.hasMore()) {
-                searchResult = (SearchResult) results.next();
+                searchResult = results.next();
                 attributes = searchResult.getAttributes();
                 ouAttribute = getAttributeOrNa(attributes, "ou");
                 for (String ou : ous) {
