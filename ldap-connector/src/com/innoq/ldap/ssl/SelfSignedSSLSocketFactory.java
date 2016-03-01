@@ -52,15 +52,9 @@ public class SelfSignedSSLSocketFactory extends SSLSocketFactory {
             return new SelfSignedSSLSocketFactory();
         } catch (NoSuchAlgorithmException ex) {
             return null;
-        } catch (KeyManagementException ex) {
+        } catch (KeyManagementException|KeyStoreException|UnrecoverableKeyException ex) {
             return null;
-        } catch (KeyStoreException ex) {
-            return null;
-        } catch (UnrecoverableKeyException ex) {
-            return null;
-        } catch (IOException ex) {
-            return null;
-        } catch (CertificateException ex) {
+        } catch (IOException|CertificateException ex) {
             return null;
         }
     }

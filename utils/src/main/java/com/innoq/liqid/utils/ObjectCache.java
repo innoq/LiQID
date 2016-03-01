@@ -53,11 +53,7 @@ public class ObjectCache {
                 if (obj instanceof Node) {
                     node = (Node) obj;
                 }
-            } catch (ClassNotFoundException ex) {
-                LOG.log(Level.SEVERE, null, ex);
-            } catch (FileNotFoundException ex) {
-                LOG.log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
+            } catch (ClassNotFoundException|IOException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             } finally {
                 try {
@@ -87,11 +83,7 @@ public class ObjectCache {
                 if (obj instanceof Set) {
                     nodes = (Set<Node>) obj;
                 }
-            } catch (ClassNotFoundException ex) {
-                LOG.log(Level.SEVERE, null, ex);
-            } catch (FileNotFoundException ex) {
-                LOG.log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
+            } catch (ClassNotFoundException|IOException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             } finally {
                 try {
@@ -114,8 +106,6 @@ public class ObjectCache {
             fileOut = new FileOutputStream(Configuration.getVersionedFilename(filename));
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(nodes);
-        } catch (FileNotFoundException ex) {
-            LOG.log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         } finally {
@@ -137,8 +127,6 @@ public class ObjectCache {
             fileOut = new FileOutputStream(Configuration.getVersionedFilename(filename));
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(node);
-        } catch (FileNotFoundException ex) {
-            LOG.log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         } finally {

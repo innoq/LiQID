@@ -73,11 +73,7 @@ public class KeyValueStore implements Serializable {
                 if (obj instanceof KeyValueStore) {
                     return (KeyValueStore) obj;
                 }
-            } catch (ClassNotFoundException ex) {
-                LOG.log(Level.SEVERE, null, ex);
-            } catch (FileNotFoundException ex) {
-                LOG.log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
+            } catch (ClassNotFoundException|IOException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             } finally {
                 try {
@@ -104,8 +100,6 @@ public class KeyValueStore implements Serializable {
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(store);
             return true;
-        } catch (FileNotFoundException ex) {
-            LOG.log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         } finally {

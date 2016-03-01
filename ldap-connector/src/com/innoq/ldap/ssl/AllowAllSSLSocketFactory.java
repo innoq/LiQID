@@ -39,9 +39,7 @@ public class AllowAllSSLSocketFactory extends SSLSocketFactory {
     public static SSLSocketFactory getDefault() {
         try {
             return new AllowAllSSLSocketFactory();
-        } catch (NoSuchAlgorithmException ex) {
-            return null;
-        } catch (KeyManagementException ex) {
+        } catch (NoSuchAlgorithmException|KeyManagementException ex) {
             return null;
         }
     }
