@@ -31,7 +31,7 @@ import java.util.logging.Logger;
  */
 public class Utils {
 
-    private static LdapHelper HELPER = null;
+    private static LdapHelper HELPER;
     private static final Logger LOG = Logger.getLogger(Utils.class.getName());
     private static String UID;
 

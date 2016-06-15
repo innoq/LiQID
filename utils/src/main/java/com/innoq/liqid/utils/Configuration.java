@@ -31,10 +31,10 @@ public class Configuration {
     private final static String TMP_DIR = System.getProperty("java.io.tmpdir");
     private final static String DEFAULT_LOCATION = System.getProperty("user.home") + SEP + ".liqid" + SEP + "liqid.properties";
     private static Configuration instance = new Configuration();
-    private String tmpDir = null;
-    private String cacheDir = null;
-    private String version = null;
-    private Properties properties = null;
+    private String tmpDir;
+    private String cacheDir;
+    private String version;
+    private Properties properties;
     private String filename = getEnvFileLocation();
 
     public static String getProperty(String key) {

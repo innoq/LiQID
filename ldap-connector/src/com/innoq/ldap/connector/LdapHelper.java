@@ -54,8 +54,8 @@ import javax.swing.ImageIcon;
 public class LdapHelper implements Helper {
 
     private Log log = new LogConsole();
-    private Node principal = null;
-    private DirContext ctx = null;
+    private Node principal;
+    private DirContext ctx;
     private String baseDn;
     private String basePeopleDn;
     private String baseGroupDn;
@@ -69,7 +69,7 @@ public class LdapHelper implements Helper {
     private String[] groupObjectClasses;
     private Map<String, String> defaultValues = new HashMap<>();
     private static Map<String, LdapHelper> helpers = new HashMap<>();
-    private boolean online = false;
+    private boolean online;
     private final String instanceName;
     private long queryCount;
     private long modificationCount;

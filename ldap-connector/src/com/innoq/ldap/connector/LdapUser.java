@@ -30,8 +30,8 @@ public class LdapUser extends LdapNode implements Comparable<LdapUser> {
      * Users uid.
      */
     private String uid = "";
-    private Set<LdapGroup> groups = null;
-    private String password = null;
+    private Set<LdapGroup> groups;
+    private String password;
     private File avatar;
     public LdapUser() {
         super();
