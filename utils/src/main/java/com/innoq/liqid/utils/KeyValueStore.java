@@ -34,7 +34,7 @@ import java.util.logging.Logger;
 
 public class KeyValueStore implements Serializable {
 
-    private final static Logger LOG = Logger.getLogger(KeyValueStore.class.getName());
+    private static final Logger LOG = Logger.getLogger(KeyValueStore.class.getName());
     private Map<String, String> storage;
 
     public KeyValueStore() {

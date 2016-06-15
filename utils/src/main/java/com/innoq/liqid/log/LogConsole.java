@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 
 public class LogConsole implements Log {
 
-    private final static Logger LOG = Logger.getLogger(LogConsole.class.getName());
+    private static final Logger LOG = Logger.getLogger(LogConsole.class.getName());
 
     public LogConsole(){
         LOG.info(">> starting...");

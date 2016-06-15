@@ -19,6 +19,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
@@ -27,9 +28,9 @@ import java.util.Properties;
  */
 public class Configuration {
 
-    public final static String SEP = System.getProperty("file.separator");
-    private final static String TMP_DIR = System.getProperty("java.io.tmpdir");
-    private final static String DEFAULT_LOCATION = System.getProperty("user.home") + SEP + ".liqid" + SEP + "liqid.properties";
+    public static final String SEP = System.getProperty("file.separator");
+    private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
+    private static final String DEFAULT_LOCATION = System.getProperty("user.home") + SEP + ".liqid" + SEP + "liqid.properties";
     private static Configuration instance = new Configuration();
     private String tmpDir = null;
     private String cacheDir = null;
@@ -125,9 +126,9 @@ public class Configuration {
 
     private static String getEnvFileLocation() {
         Map<String, String> env = System.getenv();
-        for (String envName : env.keySet()) {
-            if ("LIQID_PROPERTIES".equals(envName)) {
-                return env.get(envName);
+        for (Entry<String, String> prop : env.entrySet()) {
+            if ("LIQID_PROPERTIES".equals(prop.getKey())) {
+                return prop.getValue();
             }
         }
         return DEFAULT_LOCATION;

@@ -36,7 +36,7 @@ public class ObjectCache {
 	
 	private ObjectCache() {}
 
-    private final static Logger LOG = Logger.getLogger(ObjectCache.class.getName());
+    private static final Logger LOG = Logger.getLogger(ObjectCache.class.getName());
 
     /**
      * Loads a Node from Cache File.

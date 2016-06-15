@@ -23,7 +23,7 @@ import java.util.Date;
 
 public class App {
 
-    private final static String HR = "------------------------------------------------------------------------------";
+    private static final String HR = "------------------------------------------------------------------------------";
     private final String out = System.getProperty("user.home") + SEP + ".liqid" + SEP + "liqid.properties";
     private static PrintStream outputStream = System.out;
     private static boolean isTest = false;
