@@ -76,6 +76,16 @@ public class LdapHelper implements Helper {
     private long validationCount;
     private long creationCount;
     private long deletionCount;
+    
+    /**
+     * Returns an Instance of the LdapHelper.
+     *
+     * @param instance the identifyer of the LDAP Instance (e.g. ldap1)
+     */
+    public LdapHelper(String instance) {
+        this.instanceName = instance;
+        checkDirs();
+    }
 
     public static LdapHelper getInstance() {
         String defaultLdap = Configuration.getProperty("default.ldap");
@@ -110,15 +120,6 @@ public class LdapHelper implements Helper {
         return ldaps;
     }
 
-    /**
-     * Returns an Instance of the LdapHelper.
-     *
-     * @param instance the identifyer of the LDAP Instance (e.g. ldap1)
-     */
-    public LdapHelper(String instance) {
-        this.instanceName = instance;
-        checkDirs();
-    }
 
     /**
      * Sets the Log of that LdapHelper.

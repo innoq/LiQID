@@ -17,7 +17,6 @@ package com.innoq.ldap.connector;
 
 public class LdapKeys {
 
-	private LdapKeys() {}
 	
     public static final String USER_OBJECTCLASS = "person";
     public static final String ASTERISK = "*";
@@ -38,4 +37,7 @@ public class LdapKeys {
     public static final String GROUP_MEMBER_ATTRIBUTE = "member";
     public static final String DEFAULT_JABBER_SERVER = "jabber.example.com";
     public static final String USER_UID_FORMAT = "%s=%s,%s";
+    
+    private LdapKeys() {}
+    
 }
