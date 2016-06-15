@@ -135,6 +135,7 @@ public class LdapHelper implements Helper {
      * @return true if the user was set correct, false otherwise.
      * @throws java.lang.Exception if adding Node fails.
      */
+    @Override
     public boolean setUser(final Node node) throws Exception {
         return setUserInContext(ctx, node);
     }
@@ -149,7 +150,8 @@ public class LdapHelper implements Helper {
      * @return true if the user was set correct, false otherwise.
      * @throws Exception if adding a User fails.
      */
-	public boolean setUserAsUser(Node node, String uid, String password) throws Exception {
+	@Override
+    public boolean setUserAsUser(Node node, String uid, String password) throws Exception {
 		boolean status = false;
 		StringBuilder sb = new StringBuilder(userIdentifyer + "=").append(uid).append(",");
 		sb.append(Configuration.getProperty(instanceName + ".ou_people")).append(",");
@@ -176,6 +178,7 @@ public class LdapHelper implements Helper {
      * @param node of the LDAP-User to be deleted.
      * @return true if User was deleted, otherwise false.
      */
+    @Override
     public boolean rmUser(final Node node) {
         LdapUser user = (LdapUser) node;
         if(node == null) {
@@ -197,6 +200,7 @@ public class LdapHelper implements Helper {
      * @param node of the LDAP-Group to be deleted.
      * @return true if Group was deleted, otherwise false.
      */
+    @Override
     public boolean rmGroup(Node node) {
         LdapGroup group = (LdapGroup) node;
         try {
@@ -216,6 +220,7 @@ public class LdapHelper implements Helper {
      * @return true if the Group was added/updated, otherwise false.
      * @throws Exception if adding a Group fails.
      */
+    @Override
     public boolean setGroup(Node node) throws Exception {
         LdapGroup newLdapGroup = (LdapGroup) node;
         newLdapGroup = updateGroupMembers(newLdapGroup);
@@ -280,6 +285,7 @@ public class LdapHelper implements Helper {
      * @see com.innoq.liqid.model.Node#getName
      * @return the Node of that User, either filled (if User was found), or empty.
      */
+    @Override
     public Node getUser(final String uid) {
         
         try {
@@ -311,6 +317,7 @@ public class LdapHelper implements Helper {
      * @param uid the uid or part of uid of the Users.
      * @return Users as a Set of com.innoq.liqid.model.Node.
      */
+    @Override
     public Set<Node> findUsers(final String uid) {
         QueryBuilder qb = new LdapQueryBuilder();
         if (uid.equals("*")) {
@@ -325,6 +332,7 @@ public class LdapHelper implements Helper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Set<Node> findUsers(QueryBuilder qb) {
         Set<Node> users = new TreeSet<>();
         String query = qb.getQuery();
@@ -357,6 +365,7 @@ public class LdapHelper implements Helper {
      * @see com.innoq.liqid.model.Node#getName()
      * @return the Node of that Group, either filled (if Group was found), or empty.
      */
+    @Override
     public Node getGroup(final String cn) {
         try {
             String query = "(&(objectClass=" + groupObjectClass + ")(" + groupIdentifyer + "=" + cn + "))";
@@ -387,6 +396,7 @@ public class LdapHelper implements Helper {
      * @param cn the cn (or part of cn) for the groups.
      * @return Groups as a Set of Nodes.
      */
+    @Override
     public Set<Node> findGroups(final String cn) {
         QueryBuilder qb = new LdapQueryBuilder();
         if (cn.equals("*")) {
@@ -401,6 +411,7 @@ public class LdapHelper implements Helper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Set<Node> findGroups(QueryBuilder qb) {
         Set<Node> groups = new TreeSet<>();
         String query = qb.getQuery();
@@ -431,6 +442,7 @@ public class LdapHelper implements Helper {
      *
      * @return the Principal of that instanceName as a Node
      */
+    @Override
     public Node getPrincipal() {
         if (principal == null) {
             principal = new LdapUser();
@@ -507,6 +519,7 @@ public class LdapHelper implements Helper {
      * @param user the given User.
      * @return Groups as a Set of Nodes for that User.
      */
+    @Override
     public Set<Node> getGroupsForUser(Node user) {
         Set<Node> groups = new TreeSet<>();
         try {
@@ -537,7 +550,8 @@ public class LdapHelper implements Helper {
      * @param group the given Group.
      * @return Users as a Set of Nodes for that Group.
      */
-	public Set<Node> getUsersForGroup(Node group) {
+	@Override
+    public Set<Node> getUsersForGroup(Node group) {
 		Set<Node> users = new TreeSet<>();
 		try {
 			String query = "(" + groupIdentifyer + "=" + group.getName() + ")";
@@ -573,6 +587,7 @@ public class LdapHelper implements Helper {
      * @param password the given password.
      * @return true if credentials are valid, otherwise false.
      */
+    @Override
     public boolean checkCredentials(final String uid, final String password) {
         StringBuilder sb = new StringBuilder(userIdentifyer + "=").append(uid).append(",");
         sb.append(Configuration.getProperty(instanceName + ".ou_people")).append(",");
@@ -667,6 +682,7 @@ public class LdapHelper implements Helper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public long getCreationCount() {
         return creationCount;
     }
@@ -674,6 +690,7 @@ public class LdapHelper implements Helper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public long getDeletionCount() {
         return deletionCount;
     }
@@ -681,6 +698,7 @@ public class LdapHelper implements Helper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public long getModificationCount() {
         return modificationCount;
     }
@@ -688,6 +706,7 @@ public class LdapHelper implements Helper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public long getQueryCount() {
         return queryCount;
     }
@@ -695,6 +714,7 @@ public class LdapHelper implements Helper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public long getValidationCount() {
         return validationCount;
     }
@@ -702,6 +722,7 @@ public class LdapHelper implements Helper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void reload() {
         loadProperties();
     }

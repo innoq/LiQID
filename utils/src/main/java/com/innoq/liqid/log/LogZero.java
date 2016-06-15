@@ -24,8 +24,11 @@ package com.innoq.liqid.log;
  * This Log is a Zero Logger. Just a Placeholder, if no Log is defined.
  */
 public class LogZero implements Log {
+    @Override
     public void write(String message, Class caller) {}
+    @Override
     public void close() {}
+    @Override
     public String getSource() {
         return "Zero";
     }

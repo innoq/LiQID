@@ -30,6 +30,7 @@ public class LdapQueryBuilder implements QueryBuilder {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getQuery() {
         if (elements.isEmpty()) {
             return "";
@@ -50,6 +51,7 @@ public class LdapQueryBuilder implements QueryBuilder {
     /**
      * {@inheritDoc}
      */
+    @Override
     public QueryBuilder append(String key, String value) {
         elements.put(key.trim(), value.trim());
         return this;

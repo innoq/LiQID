@@ -31,14 +31,17 @@ public class LogConsole implements Log {
         LOG.info(">> starting...");
     }
 
+    @Override
     public void write(String message, Class caller) {
         LOG.log(Level.INFO, ">> {0} {1}", new Object[]{caller.getName(), message});
     }
 
+    @Override
     public void close() {
         LOG.info(">> closing...");
     }
 
+    @Override
     public String getSource() {
         return LOG.getName();
     }
