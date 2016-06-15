@@ -21,7 +21,6 @@ package com.innoq.liqid.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -34,6 +33,8 @@ import java.util.logging.Logger;
 
 public class KeyValueStore implements Serializable {
 
+    private static final long serialVersionUID = -843713925958974030L;
+    
     private final static Logger LOG = Logger.getLogger(KeyValueStore.class.getName());
     private Map<String, String> storage;
 

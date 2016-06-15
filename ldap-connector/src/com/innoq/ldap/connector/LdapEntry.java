@@ -17,7 +17,7 @@ package com.innoq.ldap.connector;
 
 public class LdapEntry extends LdapNode implements Comparable<LdapEntry> {
 
-    public String owner;
+    private String owner;
 
     public LdapEntry(String cn, String owner) {
         super();
