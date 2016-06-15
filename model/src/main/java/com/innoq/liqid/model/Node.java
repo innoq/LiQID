@@ -23,17 +23,17 @@ import java.util.Set;
  */
 public interface Node {
 
-    public String getName();
+    String getName();
     
-    public String getDn();
+    String getDn();
     
-    public void setDn(String dn);
+    void setDn(String dn);
 
-    public String get(String key);
+    String get(String key);
 
-    public void set(String key, String value);
+    void set(String key, String value);
 
-    public Set<String> getKeys();
+    Set<String> getKeys();
 
-    public boolean isEmpty();
+    boolean isEmpty();
 }
