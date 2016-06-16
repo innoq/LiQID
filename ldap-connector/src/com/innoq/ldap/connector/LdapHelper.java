@@ -53,6 +53,9 @@ import javax.swing.ImageIcon;
  */
 public class LdapHelper implements Helper {
 
+    private static final String TAG_AVATARS = "/avatars";
+    private static final String LOG_MODIFY_ATTRIBUTES = "modifyAttributes: ";
+    private static final String LOG_BIND = "bind: ";
     private Log log = new LogConsole();
     private Node principal = null;
     private DirContext ctx = null;
@@ -152,7 +155,7 @@ public class LdapHelper implements Helper {
 	public boolean setUserAsUser(Node node, String uid, String password) throws Exception {
 		boolean status = false;
 		StringBuilder sb = new StringBuilder(userIdentifyer + "=").append(uid).append(",");
-		sb.append(Configuration.getProperty(instanceName + ".ou_people")).append(",");
+		sb.append(Configuration.getProperty(instanceName + LdapKeys.ATTR_OU_PEOPLE)).append(",");
 		sb.append(baseDn);
 		if (uid == null || uid.isEmpty() || password == null || password.isEmpty()) {
 			return false;
@@ -222,14 +225,14 @@ public class LdapHelper implements Helper {
         LdapGroup oldLdapGroup = (LdapGroup) getGroup(newLdapGroup.getCn());
         if (oldLdapGroup.isEmpty()) {
             creationCount++;
-            log.write("bind: " + getOuForNode(newLdapGroup) + "\n", LdapHelper.class);
+            log.write(LOG_BIND + getOuForNode(newLdapGroup) + "\n", LdapHelper.class);
             ctx.bind(getOuForNode(newLdapGroup), null, newLdapGroup.getAttributes());
             return true;
         } else {
             ModificationItem[] mods = buildModificationsForGroup(newLdapGroup, oldLdapGroup);
             if (mods.length > 0) {
                 modificationCount++;
-                log.write("modifyAttributes: " + getOuForNode(newLdapGroup) + "\n", LdapHelper.class);
+                log.write(LOG_MODIFY_ATTRIBUTES + getOuForNode(newLdapGroup) + "\n", LdapHelper.class);
                 ctx.modifyAttributes(getOuForNode(newLdapGroup), mods);
                 return true;
             }
@@ -243,13 +246,13 @@ public class LdapHelper implements Helper {
             LdapEntry oldLdapEntry = (LdapEntry) getEntry(newLdapEntry.getCn(), newLdapEntry.getOwner());
             if (oldLdapEntry.isEmpty()) {
                 creationCount++;
-                log.write("bind: " + getOuForNode(newLdapEntry) + "\n", LdapHelper.class);
+                log.write(LOG_BIND + getOuForNode(newLdapEntry) + "\n", LdapHelper.class);
                 ctx.bind(getOuForNode(newLdapEntry), null, newLdapEntry.getAttributes());
             } else {
                 ModificationItem[] mods = buildModificationsForEntry(newLdapEntry, oldLdapEntry);
                 if (mods.length > 0) {
                     modificationCount++;
-                    log.write("modifyAttributes: " + getOuForNode(newLdapEntry) + "\n", LdapHelper.class);
+                    log.write(LOG_MODIFY_ATTRIBUTES + getOuForNode(newLdapEntry) + "\n", LdapHelper.class);
                     ctx.modifyAttributes(getOuForNode(newLdapEntry), mods);
                 }
             }
@@ -494,7 +497,7 @@ public class LdapHelper implements Helper {
             return String.format(LdapKeys.GROUP_CN_FORMAT, groupIdentifyer, node.get(groupIdentifyer), ouGroup);
         }
         if (node instanceof LdapUser) {
-            String ouPeople = Configuration.getProperty(instanceName + ".ou_people");
+            String ouPeople = Configuration.getProperty(instanceName + LdapKeys.ATTR_OU_PEOPLE);
             return String.format(LdapKeys.USER_UID_FORMAT, userIdentifyer, node.get(userIdentifyer), ouPeople);
         }
         return String.format(LdapKeys.ENTRY_CN_FORMAT, groupIdentifyer, node.get(groupIdentifyer), node.get(LdapKeys.OWNER));
@@ -575,7 +578,7 @@ public class LdapHelper implements Helper {
      */
     public boolean checkCredentials(final String uid, final String password) {
         StringBuilder sb = new StringBuilder(userIdentifyer + "=").append(uid).append(",");
-        sb.append(Configuration.getProperty(instanceName + ".ou_people")).append(",");
+        sb.append(Configuration.getProperty(instanceName + LdapKeys.ATTR_OU_PEOPLE)).append(",");
         sb.append(baseDn);
         if (uid == null || uid.isEmpty() || password == null || password.isEmpty()) {
             return false;
@@ -785,13 +788,13 @@ public class LdapHelper implements Helper {
             if (newLdapUser.getPassword() == null) {
                 newLdapUser.setPassword("!" + System.currentTimeMillis());
             }
-            log.write("bind: " + getOuForNode(newLdapUser) + "\n", LdapHelper.class);
+            log.write(LOG_BIND + getOuForNode(newLdapUser) + "\n", LdapHelper.class);
             ldapCtx.bind(getOuForNode(newLdapUser), null, newLdapUser.getAttributes());
             creationCount++;
         } else {
             ModificationItem[] mods = buildModificationsForUser(newLdapUser, oldLdapUser);
             if (mods.length > 0) {
-                log.write("modifyAttributes: " + getOuForNode(newLdapUser) + "\n", LdapHelper.class);
+                log.write(LOG_MODIFY_ATTRIBUTES + getOuForNode(newLdapUser) + "\n", LdapHelper.class);
                 ldapCtx.modifyAttributes(getOuForNode(newLdapUser), mods);
                 modificationCount++;
             }
@@ -1134,11 +1137,11 @@ public class LdapHelper implements Helper {
 
     private File getUserAvatarAsFile(ImageIcon avatar, String uid) {
         String tmpDir = Configuration.getInstance().getTmpDir();
-        File folder = new File(tmpDir + "/ldap/" + instanceName + "/avatars");
+        File folder = new File(tmpDir + "/ldap/" + instanceName + TAG_AVATARS);
         if (!folder.exists()) {
             folder.mkdirs();
         }
-        File file = new File(tmpDir + "/ldap/" + instanceName + "/avatars" + "/" + uid + ".png");
+        File file = new File(tmpDir + "/ldap/" + instanceName + TAG_AVATARS + "/" + uid + ".png");
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -1180,7 +1183,7 @@ public class LdapHelper implements Helper {
         creationCount = 0L;
         deletionCount = 0L;
         baseDn = Configuration.getProperty(instanceName + ".base_dn");
-        basePeopleDn = Configuration.getProperty(instanceName + ".ou_people") + "," + baseDn;
+        basePeopleDn = Configuration.getProperty(instanceName + LdapKeys.ATTR_OU_PEOPLE) + "," + baseDn;
         baseGroupDn = Configuration.getProperty(instanceName + ".ou_group") + "," + baseDn;
         Hashtable<String, String> env = new Hashtable<>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
@@ -1286,7 +1289,7 @@ public class LdapHelper implements Helper {
     private void checkDirs() {
         String tmpDir = Configuration.getInstance().getTmpDir();
         String ldapDir = tmpDir + "/ldap";
-        String[] subFolders = {instanceName + "/avatars"};
+        String[] subFolders = {instanceName + TAG_AVATARS};
         for (String subFolder : subFolders) {
             File aFolder = new File(ldapDir + "/" + subFolder);
             if (!aFolder.exists()) {

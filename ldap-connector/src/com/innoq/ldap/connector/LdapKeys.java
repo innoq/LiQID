@@ -34,6 +34,9 @@ public class LdapKeys {
     public static final String MODIFY_TIMESTAMP = "modifyTimestamp";
     public static final String GROUP_ID_ATTRIBTUE = "cn";
     public static final String GROUP_CN_FORMAT = "%s=%s,%s";
+    
+    public static final String ATTR_OU_PEOPLE = ".ou_people";
+    
     // DEFAULT Values
     public static final String GROUP_MEMBER_ATTRIBUTE = "member";
     public static final String DEFAULT_JABBER_SERVER = "jabber.example.com";
