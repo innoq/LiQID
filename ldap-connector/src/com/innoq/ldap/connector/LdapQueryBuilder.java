@@ -20,7 +20,9 @@
 package com.innoq.ldap.connector;
 
 import com.innoq.liqid.model.QueryBuilder;
+
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 public class LdapQueryBuilder implements QueryBuilder {
@@ -39,8 +41,8 @@ public class LdapQueryBuilder implements QueryBuilder {
         if (elements.size() > 1) {
             sb.append("(&");
         }
-        for (String key : elements.keySet()) {
-            sb.append("(").append(key).append("=").append(elements.get(key)).append(")");
+        for (Entry<String, String> element : elements.entrySet()) {
+            sb.append("(").append(element.getKey()).append("=").append(element.getValue()).append(")");
         }
         if (elements.size() > 1) {
             sb.append(")");
