@@ -26,7 +26,7 @@ public class App {
     private final static String HR = "------------------------------------------------------------------------------";
     private final String out = System.getProperty("user.home") + SEP + ".liqid" + SEP + "liqid.properties";
     private static PrintStream outputStream = System.out;
-    private static boolean isTest = false;
+    private static boolean isTest;
     public static void main(String[] args) {
         int i = 0;
         if (args.length > 0) {

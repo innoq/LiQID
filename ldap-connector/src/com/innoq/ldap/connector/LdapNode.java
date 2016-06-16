@@ -30,13 +30,13 @@ public class LdapNode implements Node {
 
     private static final String LINE = "------------------------------------------------------------------------\n";
     protected BasicAttributes attributes = new BasicAttributes(false);
-    protected Set<String> keys = null;
-    protected Set<String> objectClasses = null;
+    protected Set<String> keys;
+    protected Set<String> objectClasses;
     protected String name;
-    protected String dn = null;
-    protected String modifyTimestamp = null;
-    protected String modifiersName = null;
-    protected String cn = null;
+    protected String dn;
+    protected String modifyTimestamp;
+    protected String modifiersName;
+    protected String cn;
 
     /**
      * Returns an entry for a given key.
