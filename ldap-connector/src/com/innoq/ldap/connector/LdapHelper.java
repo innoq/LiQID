@@ -316,7 +316,7 @@ public class LdapHelper implements Helper {
      */
     public Set<Node> findUsers(final String uid) {
         QueryBuilder qb = new LdapQueryBuilder();
-        if (uid.equals("*")) {
+        if ("*".equals(uid)) {
             qb.append(LdapKeys.OBJECT_CLASS, userObjectClass);
         } else {
             qb.append(LdapKeys.OBJECT_CLASS, userObjectClass);
@@ -392,7 +392,7 @@ public class LdapHelper implements Helper {
      */
     public Set<Node> findGroups(final String cn) {
         QueryBuilder qb = new LdapQueryBuilder();
-        if (cn.equals("*")) {
+        if ("*".equals(cn)) {
             qb.append(LdapKeys.OBJECT_CLASS, groupObjectClass);
         } else {
             qb.append(LdapKeys.OBJECT_CLASS, groupObjectClass);
@@ -1006,7 +1006,7 @@ public class LdapHelper implements Helper {
         Enumeration<String> keys = attrs.getIDs();
         while (keys.hasMoreElements()) {
             k = keys.nextElement();
-            if (getAttributeOrNa(attrs, k).equals("null")) {
+            if ("null".equals(getAttributeOrNa(attrs, k))) {
                 log.write("filterForNullAttributes removing " + k + " " + attrs.get(k) + "\n", LdapHelper.class);
                 attrs.remove(k);
             }
