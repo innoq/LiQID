@@ -22,14 +22,17 @@ package com.innoq.liqid.log;
 
 public class LogSystemOutput implements Log {
 
+    @Override
     public void write(String message, Class caller) {
         System.out.println("==> " + caller.getName() + ": " + message+"\n");
     }
 
+    @Override
     public void close() {
         System.out.println("==> closing");
     }
 
+    @Override
     public String getSource() {
         return "System.out";
     }

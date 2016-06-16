@@ -44,6 +44,7 @@ public class LogFile implements Log {
         }
     }
 
+    @Override
     public void write(String message, Class caller) {
         try {
             bos.write(message.getBytes());
@@ -52,6 +53,7 @@ public class LogFile implements Log {
         }
     }
 
+    @Override
     public void close() {
         try {
             bos.flush();
@@ -61,6 +63,7 @@ public class LogFile implements Log {
         }
     }
 
+    @Override
     public String getSource() {
         return logFile.getName();
     }

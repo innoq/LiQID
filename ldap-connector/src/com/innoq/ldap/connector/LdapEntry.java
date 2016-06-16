@@ -29,6 +29,7 @@ public class LdapEntry extends LdapNode implements Comparable<LdapEntry> {
         return this.owner;
     }
 
+    @Override
     public int compareTo(LdapEntry t) {
         if (t == null) {
             return 1;

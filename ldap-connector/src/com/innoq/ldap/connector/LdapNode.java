@@ -44,6 +44,7 @@ public class LdapNode implements Node {
      * @param key the key for the entry.
      * @return the value of the entry, null if the entry does not exists.
      */
+    @Override
     public String get(String key) {
     	if("dn".equals(key)) {
     		return dn;
@@ -69,6 +70,7 @@ public class LdapNode implements Node {
      *
      * @return true it this Node is empty, false otherwise.
      */
+    @Override
     public boolean isEmpty() {
         return true;
     }
@@ -79,6 +81,7 @@ public class LdapNode implements Node {
      * @param key the key of that entry.
      * @param value the new value for that entry.
      */
+    @Override
     public void set(String key, String value) {
         if("dn".equals(key)) {
         	dn = value;
@@ -152,6 +155,7 @@ public class LdapNode implements Node {
         return null;
     }
 
+    @Override
     public Set<String> getKeys() {
         if (keys == null
                 && attributes != null) {
@@ -172,10 +176,12 @@ public class LdapNode implements Node {
         this.objectClasses.add(objectClass);
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getDn() {
         if (dn == null) {
             dn = LdapHelper.getInstance().getDNForNode(this);
@@ -183,6 +189,7 @@ public class LdapNode implements Node {
         return dn;
     }
 
+    @Override
     public void setDn(final String dn) {
         this.dn = dn;
     }
