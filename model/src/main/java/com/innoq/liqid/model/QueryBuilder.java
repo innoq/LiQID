@@ -36,11 +36,11 @@ public interface QueryBuilder {
      * @param value the value of the query - or part of it (e.g. ph*, phl).
      * @return The QueryBuilder.
      */
-    public QueryBuilder append(String key, String value);
+    QueryBuilder append(String key, String value);
 
     /**
      * Returns the complete Query of that Builder.
      * @return the complete Query.
      */
-    public String getQuery();
+    String getQuery();
 }

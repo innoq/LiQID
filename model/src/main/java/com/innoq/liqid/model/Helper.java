@@ -30,9 +30,9 @@ public interface Helper {
      * @param password the given password.
      * @return true if credentials are valid, otherwise false.
      */
-    public boolean checkCredentials(final String uid, final String password);
+    boolean checkCredentials(final String uid, final String password);
 
-    public Set<Node> findUsers(final String uid);
+    Set<Node> findUsers(final String uid);
 
     /**
      * Finds a List of Users with a QueryBuilder.
@@ -40,7 +40,7 @@ public interface Helper {
      * @param qb
      * @return a List of Nodes.
      */
-    public Set<Node> findUsers(final QueryBuilder qb);
+    Set<Node> findUsers(final QueryBuilder qb);
 
     /**
      * Finds a List of Groups by a given CN (or Part of it).
@@ -48,7 +48,7 @@ public interface Helper {
      * @param cn the given CN to search.
      * @return a List of Nodes.
      */
-    public Set<Node> findGroups(final String cn);
+    Set<Node> findGroups(final String cn);
 
     /**
      * Finds a List of Groups with a QueryBuilder.
@@ -56,20 +56,20 @@ public interface Helper {
      * @param qb
      * @return a List of Nodes.
      */
-    public Set<Node> findGroups(final QueryBuilder qb);
+    Set<Node> findGroups(final QueryBuilder qb);
 
-    public Node getGroup(final String cn);
+    Node getGroup(final String cn);
 
-    public Set<Node> getGroupsForUser(Node user);
+    Set<Node> getGroupsForUser(Node user);
 
-    public Node getUser(final String uid);
+    Node getUser(final String uid);
 
-    public Set<Node> getUsersForGroup(Node group);
+    Set<Node> getUsersForGroup(Node group);
 
     /**
      * Reloads the Helpers Configuration.
      */
-    public void reload();
+    void reload();
 
     /**
      * Delete the User Object from the Directory.
@@ -78,7 +78,7 @@ public interface Helper {
      * @return true if the user was deleted, false otherwise.
      * @throws Exception
      */
-    public boolean rmUser(final Node node) throws Exception;
+    boolean rmUser(final Node node) throws Exception;
 
     /**
      * Delete the Group Object from the Directory.
@@ -87,7 +87,7 @@ public interface Helper {
      * @return true if the group was deleted, false otherwise.
      * @throws Exception
      */
-    public boolean rmGroup(final Node node) throws Exception;
+    boolean rmGroup(final Node node) throws Exception;
 
     /**
      * Write the User Object to the Directory. Creates a new one or updates the
@@ -99,7 +99,7 @@ public interface Helper {
      * @see Helper#setUserAsUser(com.innoq.liqid.model.Node, java.lang.String,
      * java.lang.String)
      */
-    public boolean setUser(final Node node) throws Exception;
+    boolean setUser(final Node node) throws Exception;
 
     /**
      * Write the User Object to the Directory using specific Credentials.
@@ -112,7 +112,7 @@ public interface Helper {
      * @return true if the user was saved, false otherwise.
      * @throws Exception
      */
-    public boolean setUserAsUser(final Node node, final String uid, final String password) throws Exception;
+    boolean setUserAsUser(final Node node, final String uid, final String password) throws Exception;
 
     /**
      * Write the Group Object to the Directory. Creates a new one or updates the
@@ -122,47 +122,47 @@ public interface Helper {
      * @return true if the group was saved, false otherwise.
      * @throws Exception
      */
-    public boolean setGroup(final Node node) throws Exception;
+    boolean setGroup(final Node node) throws Exception;
 
     /**
      * Returns the Principal Node.
      *
      * @return the Principal of that Helper as a Node.
      */
-    public Node getPrincipal();
+    Node getPrincipal();
 
     /**
      * Returns the count of creating operations for the given directory.
      *
      * @return Number of Creation Operations.
      */
-    public long getCreationCount();
+    long getCreationCount();
 
     /**
      * Returns the count of deleting operations for the given directory.
      *
      * @return Number of Deletion Operations.
      */
-    public long getDeletionCount();
+    long getDeletionCount();
 
     /**
      * Returns the count of modification operations for the given directory.
      *
      * @return Number of Update Operations.
      */
-    public long getModificationCount();
+    long getModificationCount();
 
     /**
      * Returns the count of query operations for the given directory.
      *
      * @return Number of Query Operations.
      */
-    public long getQueryCount();
+    long getQueryCount();
 
     /**
      * Returns the count of validation operations for the given directory.
      *
      * @return Number of Validation Operations.
      */
-    public long getValidationCount();
+    long getValidationCount();
 }
