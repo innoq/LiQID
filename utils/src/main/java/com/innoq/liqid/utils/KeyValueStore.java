@@ -66,22 +66,15 @@ public class KeyValueStore implements Serializable {
     public static KeyValueStore loadKeyValueStore(String filename) {
         File cacheFile = new File(Configuration.getVersionedFilename(filename));
         if (cacheFile.exists()) {
-            FileInputStream fileIn = null;
-            try {
-                fileIn = new FileInputStream(Configuration.getVersionedFilename(filename));
-                ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+            try (FileInputStream fileIn = new FileInputStream(Configuration.getVersionedFilename(filename));
+                    ObjectInputStream objectIn = new ObjectInputStream(fileIn)){
+                
                 Object obj = objectIn.readObject();
                 if (obj instanceof KeyValueStore) {
                     return (KeyValueStore) obj;
                 }
             } catch (ClassNotFoundException|IOException ex) {
                 LOG.log(Level.SEVERE, null, ex);
-            } finally {
-                try {
-                    fileIn.close();
-                } catch (IOException ex) {
-                    LOG.log(Level.SEVERE, null, ex);
-                }
             }
         }
         return new KeyValueStore();
@@ -95,20 +88,14 @@ public class KeyValueStore implements Serializable {
      * @return true if successful saved, false otherwise.
      */
     public static boolean saveKeyValueStore(String filename, KeyValueStore store) {
-        FileOutputStream fileOut = null;
-        try {
-            fileOut = new FileOutputStream(Configuration.getVersionedFilename(filename));
-            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+        
+        try (FileOutputStream fileOut = new FileOutputStream(Configuration.getVersionedFilename(filename));
+                ObjectOutputStream objectOut = new ObjectOutputStream(fileOut)) {
+            
             objectOut.writeObject(store);
             return true;
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                fileOut.close();
-            } catch (IOException ex) {
-                LOG.log(Level.SEVERE, null, ex);
-            }
         }
         return false;
     }
