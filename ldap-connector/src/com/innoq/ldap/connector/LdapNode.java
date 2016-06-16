@@ -37,6 +37,13 @@ public class LdapNode implements Node {
     protected String modifyTimestamp;
     protected String modifiersName;
     protected String cn;
+    
+    /**
+     * Basic Constructor.
+     */
+    public LdapNode() {
+        objectClasses = new HashSet<>();
+    }
 
     /**
      * Returns an entry for a given key.
@@ -58,12 +65,6 @@ public class LdapNode implements Node {
         return null;
     }
 
-    /**
-     * Basic Constructor.
-     */
-    public LdapNode() {
-        objectClasses = new HashSet<>();
-    }
 
     /**
      * There might be always a root entry (uid or cn).
