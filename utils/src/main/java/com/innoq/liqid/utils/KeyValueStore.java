@@ -36,6 +36,7 @@ public class KeyValueStore implements Serializable {
     private static final long serialVersionUID = -843713925958974030L;
     
     private final static Logger LOG = Logger.getLogger(KeyValueStore.class.getName());
+
     private Map<String, String> storage;
 
     public KeyValueStore() {
