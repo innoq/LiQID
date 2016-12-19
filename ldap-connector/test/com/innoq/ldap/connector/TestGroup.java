@@ -44,8 +44,8 @@ public class TestGroup {
     @BeforeClass
     public static void setUpClass() throws Exception {
         HELPER = Utils.getHelper();
-        CN = "G_" + System.currentTimeMillis();
-        testUser1 = HELPER.getUserTemplate("U_" + System.currentTimeMillis());
+        CN = "G1_" + System.currentTimeMillis();
+        testUser1 = HELPER.getUserTemplate("U1_" + System.currentTimeMillis());
         testUser1.set("cn", testUser1.getUid());
         HELPER.setUser(testUser1);
     }
@@ -102,7 +102,7 @@ public class TestGroup {
     @Test
     public void testRemoveUserFromGroup() throws Exception {
         LdapGroup g1 = Utils.createTestGroup(CN);
-        String[] usernames = {"U1_" + System.currentTimeMillis(), "U2_" + System.currentTimeMillis()};
+        String[] usernames = {"U2_" + System.currentTimeMillis(), "U3_" + System.currentTimeMillis()};
         if (HELPER.setGroup(g1)) {
             LOG.log(Level.INFO, "updated Group {0}", CN);
         }
@@ -130,7 +130,7 @@ public class TestGroup {
 
     @Test
     public void testAddUsersToGroup() throws Exception {
-        testUser2 = HELPER.getUserTemplate("U_" + System.currentTimeMillis());
+		testUser2 = HELPER.getUserTemplate("U4_" + System.currentTimeMillis());
         testUser2.set("cn", testUser2.getUid());
         HELPER.setUser(testUser2);
         LdapGroup g1 = Utils.createTestGroup(CN);

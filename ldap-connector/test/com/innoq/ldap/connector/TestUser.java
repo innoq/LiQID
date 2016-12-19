@@ -35,7 +35,7 @@ public class TestUser {
 
     public TestUser() {
         HELPER = Utils.getHelper();
-        UID = "U_" + System.currentTimeMillis();
+        UID = "UX_" + System.currentTimeMillis();
         PW = UID.substring(0, 5) + UID.substring(5);
         LOGGER.log(Level.INFO, "UID: {0}", UID);
     }
@@ -186,5 +186,6 @@ public class TestUser {
     	LOGGER.log(Level.INFO, "User getDN(): User matches: {0} == {1}", new String[]{testUser.getDn(), ldapUser.getDn()});
         assertEquals(testUser.get("dn"), ldapUser.get("dn"));
     	LOGGER.log(Level.INFO, "User get(\"dn\"): User matches: {0} == {1}", new String[]{testUser.get("dn"), ldapUser.get("dn")});
+    	Utils.removeTestUser(testUser);
     }    
 }
