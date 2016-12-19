@@ -19,6 +19,7 @@
 			<includes>
 				<include>com.innoq.liqid:utils</include>
 				<include>com.innoq.liqid:model</include>
+				<include>org.owasp.esapi:esapi</include>
 			</includes>
 		</dependencySet>
 	</dependencySets>

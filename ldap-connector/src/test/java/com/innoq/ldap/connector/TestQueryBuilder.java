@@ -73,6 +73,17 @@ public class TestQueryBuilder {
     }
 
     @Test
+    public void testForMultiWildCards() {
+        String expectedValues = "(&(cn=innoQ_*)(l=Berlin)(objectClass=person)(uid=U1_*_user))";
+        QueryBuilder qb = new LdapQueryBuilder();
+        qb.append("objectClass", "person");
+        qb.append("l", "Berlin");
+        qb.append("cn", "innoQ_*");
+        qb.append("uid", "U1_*_user");
+        assertEquals(expectedValues, qb.getQuery());
+    }
+    
+    @Test
     public void testReplaceParameter() {
         String expectedValues = "(objectClass=*)";
         QueryBuilder qb = new LdapQueryBuilder();

@@ -21,14 +21,24 @@ package com.innoq.ldap.connector;
 
 import com.innoq.liqid.model.QueryBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.owasp.esapi.reference.DefaultEncoder;
+
 public class LdapQueryBuilder implements QueryBuilder {
+	private Map<String, String> elements = new TreeMap<>();
+	private DefaultEncoder ldapEncoder;
+	
+	public LdapQueryBuilder() {
+		List<String> list = new ArrayList<String>();
+		ldapEncoder =  new DefaultEncoder(list);
+	}
 
-    private Map<String, String> elements = new TreeMap<>();
-
+	
     /**
      * {@inheritDoc}
      */
@@ -55,7 +65,14 @@ public class LdapQueryBuilder implements QueryBuilder {
      */
     @Override
     public QueryBuilder append(String key, String value) {
-        elements.put(key.trim(), value.trim());
+    	String cleanValue = value.trim();
+    	if(cleanValue.contains("*")) {
+    		cleanValue = cleanValue.replace("*", "####");
+    		cleanValue = ldapEncoder.encodeForLDAP(cleanValue).replaceAll("####", "*");
+    	} else {
+    		cleanValue = ldapEncoder.encodeForLDAP(cleanValue);
+    	}
+        elements.put(ldapEncoder.encodeForLDAP(key.trim()), cleanValue);
         return this;
     }
 }
