@@ -28,7 +28,6 @@ public class App {
     private static PrintStream outputStream = System.out;
     private static boolean isTest;
     public static void main(String[] args) {
-        int i = 0;
         if (args.length > 0) {
             App app = new App();
             for (String arg : args) {
@@ -39,7 +38,6 @@ public class App {
                     outputStream.println(app.getExampelConfig());
                     if(!isTest)System.exit(0);
                 }
-                i++;
             }
         } else {
             App.help();
