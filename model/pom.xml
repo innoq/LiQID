@@ -19,10 +19,10 @@
     <parent>
         <groupId>com.innoq.liqid</groupId>
         <artifactId>liqid-parent</artifactId>
-        <version>1.8-SNAPSHOT</version>
+        <version>1.7</version>
     </parent>
     <artifactId>model</artifactId>
-    <version>1.8-SNAPSHOT</version>       
+    <version>1.7</version>       
     <packaging>jar</packaging>
     <name>LiQID Model</name>
     <dependencies>
