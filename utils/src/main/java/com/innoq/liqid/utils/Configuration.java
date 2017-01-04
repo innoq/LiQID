@@ -23,14 +23,15 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Configuration 14.04.2011
+ * Configuration 14.04.2011.
  *
  */
 public class Configuration {
 
     public static final String SEP = System.getProperty("file.separator");
     private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
-    private static final String DEFAULT_LOCATION = System.getProperty("user.home") + SEP + ".liqid" + SEP + "liqid.properties";
+    private static final String DEFAULT_LOCATION = 
+            System.getProperty("user.home") + SEP + ".liqid" + SEP + "liqid.properties";
     private static Configuration instance = new Configuration();
     private String tmpDir;
     private String cacheDir;

@@ -18,22 +18,58 @@ package com.innoq.liqid.model;
 import java.util.Set;
 
 /**
- * Node
+ * Model of a Node.
  * 10.12.2011
  */
 public interface Node {
 
+    /**
+     * Returns the Name of a Node (e.g. uid for User, cn for Group).
+     *
+     * @return the name.
+     */
     String getName();
-    
+
+    /**
+     * Returns the distinguished name of the Node.
+     *
+     * @return the DN.
+     */
     String getDn();
-    
+
+    /**
+     * Sets the distinguished name of the Node.
+     * @param dn the DN.
+     */
     void setDn(String dn);
 
+    /**
+     * Returns a value for a given Key of that node.
+     *
+     * @param key the key.
+     * @return the value.
+     */
     String get(String key);
 
+    /**
+     * Sets a value of that node.
+     *
+     * @param key the key.
+     * @param value the value.
+     */
     void set(String key, String value);
 
+    /**
+     * Returns all keys that the Node has.
+     *
+     * @return a List of keys.
+     */
     Set<String> getKeys();
 
+    /**
+     * Is the Node empty?
+     *
+     * @return true if the Node is empty, false otherwise.
+     */
     boolean isEmpty();
 }
