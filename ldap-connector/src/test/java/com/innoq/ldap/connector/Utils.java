@@ -15,7 +15,6 @@
  */
 package com.innoq.ldap.connector;
 
-import com.innoq.liqid.log.LogConsole;
 import com.innoq.liqid.model.Node;
 import com.innoq.liqid.utils.Configuration;
 import java.util.ArrayList;
@@ -39,7 +38,6 @@ public class Utils {
         if (HELPER == null) {
             Configuration.getInstance().setTmpDir("target");
             HELPER = LdapHelper.getInstance();
-            HELPER.setLog(new LogConsole());
             showConfigInfo();
         }
         return HELPER;
