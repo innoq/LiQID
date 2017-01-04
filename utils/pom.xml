@@ -22,6 +22,7 @@
         <version>1.7-SNAPSHOT</version>
     </parent>
     <artifactId>utils</artifactId>
+    <version>1.7-SNAPSHOT</version>    
     <packaging>jar</packaging>
     <name>LiQID Utilities</name>
     <dependencies>
