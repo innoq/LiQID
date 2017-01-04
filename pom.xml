@@ -22,8 +22,8 @@
 	<name>LiQID</name>
 	<url>https://github.com/innoq/LiQID</url>
 	<scm>
-		<connection>scm:git:git@github.com:innoq/LiQID.git</connection>
-		<developerConnection>scm:git:git@github.com:innoq/LiQID.git</developerConnection>
+		<connection>scm:git:https://github.com/innoq/LiQID.git</connection>
+		<developerConnection>scm:git:https://github.com/innoq/LiQID.git</developerConnection>
 		<url>https://github.com/innoq/LiQID</url>
 		<tag>HEAD</tag>
 	</scm>
