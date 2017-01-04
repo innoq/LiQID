@@ -21,7 +21,6 @@
         <artifactId>liqid-parent</artifactId>
         <version>1.7-SNAPSHOT</version>
     </parent>
-    <groupId>com.innoq.liqid</groupId>
     <artifactId>model</artifactId>
     <packaging>jar</packaging>
     <name>LiQID Model</name>
