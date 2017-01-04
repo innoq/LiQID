@@ -18,7 +18,7 @@ package com.innoq.liqid.model;
 import java.util.Set;
 
 /**
- * Helper 11.12.2011
+ * Helper 11.12.2011.
  */
 public interface Helper {
 
@@ -32,12 +32,18 @@ public interface Helper {
      */
     boolean checkCredentials(final String uid, final String password);
 
+    /**
+     * Finds a Set of users by a given uid or *.
+     *
+     * @param uid the given uid.
+     * @return result set of users matching the uid.
+     */
     Set<Node> findUsers(final String uid);
 
     /**
      * Finds a List of Users with a QueryBuilder.
      *
-     * @param qb
+     * @param qb the QueryBuilder.
      * @return a List of Nodes.
      */
     Set<Node> findUsers(final QueryBuilder qb);
@@ -53,17 +59,41 @@ public interface Helper {
     /**
      * Finds a List of Groups with a QueryBuilder.
      *
-     * @param qb
+     * @param qb the QueryBuilder.
      * @return a List of Nodes.
      */
     Set<Node> findGroups(final QueryBuilder qb);
 
+    /**
+     * Finds a Group with a given cn.
+     *
+     * @param cn the given cn.
+     * @return a group, will return an empty group, when not found.
+     */
     Node getGroup(final String cn);
 
+    /**
+     * Find all groups of a User.
+     *
+     * @param user the user, having the groups.
+     * @return the list of Groups.
+     */
     Set<Node> getGroupsForUser(Node user);
 
+    /**
+     * Finds a User with a given uid.
+     *
+     * @param uid the given uid.
+     * @return a user, will return an empty user, when not found.
+     */
     Node getUser(final String uid);
 
+    /**
+     * Find all Users of a Group.
+     *
+     * @param group the Group containing the users.
+     * @return the list of Users.
+     */
     Set<Node> getUsersForGroup(Node group);
 
     /**
@@ -74,18 +104,18 @@ public interface Helper {
     /**
      * Delete the User Object from the Directory.
      *
-     * @param node
+     * @param node the User to be deleted.
      * @return true if the user was deleted, false otherwise.
-     * @throws Exception
+     * @throws Exception if rmUser fails.
      */
     boolean rmUser(final Node node) throws Exception;
 
     /**
      * Delete the Group Object from the Directory.
      *
-     * @param node
+     * @param node the Group to be deleted.
      * @return true if the group was deleted, false otherwise.
-     * @throws Exception
+     * @throws Exception if rmGroup fails.
      */
     boolean rmGroup(final Node node) throws Exception;
 
@@ -93,9 +123,9 @@ public interface Helper {
      * Write the User Object to the Directory. Creates a new one or updates the
      * old one.
      *
-     * @param node
+     * @param node updated user.
      * @return true if the user was saved, false otherwise.
-     * @throws Exception
+     * @throws Exception if setUser fails.
      * @see Helper#setUserAsUser(com.innoq.liqid.model.Node, java.lang.String,
      * java.lang.String)
      */
@@ -107,20 +137,22 @@ public interface Helper {
      * self-updates for normal users.
      *
      * @param node updated user.
-     * @param uid
-     * @param password
+     * @param uid the uid of that user.
+     * @param password the password of that user.
      * @return true if the user was saved, false otherwise.
-     * @throws Exception
+     * @throws Exception if setUser fails.
      */
-    boolean setUserAsUser(final Node node, final String uid, final String password) throws Exception;
+    boolean setUserAsUser(final Node node,
+            final String uid,
+            final String password) throws Exception;
 
     /**
      * Write the Group Object to the Directory. Creates a new one or updates the
      * old one.
      *
-     * @param node
+     * @param node updated group
      * @return true if the group was saved, false otherwise.
-     * @throws Exception
+     * @throws Exception if setGroup fails.
      */
     boolean setGroup(final Node node) throws Exception;
 
