@@ -17,6 +17,9 @@ package com.innoq.ldap.connector;
 
 import com.innoq.liqid.model.Node;
 import com.innoq.liqid.utils.Configuration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,6 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static org.junit.Assert.*;
+
+import org.apache.commons.io.FileUtils;
 
 /**
  * Utils 27.05.2012
@@ -183,23 +189,46 @@ public class Utils {
         LOG.log(Level.INFO, sb.toString());
     }
 
-    public static void removeTestGroup(LdapGroup g1) {
+    public static void removeTestGroup(final LdapGroup g1) {
         HELPER.rmGroup(g1);
     }
 
-    public static LdapGroup createTestGroup(String cn) throws Exception {
+    public static LdapGroup createTestGroup(final String cn) throws Exception {
         LdapGroup g1 = HELPER.getGroupTemplate(cn);
         HELPER.setGroup(g1);
         return g1;
     }
     
-    public static LdapUser createTestUser(String uid) throws Exception{
+    public static LdapUser createTestUser(final String uid) throws Exception{
         LdapUser u1 = HELPER.getUserTemplate(uid);
         HELPER.setUser(u1);
         return u1;
     }
     
-    public static boolean removeTestUser(LdapUser u1) {
+    public static File getFile(final String filename) {
+    	File file = new File(filename);
+    	assertTrue(file.getAbsolutePath()+" should exists", file.exists());
+    	return file;
+    }
+    
+    public static String generatePath(final String... parts) {
+    	StringBuilder sb = new StringBuilder();
+    	for(String part : parts) {
+    		sb.append(part).append(File.separator);
+    	}
+    	return sb.toString();
+    }
+    
+    public static boolean compareFiles(final File file1, final File file2) {
+    	try {
+			return FileUtils.contentEquals(file1, file2);
+		} catch (IOException ex) {
+			LOG.log(Level.WARNING, ex.getLocalizedMessage(), ex);
+			return false;
+		}
+    }
+    
+    public static boolean removeTestUser(final LdapUser u1) {
         return HELPER.rmUser(u1);
     }
 }

@@ -22,8 +22,12 @@ import com.innoq.liqid.utils.Configuration;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -633,8 +637,8 @@ public class LdapHelper implements Helper {
 
         // for posixAccount
         if (user.getObjectClasses().contains("posixAccount")) {
-            user.set("uidNumber", "0");
-            user.set("gidNumber", "0");
+            user.set("uidNumber", "99999");
+            user.set("gidNumber", "99999");
             user.set("cn", uid);
             user.set("homeDirectory", "/dev/null");
         }
@@ -1002,8 +1006,17 @@ public class LdapHelper implements Helper {
         miList = buildMiListForUser(miList, attrs, mods, adds, dels);
         if (newLdapUser.getPassword() != null) {
             BasicAttribute pwAttr = new BasicAttribute(LdapKeys.USER_PASSWORD, "{SHA}" + newLdapUser.getPassword());
-            Logger.info("update Password for "+newLdapUser.getName());
+            Logger.info("updating Password for "+newLdapUser.getName());
             miList.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, pwAttr));
+        }
+        if(newLdapUser.getAvatar() != null) {
+        	BasicAttribute avatarAttr = new BasicAttribute(LdapKeys.JPEG_PHOTO, convertImageToBinary(newLdapUser.getAvatar()));
+        	Logger.info("updating Avatar for "+newLdapUser.getName());
+        	if(oldLdapUser.getAvatar() != null) {
+            	miList.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, avatarAttr));        		
+        	} else {
+               	miList.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, avatarAttr));  
+        	}
         }
         int c = 0;
         ModificationItem[] miArray = new ModificationItem[miList.size()];
@@ -1181,6 +1194,31 @@ public class LdapHelper implements Helper {
         return file;
     }
 
+	private Object convertImageToBinary(final File avatar) {
+		Object photo = null;
+		if (avatar.exists()) {
+			long fileLength = avatar.length();
+
+			Logger.info("converting "+avatar.getAbsolutePath()+" Size: "+fileLength);
+
+			byte buffer[] = new byte[(int) fileLength];
+			InputStream is;
+			try {
+				is = new BufferedInputStream(new FileInputStream(avatar));
+				int len = is.read(buffer, 0, (int) fileLength);
+				Logger.info("reading "+avatar.getName()+" into buffer: "+len+" bytes.");
+				photo = buffer;
+			} catch (FileNotFoundException ex) {
+				Logger.error(ex.getLocalizedMessage(), ex);
+			} catch (IOException ex) {
+				Logger.error(ex.getLocalizedMessage(), ex);
+			}
+		} else {
+			Logger.error(avatar.getAbsolutePath()+" does not exists!");
+		}
+		return photo;
+	}
+
     private String getAttributeOrNa(final Attributes attributes, final String key) {
         return attributes.get(key).toString().replace(key + ":", "").trim();
     }
@@ -1203,6 +1241,7 @@ public class LdapHelper implements Helper {
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
         env.put(Context.SECURITY_PRINCIPAL, Configuration.getProperty(instanceName + ".principal"));
         env.put(Context.SECURITY_CREDENTIALS, Configuration.getProperty(instanceName + ".credentials"));
+        env.put(LdapKeys.LDAP_ATTRIBUTES_BINARY, "jpegPhoto");
         adminGroupIdentifiyer = Configuration.getProperty(instanceName + ".admin.group.id", LdapKeys.ADMIN_GROUP_CN).trim();
         userIdentifyer = Configuration.getProperty(instanceName + ".user.id.attribute", LdapKeys.USER_ID_ATTRIBUTE).trim();
         userObjectClass = Configuration.getProperty(instanceName + ".user.object.class", LdapKeys.USER_OBJECTCLASS).trim();

@@ -18,6 +18,7 @@ package com.innoq.ldap.connector;
 import com.innoq.liqid.model.Node;
 import com.innoq.liqid.utils.Configuration;
 
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.junit.Assert.*;
@@ -136,6 +137,22 @@ public class TestUser {
     }
 
     @Test
+    public void testAvatar() throws Exception {
+    	LdapUser user1 = Utils.createTestUser(UID);
+    	user1 = (LdapUser) HELPER.getUser(UID);
+    	assertNull(user1.getAvatar());
+    	String dummyPath = Utils.generatePath("src", "test", "resources")+"dummy.png";
+    	File avatar1 = Utils.getFile(dummyPath);
+    	user1.setAvatar(avatar1);
+    	HELPER.setUser(user1);
+    	user1 = (LdapUser) HELPER.getUser(UID);
+    	File avatar2 = user1.getAvatar();
+    	assertEquals(avatar1.length(), avatar2.length());
+    	assertTrue(Utils.compareFiles(avatar1, avatar2));
+    	assertTrue(Utils.removeTestUser(user1));
+    }
+    
+    @Test
     public void testUpdateUser() throws Exception {
         LdapUser u1 = Utils.createTestUser(UID);
         assertNull(u1.get("o"));
@@ -154,17 +171,6 @@ public class TestUser {
         u1 = (LdapUser) HELPER.getUser(UID);
         assertTrue(u1.isEmpty());
         Utils.removeTestUser(u1);
-    }
-
-    @Test
-    public void testDefaultConfig() {
-        //String sshKey = Configuration.getProperty("ldap.sshKey");
-        //Configuration.setProperty("ldap.sshKey", null);
-        HELPER.reload();
-        LdapUser u1 = HELPER.getUserTemplate(UID);
-        //assertEquals(HELPER.getDefault("sshKey"), u1.get("sshPublicKey"));
-        //Configuration.setProperty("ldap.sshKey", sshKey);
-        HELPER.reload();
     }
     
     @Test
