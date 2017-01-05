@@ -41,6 +41,7 @@ public class LdapKeys {
     public static final String DEFAULT_JABBER_SERVER = "jabber.example.com";
     public static final String USER_UID_FORMAT = "%s=%s,%s";
     
+    public static final String LDAP_ATTRIBUTES_BINARY = "java.naming.ldap.attributes.binary";
     private LdapKeys() {}
     
 }
