@@ -1134,12 +1134,16 @@ public class LdapHelper implements Helper {
                     group.setCn(getAttributeOrNa(attributes, key));
                 }
             }
-            NamingEnumeration<?> members = attributes.get(groupMemberAttribut).getAll();
-            while (members.hasMoreElements()) {
-                String memberDN = (String) members.nextElement();
-                member = new LdapUser(getUidForDN(memberDN), this);
-                member.setDn(memberDN);
-                group.addUser(member);
+
+	    Attribute membersAttribute = attributes.get(groupMemberAttribut);
+	    if (membersAttribute != null) {
+	    	NamingEnumeration<?> members = membersAttribute.getAll();
+            	while (members.hasMoreElements()) {
+                    String memberDN = (String) members.nextElement();
+                    member = new LdapUser(getUidForDN(memberDN), this);
+                    member.setDn(memberDN);
+                    group.addUser(member);
+		}
             }
         } catch (NamingException ex) {
             handleNamingException(group, ex);
