@@ -19,10 +19,10 @@
     <parent>
         <groupId>com.innoq.liqid</groupId>
         <artifactId>liqid-parent</artifactId>
-        <version>1.7.1-SNAPSHOT</version>
+        <version>1.7.2-SNAPSHOT</version>
     </parent>
     <artifactId>utils</artifactId>
-    <version>1.7.1-SNAPSHOT</version>    
+    <version>1.7.2-SNAPSHOT</version>    
     <packaging>jar</packaging>
     <name>LiQID Utilities</name>
     <dependencies>
@@ -35,7 +35,7 @@
         <dependency>
             <groupId>com.innoq.liqid</groupId>
             <artifactId>model</artifactId>
-            <version>1.7.1-SNAPSHOT</version>
+            <version>1.7.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
