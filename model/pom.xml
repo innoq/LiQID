@@ -22,7 +22,7 @@
         <version>1.7.1-SNAPSHOT</version>
     </parent>
     <artifactId>model</artifactId>
-    <version>1.7.1-SNAPSHOT</version>       
+    <version>1.7.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>LiQID Model</name>
     <dependencies>
