@@ -293,7 +293,7 @@ public class LdapHelper implements Helper {
             SearchResult searchResult;
             Attributes attributes;
             SearchControls controls = new SearchControls();
-            controls.setReturningAttributes(new String[]{LdapKeys.ASTERISK, LdapKeys.MODIFY_TIMESTAMP, LdapKeys.MODIFIERS_NAME});
+            controls.setReturningAttributes(new String[]{LdapKeys.ASTERISK, LdapKeys.MODIFY_TIMESTAMP, LdapKeys.MODIFIERS_NAME, LdapKeys.ENTRY_UUID});
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
             queryCount++;
@@ -372,7 +372,7 @@ public class LdapHelper implements Helper {
             SearchResult searchResult;
             Attributes attributes;
             SearchControls controls = new SearchControls();
-            controls.setReturningAttributes(new String[]{LdapKeys.ASTERISK, LdapKeys.MODIFY_TIMESTAMP, LdapKeys.MODIFIERS_NAME});
+            controls.setReturningAttributes(new String[]{LdapKeys.ASTERISK, LdapKeys.MODIFY_TIMESTAMP, LdapKeys.MODIFIERS_NAME, LdapKeys.ENTRY_UUID});
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             NamingEnumeration<SearchResult> results = ctx.search("", query, controls);
             queryCount++;
@@ -1104,6 +1104,8 @@ public class LdapHelper implements Helper {
                     user.setModifyTimestamp(getAttributeOrNa(attributes, key));
                 } else if (LdapKeys.MODIFIERS_NAME.equals(key)) {
                     user.setModifiersName(getAttributeOrNa(attributes, key));
+                } else if (LdapKeys.ENTRY_UUID.equals(key)) {
+                	user.setEntryUUID(getAttributeOrNa(attributes, key));
                 } else if (LdapKeys.USER_PASSWORD.equals(key)) {
                     user.addAttribute(new BasicAttribute(LdapKeys.USER_PASSWORD, null));
                 } else {
@@ -1128,6 +1130,8 @@ public class LdapHelper implements Helper {
                     group.setModifyTimestamp(getAttributeOrNa(attributes, key));
                 } else if (LdapKeys.MODIFIERS_NAME.equals(key)) {
                     group.setModifiersName(getAttributeOrNa(attributes, key));
+                } else if (LdapKeys.ENTRY_UUID.equals(key)) {
+                	group.setEntryUUID(getAttributeOrNa(attributes, key));
                 } else {
                     group.addAttribute((BasicAttribute) attributes.get(key));
                 }

@@ -43,7 +43,6 @@ public class TestUser {
 
     @Test
     public void testCreateUser() throws Exception {
-        //String uid = "newTestUser";
         Node u1 = HELPER.getUser(UID);
         assertTrue(u1.isEmpty());
         LdapUser t1 = Utils.getTestUser(UID);
@@ -53,6 +52,22 @@ public class TestUser {
         u1 = HELPER.getUser(UID);
         assertFalse(u1.isEmpty());
         Utils.removeTestUser(t1);
+    }
+    
+    @Test
+    public void testCreateUserWithMetadata() throws Exception {
+        LdapUser u1 = Utils.createTestUser(UID);
+        String[] parts;
+        u1 = (LdapUser) HELPER.getUser(UID);
+        assertNotNull(u1.getModifiersName());
+        parts = u1.getModifiersName().split("=");
+        assertTrue(parts.length > 0);
+        parts = u1.getEntryUUID().split("-");
+        assertNotNull(u1.getEntryUUID());
+        assertTrue(parts.length > 0);
+        assertNotNull(u1.getModifyTimestamp());
+        assertTrue(u1.getModifyTimestamp().contains("Z"));
+        Utils.removeTestUser(u1);    	
     }
 
     @Test
