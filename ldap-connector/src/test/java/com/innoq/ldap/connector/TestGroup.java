@@ -75,18 +75,34 @@ public class TestGroup {
 
     @Test
     public void testCreateGroup() throws Exception {
-        Node g1 = HELPER.getGroup(CN);
-        assertTrue(g1.isEmpty());
-        LdapGroup t1 = Utils.getTestGroup("test");
-        t1 = Utils.updatedGroup(t1, CN);
-        if (HELPER.setGroup(t1)) {
+        Node n1 = HELPER.getGroup(CN);
+        assertTrue(n1.isEmpty());
+        LdapGroup g1 = Utils.getTestGroup("test");
+        g1 = Utils.updatedGroup(g1, CN);
+        if (HELPER.setGroup(g1)) {
             LOG.log(Level.INFO, "created Group {0}", CN);
         }
-        g1 = HELPER.getGroup(CN);
-        assertFalse(g1.isEmpty());
-
+        n1 = HELPER.getGroup(CN);
+        assertFalse(n1.isEmpty());
+        Utils.removeTestGroup(g1);
     }
 
+    @Test
+    public void testCreateGroupWithMetadata() throws Exception {
+    	LdapGroup g1 = Utils.createTestGroup(CN);
+        String[] parts;
+        g1 = (LdapGroup) HELPER.getGroup(CN);
+        assertNotNull(g1.getModifiersName());
+        parts = g1.getModifiersName().split("=");
+        assertTrue(parts.length > 0);
+        assertNotNull(g1.getEntryUUID());
+        parts = g1.getEntryUUID().split("-");
+        assertTrue(parts.length > 0);
+        assertNotNull(g1.getModifyTimestamp());
+        assertTrue(g1.getModifyTimestamp().contains("Z"));
+        Utils.removeTestGroup(g1);   	
+    }
+    
     @Test
     public void testAddUserToGroup() throws Exception {
         LdapGroup g1 = Utils.createTestGroup(CN);

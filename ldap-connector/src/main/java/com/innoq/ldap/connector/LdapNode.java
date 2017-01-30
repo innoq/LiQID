@@ -36,6 +36,7 @@ public class LdapNode implements Node {
     protected String dn;
     protected String modifyTimestamp;
     protected String modifiersName;
+    protected String entryUUID;
     protected String cn;
     
     /**
@@ -203,7 +204,15 @@ public class LdapNode implements Node {
         this.modifiersName = modifiersName.trim();
     }
 
-    public String getModifiersName() {
+    public String getEntryUUID() {
+		return entryUUID;
+	}
+
+	public void setEntryUUID(String entryUUID) {
+		this.entryUUID = entryUUID;
+	}
+
+	public String getModifiersName() {
         return this.modifiersName;
     }
 
