@@ -34,9 +34,6 @@ public class LdapNode implements Node {
     protected Set<String> objectClasses;
     protected String name;
     protected String dn;
-    protected String modifyTimestamp;
-    protected String modifiersName;
-    protected String entryUUID;
     protected String cn;
     
     /**
@@ -123,7 +120,7 @@ public class LdapNode implements Node {
     }
 
     public boolean isNew() {
-        return (this.modifiersName == null && this.modifyTimestamp == null);
+        return (getModifiersName() == null && getModifyTimestamp() == null);
     }
 
     public void debug() {
@@ -131,7 +128,7 @@ public class LdapNode implements Node {
         sb.append(LINE);
         sb.append("\t").append("dn").append(" : ").append(getDn()).append("\n");
         if (!isNew()) {
-            sb.append("\tupdated: ").append(this.modifyTimestamp).append(" by ").append(this.modifiersName).append("\n");
+            sb.append("\tupdated: ").append(getModifyTimestamp()).append(" by ").append(getModifiersName()).append("\n");
         }
         sb.append(LINE);
         for (String key : getKeys()) {
@@ -197,27 +194,27 @@ public class LdapNode implements Node {
     }
 
     public void setModifyTimestamp(final String modifyTimestamp) {
-        this.modifyTimestamp = modifyTimestamp.trim();
+        set(LdapKeys.MODIFY_TIMESTAMP, modifyTimestamp);
     }
 
     public void setModifiersName(final String modifiersName) {
-        this.modifiersName = modifiersName.trim();
+    	set(LdapKeys.MODIFIERS_NAME, modifiersName);
     }
 
     public String getEntryUUID() {
-		return entryUUID;
+		return get(LdapKeys.ENTRY_UUID);
 	}
 
 	public void setEntryUUID(String entryUUID) {
-		this.entryUUID = entryUUID;
+		set(LdapKeys.ENTRY_UUID, entryUUID);
 	}
 
 	public String getModifiersName() {
-        return this.modifiersName;
+        return get(LdapKeys.MODIFIERS_NAME);
     }
 
     public String getModifyTimestamp() {
-        return this.modifyTimestamp;
+        return get(LdapKeys.MODIFY_TIMESTAMP);
     }
 
     public String toLdif(LdapHelper instance) {
