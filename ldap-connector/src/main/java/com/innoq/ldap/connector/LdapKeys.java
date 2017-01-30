@@ -31,7 +31,7 @@ public class LdapKeys {
     public static final String GROUP_OBJECTCLASS = "groupOfNames";
     public static final String JPEG_PHOTO = "jpegPhoto";
     public static final String LDAP_ATTRIBUTES_BINARY = "java.naming.ldap.attributes.binary";
-     public static final String MODIFIERS_NAME = "modifiersName";
+    public static final String MODIFIERS_NAME = "modifiersName";
     public static final String MODIFY_TIMESTAMP = "modifyTimestamp";
     public static final String OBJECT_CLASS = "objectClass";
     public static final String OWNER = "owner";
