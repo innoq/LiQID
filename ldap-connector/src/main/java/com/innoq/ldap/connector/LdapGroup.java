@@ -95,7 +95,7 @@ public class LdapGroup extends LdapNode implements Comparable<LdapGroup> {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 79 * hash + (this.cn != null ? this.cn.hashCode() : 0);
+        hash = 79 * hash + (get("cn") != null ? get("cn").hashCode() : 0);
         hash = 79 * hash + (this.attributes != null ? this.attributes.hashCode() : 0);
         return hash;
     }
@@ -109,7 +109,7 @@ public class LdapGroup extends LdapNode implements Comparable<LdapGroup> {
             return false;
         }
         final LdapGroup other = (LdapGroup) obj;
-        if ((this.cn == null) ? (other.cn != null) : !this.cn.equals(other.cn)) {
+        if ((get("cn") == null) ? (other.get("cn") != null) : !get("cn").equals(get("cn"))) {
             return false;
         }
         return true;
@@ -125,7 +125,7 @@ public class LdapGroup extends LdapNode implements Comparable<LdapGroup> {
 
     @Override
     public String toString() {
-        return this.cn + " # " + attributes.size();
+        return get("cn") + " # " + attributes.size();
     }
 
     @Override

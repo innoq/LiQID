@@ -21,7 +21,6 @@ public class LdapEntry extends LdapNode implements Comparable<LdapEntry> {
 
     public LdapEntry(String cn, String owner) {
         super();
-        this.cn = cn;
         this.owner = owner;
     }
 

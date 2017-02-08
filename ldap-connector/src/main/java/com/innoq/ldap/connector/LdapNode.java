@@ -33,8 +33,7 @@ public class LdapNode implements Node {
     protected Set<String> keys;
     protected Set<String> objectClasses;
     protected String name;
-    protected String dn;
-    protected String cn;
+	private String dn;
     
     /**
      * Basic Constructor.
@@ -52,9 +51,8 @@ public class LdapNode implements Node {
     @Override
     public String get(String key) {
     	if("dn".equals(key)) {
-    		return dn;
-    	}
-        if (key != null
+    		return this.dn;
+    	} else if (key != null
                 && attributes != null
                 && getKeys().contains(key)
                 && attributes.get(key) != null) {
@@ -82,9 +80,9 @@ public class LdapNode implements Node {
      */
     @Override
     public void set(String key, String value) {
-        if("dn".equals(key)) {
-        	dn = value;
-        } else if (value != null
+    	if("dn".equals(key)) {
+    		this.dn = value;
+    	} else if (value != null
                 && !value.isEmpty()
                 && key != null
                 && !key.isEmpty()) {
@@ -112,11 +110,11 @@ public class LdapNode implements Node {
     }
 
     public void setCn(String cn) {
-        this.cn = cn;
+        set("cn", cn);
     }
 
     public String getCn() {
-        return this.cn == null ? "" : this.cn;
+        return get("cn");
     }
 
     public boolean isNew() {
@@ -177,14 +175,11 @@ public class LdapNode implements Node {
 
     @Override
     public String getName() {
-        return name;
+        return getCn();
     }
 
     @Override
     public String getDn() {
-        if (dn == null) {
-            dn = LdapHelper.getInstance().getDNForNode(this);
-        }
         return dn;
     }
 
