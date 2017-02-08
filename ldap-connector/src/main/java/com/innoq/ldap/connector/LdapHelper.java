@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2012 innoQ Deutschland GmbH
+ Copyright (C) 2017 innoQ Deutschland GmbH
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -618,6 +618,7 @@ public class LdapHelper implements Helper {
      */
     public LdapUser getUserTemplate(String uid) {
         LdapUser user = new LdapUser(uid, this);
+        user.set("dn", getDNForNode(user));
         for (String oc : userObjectClasses) {
             user.addObjectClass(oc.trim());
         }
@@ -662,6 +663,7 @@ public class LdapHelper implements Helper {
      */
     public LdapGroup getGroupTemplate(String cn) {
         LdapGroup group = new LdapGroup(cn, this);
+        group.set("dn", getDNForNode(group));
         for (String oc : groupObjectClasses) {
             group.addObjectClass(oc.trim());
         }
@@ -917,6 +919,10 @@ public class LdapHelper implements Helper {
         }
         for (LdapUser member : oldLdapGroup.getUsers()) {
             if (!newLdapGroup.getUsers().contains(member)) {
+            	if(oldLdapGroup.getUsers().size() == 1) {
+            		Logger.error("Group "+oldLdapGroup.getName()+" has only one member left. Cannot remove "+member.getName());
+            		return miList;
+            	}
                 a = new BasicAttribute(groupMemberAttribut, member.getDn());
                 miList.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE, a));
             }

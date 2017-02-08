@@ -145,6 +145,33 @@ public class TestGroup {
     }
 
     @Test
+    public void testRemoveUserFromGroupNotAllowed() throws Exception {
+    	LdapGroup g1 = Utils.createTestGroup(CN);
+    	assertTrue(g1.getUsers().size() == 1);
+    	Node principal = HELPER.getPrincipal();	
+    	LdapUser principalUser = (LdapUser) principal;
+    	g1.rmUser(principalUser);
+    	HELPER.setGroup(g1);
+    	LdapGroup g2 = Utils.createTestGroup(CN);
+    	assertTrue(g2.getUsers().size() == 1);
+        Utils.removeTestGroup(g1);
+    }
+    
+    @Test
+    public void testLoadPrincipalUserFromGroup() throws Exception {
+    	LdapGroup g1 = Utils.createTestGroup(CN);
+    	assertTrue(g1.getUsers().size() == 1);
+    	Node principal = HELPER.getPrincipal();	
+    	LdapUser principalUser = (LdapUser) principal;
+    	Set<LdapUser> users = g1.getUsers();
+    	assertTrue(users.size() == 1);
+    	for(LdapUser user : users) {
+        	assertEquals(principalUser.getDn(), user.getDn());    		
+    	}
+        Utils.removeTestGroup(g1);
+    }
+    
+    @Test
     public void testAddUsersToGroup() throws Exception {
 		testUser2 = HELPER.getUserTemplate("U4_" + System.currentTimeMillis());
         testUser2.set("cn", testUser2.getUid());
