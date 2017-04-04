@@ -864,7 +864,11 @@ public class LdapHelper implements Helper {
         }
 
         for (String key : oldLdapGroup.getKeys()) {
-            if (!groupMemberAttribut.equals(key)
+            if (LdapKeys.MODIFY_TIMESTAMP.equals(key) ||
+                	LdapKeys.MODIFIERS_NAME.equals(key) ||	
+                	LdapKeys.ENTRY_UUID.equals(key)) {
+                	Logger.warn(key+" should be readonly, but different!");
+            } else if (!groupMemberAttribut.equals(key)
                     && !LdapKeys.OBJECT_CLASS.equals(key)
                     && newLdapGroup.get(key) == null) {
                 attrs.put(key, newLdapGroup.get(key));
@@ -965,7 +969,11 @@ public class LdapHelper implements Helper {
             }
         }
         for (String key : oldLdapEntry.getKeys()) {
-            if (!LdapKeys.OBJECT_CLASS.equals(key) && newLdapEntry.get(key) == null) {
+            if (LdapKeys.MODIFY_TIMESTAMP.equals(key) ||
+                	LdapKeys.MODIFIERS_NAME.equals(key) ||	
+                	LdapKeys.ENTRY_UUID.equals(key)) {
+                	Logger.warn(key+" should be readonly, but different!");
+            } else if (!LdapKeys.OBJECT_CLASS.equals(key) && newLdapEntry.get(key) == null) {
                 attrs.put(key, newLdapEntry.get(key));
                 dels.add(key);
             }
@@ -1001,7 +1009,11 @@ public class LdapHelper implements Helper {
             }
         }
         for (String key : oldLdapUser.getKeys()) {
-            if (!LdapKeys.OBJECT_CLASS.equals(key) && newLdapUser.get(key) == null) {
+            if (LdapKeys.MODIFY_TIMESTAMP.equals(key) ||
+                	LdapKeys.MODIFIERS_NAME.equals(key) ||	
+                	LdapKeys.ENTRY_UUID.equals(key)) {
+                	Logger.warn(key+" should be readonly, but different!");
+            } else if (!LdapKeys.OBJECT_CLASS.equals(key) && newLdapUser.get(key) == null) {
                 attrs.put(key, newLdapUser.get(key));
                 dels.add(key);
             }
