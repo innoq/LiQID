@@ -35,7 +35,7 @@ public class TestGroup {
 
     private static LdapHelper HELPER;
     private static final Logger LOG = Logger.getLogger(TestUser.class.getName());
-    private static String CN;
+    private static String CN1, CN2;
     private static LdapUser testUser1, testUser2;
 
     public TestGroup() {
@@ -44,7 +44,8 @@ public class TestGroup {
     @BeforeClass
     public static void setUpClass() throws Exception {
         HELPER = Utils.getHelper();
-        CN = "G1_" + System.currentTimeMillis();
+        CN1 = "G1_" + System.currentTimeMillis();
+        CN2 = "G2_" + System.currentTimeMillis();
         testUser1 = HELPER.getUserTemplate("U1_" + System.currentTimeMillis());
         testUser1.set("cn", testUser1.getUid());
         HELPER.setUser(testUser1);
@@ -75,23 +76,23 @@ public class TestGroup {
 
     @Test
     public void testCreateGroup() throws Exception {
-        Node n1 = HELPER.getGroup(CN);
+        Node n1 = HELPER.getGroup(CN1);
         assertTrue(n1.isEmpty());
         LdapGroup g1 = Utils.getTestGroup("test");
-        g1 = Utils.updatedGroup(g1, CN);
+        g1 = Utils.updatedGroup(g1, CN1);
         if (HELPER.setGroup(g1)) {
-            LOG.log(Level.INFO, "created Group {0}", CN);
+            LOG.log(Level.INFO, "created Group {0}", CN1);
         }
-        n1 = HELPER.getGroup(CN);
+        n1 = HELPER.getGroup(CN1);
         assertFalse(n1.isEmpty());
         Utils.removeTestGroup(g1);
     }
 
     @Test
     public void testCreateGroupWithMetadata() throws Exception {
-    	LdapGroup g1 = Utils.createTestGroup(CN);
+    	LdapGroup g1 = Utils.createTestGroup(CN1);
         String[] parts;
-        g1 = (LdapGroup) HELPER.getGroup(CN);
+        g1 = (LdapGroup) HELPER.getGroup(CN1);
         assertNotNull(g1.getModifiersName());
         parts = g1.getModifiersName().split("=");
         assertTrue(parts.length > 0);
@@ -104,40 +105,49 @@ public class TestGroup {
     }
     
     @Test
+    public void testCompareGroups() throws Exception {
+    	LdapGroup g1 = Utils.createTestGroup(CN1);
+    	LdapGroup g2 = Utils.createTestGroup(CN2);
+    	assertTrue(g1.compareTo(g2) != 0);
+    	Utils.removeTestGroup(g1);
+    	Utils.removeTestGroup(g2);
+    }
+    
+    @Test
     public void testAddUserToGroup() throws Exception {
-        LdapGroup g1 = Utils.createTestGroup(CN);
+        LdapGroup g1 = Utils.createTestGroup(CN1);
         g1.addUser(testUser1);
         if (HELPER.setGroup(g1)) {
-            LOG.log(Level.INFO, "updated Group {0}", CN);
+            LOG.log(Level.INFO, "updated Group {0}", CN1);
         }
-        g1 = (LdapGroup) HELPER.getGroup(CN);
+        g1 = (LdapGroup) HELPER.getGroup(CN1);
         g1.debug();
         Utils.removeTestGroup(g1);
     }
 
     @Test
     public void testRemoveUserFromGroup() throws Exception {
-        LdapGroup g1 = Utils.createTestGroup(CN);
+        LdapGroup g1 = Utils.createTestGroup(CN1);
         String[] usernames = {"U2_" + System.currentTimeMillis(), "U3_" + System.currentTimeMillis()};
         if (HELPER.setGroup(g1)) {
-            LOG.log(Level.INFO, "updated Group {0}", CN);
+            LOG.log(Level.INFO, "updated Group {0}", CN1);
         }
         List<LdapUser> users = Utils.createTestUsers(usernames);
         for (LdapUser user : users) {
             g1.addUser(user);
         }
         HELPER.setGroup(g1);
-        g1 = (LdapGroup) HELPER.getGroup(CN);
+        g1 = (LdapGroup) HELPER.getGroup(CN1);
         int count;
         count = g1.getUsers().size();
-        LOG.log(Level.INFO, "getUsers() count Group {0} is {1}", new Object[]{CN, count});
+        LOG.log(Level.INFO, "getUsers() count Group {0} is {1}", new Object[]{CN1, count});
         g1.debug();
         assertTrue(count > 1);
         
         g1.rmUser(users.get(0));
         HELPER.setGroup(g1);
-        g1 = (LdapGroup) HELPER.getGroup(CN);
-        LOG.log(Level.INFO, "user count Group {0} is {1}", new Object[]{CN, g1.getUsers().size()});
+        g1 = (LdapGroup) HELPER.getGroup(CN1);
+        LOG.log(Level.INFO, "user count Group {0} is {1}", new Object[]{CN1, g1.getUsers().size()});
         g1.debug();
         assertTrue(g1.getUsers().size() == (count - 1));
         Utils.removeTestGroup(g1);
@@ -146,20 +156,20 @@ public class TestGroup {
 
     @Test
     public void testRemoveUserFromGroupNotAllowed() throws Exception {
-    	LdapGroup g1 = Utils.createTestGroup(CN);
+    	LdapGroup g1 = Utils.createTestGroup(CN1);
     	assertTrue(g1.getUsers().size() == 1);
     	Node principal = HELPER.getPrincipal();	
     	LdapUser principalUser = (LdapUser) principal;
     	g1.rmUser(principalUser);
     	HELPER.setGroup(g1);
-    	LdapGroup g2 = Utils.createTestGroup(CN);
+    	LdapGroup g2 = Utils.createTestGroup(CN1);
     	assertTrue(g2.getUsers().size() == 1);
         Utils.removeTestGroup(g1);
     }
     
     @Test
     public void testLoadPrincipalUserFromGroup() throws Exception {
-    	LdapGroup g1 = Utils.createTestGroup(CN);
+    	LdapGroup g1 = Utils.createTestGroup(CN1);
     	assertTrue(g1.getUsers().size() == 1);
     	Node principal = HELPER.getPrincipal();	
     	LdapUser principalUser = (LdapUser) principal;
@@ -176,16 +186,16 @@ public class TestGroup {
 		testUser2 = HELPER.getUserTemplate("U4_" + System.currentTimeMillis());
         testUser2.set("cn", testUser2.getUid());
         HELPER.setUser(testUser2);
-        LdapGroup g1 = Utils.createTestGroup(CN);
+        LdapGroup g1 = Utils.createTestGroup(CN1);
         g1.addUser(testUser1);
         g1.addUser(testUser2);
         HELPER.setGroup(g1);
-        g1 = (LdapGroup) HELPER.getGroup(CN);
-        LOG.log(Level.INFO, "user count Group {0} is {1}", new Object[]{CN, g1.getUsers().size()});
+        g1 = (LdapGroup) HELPER.getGroup(CN1);
+        LOG.log(Level.INFO, "user count Group {0} is {1}", new Object[]{CN1, g1.getUsers().size()});
         assertTrue(g1.getUsers().size() > 2);
         
         Set<Node> members = HELPER.getUsersForGroup(g1);
-        LOG.log(Level.INFO, "getUsersForGroup() count Group {0} is {1}", new Object[]{CN, members.size()});
+        LOG.log(Level.INFO, "getUsersForGroup() count Group {0} is {1}", new Object[]{CN1, members.size()});
         g1.debug();
         assertTrue(members.size() > 2);
         
@@ -194,12 +204,12 @@ public class TestGroup {
 
     @Test
     public void testUpdateGroup() throws Exception {
-        LdapGroup g1 =Utils.createTestGroup(CN);
+        LdapGroup g1 =Utils.createTestGroup(CN1);
         assertNull(g1.get("description"));
-        g1.set("description", "Group " + CN);
+        g1.set("description", "Group " + CN1);
         HELPER.setGroup(g1);
-        g1 = (LdapGroup) HELPER.getGroup(CN);
-        assertEquals(g1.get("description"), "Group " + CN);
+        g1 = (LdapGroup) HELPER.getGroup(CN1);
+        assertEquals(g1.get("description"), "Group " + CN1);
         Utils.removeTestGroup(g1);
     }
 
@@ -208,10 +218,10 @@ public class TestGroup {
         LdapGroup g1 = (LdapGroup) HELPER.getGroup("users");
         LOG.log(Level.INFO, "Group users description: {0}", g1.get("description"));
         String description = g1.get("description");
-        g1.set("description", description + CN);
+        g1.set("description", description + CN1);
         HELPER.setGroup(g1);
         g1 = (LdapGroup) HELPER.getGroup("users");
-        assertEquals(g1.get("description"), description + CN);
+        assertEquals(g1.get("description"), description + CN1);
         g1.set("description", description);
         HELPER.setGroup(g1);
         g1 = (LdapGroup) HELPER.getGroup("users");
@@ -220,9 +230,9 @@ public class TestGroup {
 
     @Test
     public void testUpdateEmptyGroup() throws Exception {
-        LdapGroup g1 = Utils.createTestGroup(CN);
+        LdapGroup g1 = Utils.createTestGroup(CN1);
         int count = g1.getUsers().size();
-        LOG.log(Level.INFO, "user count Group {0} is {1}", new Object[]{CN, count});
+        LOG.log(Level.INFO, "user count Group {0} is {1}", new Object[]{CN1, count});
         g1.debug();
         List<LdapUser> users = new ArrayList<LdapUser>();
         for (LdapUser user : g1.getUsers()) {
@@ -232,9 +242,9 @@ public class TestGroup {
             g1.rmUser(user);
         }
         HELPER.setGroup(g1);
-        g1 = (LdapGroup) HELPER.getGroup(CN);
+        g1 = (LdapGroup) HELPER.getGroup(CN1);
         count = g1.getUsers().size();
-        LOG.log(Level.INFO, "user count Group {0} is {1}", new Object[]{CN, count});
+        LOG.log(Level.INFO, "user count Group {0} is {1}", new Object[]{CN1, count});
         g1.debug();
         assertTrue(g1.getUsers().size() == 1);
         Utils.removeTestGroup(g1);
@@ -242,15 +252,15 @@ public class TestGroup {
 
     @Test
     public void testDeleteGroup() throws Exception {
-        LdapGroup g1 = Utils.createTestGroup(CN);
+        LdapGroup g1 = Utils.createTestGroup(CN1);
         try {
             if (HELPER.rmGroup(g1)) {
-                LOG.log(Level.INFO, "deleted Group {0}", CN);
+                LOG.log(Level.INFO, "deleted Group {0}", CN1);
             }
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "setGroup fails", ex);
         }
-        g1 = (LdapGroup) HELPER.getGroup(CN);
+        g1 = (LdapGroup) HELPER.getGroup(CN1);
         assertTrue(g1.isEmpty());
     }
 }
