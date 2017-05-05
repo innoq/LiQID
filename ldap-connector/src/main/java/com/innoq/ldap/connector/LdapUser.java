@@ -21,11 +21,16 @@ import java.io.File;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * LdapUser 04.12.2011
  */
 public class LdapUser extends LdapNode implements Comparable<LdapUser> {
 
+    private final Logger Logger = LoggerFactory.getLogger(LdapUser.class);
+    
     /**
      * Users uid.
      */
@@ -65,8 +70,14 @@ public class LdapUser extends LdapNode implements Comparable<LdapUser> {
     public Set<LdapGroup> getGroups() {
         if (this.groups == null) {
             this.groups = new TreeSet<>();
+            LdapGroup g;
             for (Node n : LdapHelper.getInstance().getGroupsForUser(this)) {
-                this.groups.add((LdapGroup) n);
+                g = (LdapGroup) n;
+                if(g != null && g.getCn() != null) {
+                	this.groups.add(g);                	
+                } else {
+                	Logger.warn("Entry " + n.getDn() + " is not a valid Group!");
+                }
             }
         }
         return this.groups;
@@ -135,6 +146,9 @@ public class LdapUser extends LdapNode implements Comparable<LdapUser> {
         if (t == null) {
             return 1;
         }
+        if (getUid() == null && t.getUid() != null) {
+        	return -1;
+        }        
         return getUid().compareTo(t.getUid());
     }
 

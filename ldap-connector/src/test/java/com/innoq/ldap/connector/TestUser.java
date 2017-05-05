@@ -31,34 +31,33 @@ public class TestUser {
 
     private static LdapHelper HELPER;
     private static final Logger LOGGER = Logger.getLogger(TestUser.class.getName());
-    private static String UID;
-    private static String PW;
+    private static String UID1, UID2;
 
     public TestUser() {
         HELPER = Utils.getHelper();
-        UID = "UX_" + System.currentTimeMillis();
-        PW = UID.substring(0, 5) + UID.substring(5);
-        LOGGER.log(Level.INFO, "UID: {0}", UID);
+        UID1 = "U1_" + System.currentTimeMillis();
+        UID2 = "U2_" + System.currentTimeMillis();        
+        LOGGER.log(Level.INFO, "UID: {0}", UID1);
     }
 
     @Test
     public void testCreateUser() throws Exception {
-        Node u1 = HELPER.getUser(UID);
+        Node u1 = HELPER.getUser(UID1);
         assertTrue(u1.isEmpty());
-        LdapUser t1 = Utils.getTestUser(UID);
-        t1.setPassword(UID);
-        t1 = Utils.updatedUser(t1, UID);
-        assertTrue("testCreateUser " + UID + " for login failed", HELPER.setUser(t1));
-        u1 = HELPER.getUser(UID);
+        LdapUser t1 = Utils.getTestUser(UID1);
+        t1.setPassword(UID1);
+        t1 = Utils.updatedUser(t1, UID1);
+        assertTrue("testCreateUser " + UID1 + " for login failed", HELPER.setUser(t1));
+        u1 = HELPER.getUser(UID1);
         assertFalse(u1.isEmpty());
         Utils.removeTestUser(t1);
     }
     
     @Test
     public void testCreateUserWithMetadata() throws Exception {
-        LdapUser u1 = Utils.createTestUser(UID);
+        LdapUser u1 = Utils.createTestUser(UID1);
         String[] parts;
-        u1 = (LdapUser) HELPER.getUser(UID);
+        u1 = (LdapUser) HELPER.getUser(UID1);
         assertNotNull(u1.getModifiersName());
         parts = u1.getModifiersName().split("=");
         assertTrue(parts.length > 0);
@@ -69,15 +68,24 @@ public class TestUser {
         assertTrue(u1.getModifyTimestamp().contains("Z"));
         Utils.removeTestUser(u1);    	
     }
+    
+    @Test
+    public void testCompareUsers() throws Exception {
+    	LdapUser u1 = Utils.createTestUser(UID1);
+    	LdapUser u2 = Utils.createTestUser(UID2);
+    	assertTrue(u1.compareTo(u2) != 0);
+    	Utils.removeTestUser(u1);
+    	Utils.removeTestUser(u2);
+    }
 
     @Test
     public void testLoginWithNull() throws Exception {
         boolean login;
-        LdapUser t1 = Utils.createTestUser(UID);
-        login = HELPER.checkCredentials(UID, null);
-        assertFalse("testValidLogin: should be false for " + UID + ":null", login);
-        login = HELPER.checkCredentials(null, UID);
-        assertFalse("testValidLogin: should be false for null:" + UID, login);
+        LdapUser t1 = Utils.createTestUser(UID1);
+        login = HELPER.checkCredentials(UID1, null);
+        assertFalse("testValidLogin: should be false for " + UID1 + ":null", login);
+        login = HELPER.checkCredentials(null, UID1);
+        assertFalse("testValidLogin: should be false for null:" + UID1, login);
         login = HELPER.checkCredentials(null, null);
         assertFalse("testValidLogin: should be false for null:null", login);
         Utils.removeTestUser(t1);
@@ -85,24 +93,24 @@ public class TestUser {
 
     @Test
     public void testValidLogin() throws Exception {
-        LdapUser t1 = Utils.createTestUser(UID);
-        t1.setPassword(UID);
-        assertTrue("testValidLogin " + UID + " for login failed", HELPER.setUser(t1));
-        boolean login = HELPER.checkCredentials(UID, UID);
-        assertTrue("testValidLogin: should be true for " + UID, login);
+        LdapUser t1 = Utils.createTestUser(UID1);
+        t1.setPassword(UID1);
+        assertTrue("testValidLogin " + UID1 + " for login failed", HELPER.setUser(t1));
+        boolean login = HELPER.checkCredentials(UID1, UID1);
+        assertTrue("testValidLogin: should be true for " + UID1, login);
         assertTrue(Utils.removeTestUser(t1));
     }
 
     @Test
     public void testInvalidLogin() {
-        boolean login = HELPER.checkCredentials(UID, "test");
-        assertFalse("testInvalidLogin: should be false " + UID, login);
+        boolean login = HELPER.checkCredentials(UID1, "test");
+        assertFalse("testInvalidLogin: should be false " + UID1, login);
     }
 
     @Test
     public void testUserLoad() throws Exception {
-        LdapUser testUser = Utils.createTestUser(UID);
-        LdapUser ldapUser = (LdapUser) HELPER.getUser(UID);
+        LdapUser testUser = Utils.createTestUser(UID1);
+        LdapUser ldapUser = (LdapUser) HELPER.getUser(UID1);
         LOGGER.log(Level.INFO, "testUser: {0}", testUser);
         LOGGER.log(Level.INFO, "ldapUser: {0}", ldapUser);
         assertFalse("User should be not new!", ldapUser.isNew());
@@ -112,11 +120,11 @@ public class TestUser {
 
     @Test
     public void testAlterUser() throws Exception {
-        LdapUser user1 = Utils.createTestUser(UID);
+        LdapUser user1 = Utils.createTestUser(UID1);
         user1.set("description", "altered Test User");
         user1.set("sn", "Test User");
-        assertTrue("testAlterUser " + UID + " fails", HELPER.setUser(user1));
-        LdapUser user2 = (LdapUser) HELPER.getUser(UID);
+        assertTrue("testAlterUser " + UID1 + " fails", HELPER.setUser(user1));
+        LdapUser user2 = (LdapUser) HELPER.getUser(UID1);
 
         assertTrue("should be \n 'altered Test User' but was \n " + user2.get("description"), "altered Test User".equals(user2.get("description")));
         assertTrue("should be \n 'Test User' but was \n " + user2.get("sn"), "Test User".equals(user2.get("sn")));
@@ -125,10 +133,10 @@ public class TestUser {
 
     @Test
     public void testAlterPassword() throws Exception {
-        LdapUser user1 = Utils.createTestUser(UID);
+        LdapUser user1 = Utils.createTestUser(UID1);
         user1.setPassword("test2");
-        assertTrue("testAlterPassword " + UID + " fails", HELPER.setUser(user1));
-        boolean login = HELPER.checkCredentials(UID, "test2");
+        assertTrue("testAlterPassword " + UID1 + " fails", HELPER.setUser(user1));
+        boolean login = HELPER.checkCredentials(UID1, "test2");
         assertTrue("should be true", login);
         assertTrue(Utils.removeTestUser(user1));
     }
@@ -139,28 +147,28 @@ public class TestUser {
         String pass1, pass2;
         pass1 = "test2";
         pass2 = "test3";
-        LdapUser user1 = Utils.createTestUser(UID);
+        LdapUser user1 = Utils.createTestUser(UID1);
         user1.setPassword(pass1);
-        assertTrue("testAlterPasswordAsUser=>setUser " + UID + " fails", HELPER.setUser(user1));
-        login = HELPER.checkCredentials(UID, pass1);
+        assertTrue("testAlterPasswordAsUser=>setUser " + UID1 + " fails", HELPER.setUser(user1));
+        login = HELPER.checkCredentials(UID1, pass1);
         assertTrue("should be true", login);
         user1.setPassword(pass2);
-        assertTrue("testAlterPasswordAsUser=>setUserAsUser " + UID + " fails", HELPER.setUserAsUser(user1, UID, pass1));
-        login = HELPER.checkCredentials(UID, pass2);
+        assertTrue("testAlterPasswordAsUser=>setUserAsUser " + UID1 + " fails", HELPER.setUserAsUser(user1, UID1, pass1));
+        login = HELPER.checkCredentials(UID1, pass2);
         assertTrue("should be true", login);
         assertTrue(Utils.removeTestUser(user1));
     }
 
     @Test
     public void testAvatar() throws Exception {
-    	LdapUser user1 = Utils.createTestUser(UID);
-    	user1 = (LdapUser) HELPER.getUser(UID);
+    	LdapUser user1 = Utils.createTestUser(UID1);
+    	user1 = (LdapUser) HELPER.getUser(UID1);
     	assertNull(user1.getAvatar());
     	String dummyPath = Utils.generatePath("src", "test", "resources")+"dummy.png";
     	File avatar1 = Utils.getFile(dummyPath);
     	user1.setAvatar(avatar1);
     	HELPER.setUser(user1);
-    	user1 = (LdapUser) HELPER.getUser(UID);
+    	user1 = (LdapUser) HELPER.getUser(UID1);
     	File avatar2 = user1.getAvatar();
     	assertEquals(avatar1.length(), avatar2.length());
     	assertTrue(Utils.compareFiles(avatar1, avatar2));
@@ -169,21 +177,21 @@ public class TestUser {
     
     @Test
     public void testUpdateUser() throws Exception {
-        LdapUser u1 = Utils.createTestUser(UID);
+        LdapUser u1 = Utils.createTestUser(UID1);
         assertNull(u1.get("o"));
-        u1.set("description", "Company for  " + UID);
+        u1.set("description", "Company for  " + UID1);
         HELPER.setUser(u1);
-        u1 = (LdapUser) HELPER.getUser(UID);
-        assertEquals(u1.get("description"), "Company for  " + UID);
+        u1 = (LdapUser) HELPER.getUser(UID1);
+        assertEquals(u1.get("description"), "Company for  " + UID1);
         assertTrue(Utils.removeTestUser(u1));
     }
 
     @Test
     public void testDeleteUser() throws Exception {
-        LdapUser u1 = Utils.createTestUser(UID);
+        LdapUser u1 = Utils.createTestUser(UID1);
         assertFalse(u1.isEmpty());
-        assertTrue("deleted User " + UID + " failed!", HELPER.rmUser(u1));
-        u1 = (LdapUser) HELPER.getUser(UID);
+        assertTrue("deleted User " + UID1 + " failed!", HELPER.rmUser(u1));
+        u1 = (LdapUser) HELPER.getUser(UID1);
         assertTrue(u1.isEmpty());
         Utils.removeTestUser(u1);
     }
@@ -201,8 +209,8 @@ public class TestUser {
     
     @Test
     public void testUserDN() throws Exception {
-        LdapUser testUser = Utils.createTestUser(UID);
-        LdapUser ldapUser = (LdapUser) HELPER.getUser(UID);
+        LdapUser testUser = Utils.createTestUser(UID1);
+        LdapUser ldapUser = (LdapUser) HELPER.getUser(UID1);
         assertEquals(testUser.getDn(), ldapUser.getDn());
     	LOGGER.log(Level.INFO, "User getDN(): User matches: {0} == {1}", new String[]{testUser.getDn(), ldapUser.getDn()});
         assertEquals(testUser.get("dn"), ldapUser.get("dn"));

@@ -120,6 +120,9 @@ public class LdapGroup extends LdapNode implements Comparable<LdapGroup> {
         if (t == null) {
             return 1;
         }
+        if (getCn() == null && t.getCn() != null) {
+        	return -1;
+        }
         return getCn().compareTo(t.getCn());
     }
 
