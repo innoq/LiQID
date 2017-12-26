@@ -38,6 +38,16 @@
 		<system>GitHub</system>
 		<url>https://github.com/innoq/LiQID/issues</url>
 	</issueManagement>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>sonatype-nexus-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>sonatype-nexus-staging</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 	<developers>
 		<developer>
 			<id>phl</id>
@@ -118,18 +128,18 @@
 						<version>1.6</version>
 						<executions>
 							<execution>
-							    <id>sign-artifacts</id>
-							    <phase>verify</phase>
-							    <goals>
-							        <goal>sign</goal>
-							    </goals>
-							    <configuration>
-							        <keyname>${gpg.keyname}</keyname>
-							        <passphraseServerId>${gpg.keyname}</passphraseServerId>
-							    </configuration>							    
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+								<configuration>
+									<keyname>${gpg.keyname}</keyname>
+									<passphraseServerId>${gpg.keyname}</passphraseServerId>
+								</configuration>
 							</execution>
 						</executions>
-					</plugin>					
+					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
