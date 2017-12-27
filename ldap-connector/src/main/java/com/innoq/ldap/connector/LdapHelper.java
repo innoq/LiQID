@@ -1118,13 +1118,7 @@ public class LdapHelper implements Helper {
                 if (userIdentifyer.equals(key)) {
                     user.setUid(getAttributeOrNa(attributes, key));
                 }
-                if (LdapKeys.MODIFY_TIMESTAMP.equals(key)) {
-                    user.setModifyTimestamp(getAttributeOrNa(attributes, key));
-                } else if (LdapKeys.MODIFIERS_NAME.equals(key)) {
-                    user.setModifiersName(getAttributeOrNa(attributes, key));
-                } else if (LdapKeys.ENTRY_UUID.equals(key)) {
-                	user.setEntryUUID(getAttributeOrNa(attributes, key));
-                } else if (LdapKeys.USER_PASSWORD.equals(key)) {
+                if (LdapKeys.USER_PASSWORD.equals(key)) {
                     user.addAttribute(new BasicAttribute(LdapKeys.USER_PASSWORD, null));
                 } else {
                     user.addAttribute((BasicAttribute) attributes.get(key));
@@ -1144,15 +1138,7 @@ public class LdapHelper implements Helper {
             group = (LdapGroup) fillObjectClasses(group, attributes);
             while (keys.hasMoreElements()) {
                 key = keys.nextElement();
-                if (LdapKeys.MODIFY_TIMESTAMP.equals(key)) {
-                    group.setModifyTimestamp(getAttributeOrNa(attributes, key));
-                } else if (LdapKeys.MODIFIERS_NAME.equals(key)) {
-                    group.setModifiersName(getAttributeOrNa(attributes, key));
-                } else if (LdapKeys.ENTRY_UUID.equals(key)) {
-                	group.setEntryUUID(getAttributeOrNa(attributes, key));
-                } else {
-                    group.addAttribute((BasicAttribute) attributes.get(key));
-                }
+                group.addAttribute((BasicAttribute) attributes.get(key));
                 if (groupIdentifyer.equals(key)) {
                     group.setCn(getAttributeOrNa(attributes, key));
                 }

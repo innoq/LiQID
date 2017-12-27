@@ -188,20 +188,8 @@ public class LdapNode implements Node {
         this.dn = dn;
     }
 
-    public void setModifyTimestamp(final String modifyTimestamp) {
-        set(LdapKeys.MODIFY_TIMESTAMP, modifyTimestamp);
-    }
-
-    public void setModifiersName(final String modifiersName) {
-    	set(LdapKeys.MODIFIERS_NAME, modifiersName);
-    }
-
     public String getEntryUUID() {
 		return get(LdapKeys.ENTRY_UUID);
-	}
-
-	public void setEntryUUID(String entryUUID) {
-		set(LdapKeys.ENTRY_UUID, entryUUID);
 	}
 
 	public String getModifiersName() {
